@@ -15,11 +15,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from tutorials.views import views
+from django.http import HttpResponse
+
+
+def student_groups(request):
+    return HttpResponse("This is the Student Groups page.")
 
 urlpatterns = [
     # Main pages
     path('', views.home, name='home'),
-
+    path('student-groups/', student_groups, name='student_groups'),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]

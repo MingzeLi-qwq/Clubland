@@ -1,0 +1,8 @@
+body {
+    background-color: rgb(255, 255, 255);
+}
+
+/* 设置导航栏背景色 */
+.navbar {
+    background-color: #3498db !important;
+}

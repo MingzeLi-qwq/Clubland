@@ -1,16 +1,50 @@
 {% extends 'base.html' %}
 {% block body %}
-  <div class="container vh-100">
-    <div class="row h-100">
-      <div class="col-12 my-auto">
-        <div class="card cover-card offset-sm-2 offset-md-4 offset-lg-7">
-          <h1 class="cover-heading">miHoyo</h1>
-          <p class="cover-text">miHoyou school community</i></p>
-          <p>
-            </a>
-          </p>
-        </div>
+  <!-- 导航栏 -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <!-- Logo -->
+      <a class="navbar-brand" href="#">miHoyo</a>
+
+      <!-- 响应式导航栏按钮 -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- 导航栏菜单 -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'student_groups' %}">Student Groups</a>
+          </li>
+        </ul>
+
+        <!-- 右侧 登录/登出 按钮 -->
+        <ul class="navbar-nav ms-auto">
+          {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'profile' %}">Welcome, {{ user.username }}</a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-danger" href="{% url 'logout' %}">Logout</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="btn btn-primary" href="{% url 'login' %}">Login</a>
+            </li>
+          {% endif %}
+        </ul>
       </div>
     </div>
+  </nav>
+
+  <!-- 这里是页面的其他内容 -->
+  <div class="container mt-4">
+    {% block content %}
+    {% endblock %}
   </div>
 {% endblock %}
