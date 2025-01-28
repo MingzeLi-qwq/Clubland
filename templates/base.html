@@ -30,11 +30,20 @@
         }
         header .user-actions a {
             text-decoration: none;
-            color: #333;
+            /* color: #333;
             padding: 5px 10px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 4px; */
         }
+
+        header .user-actions a:visited {
+    color: inherit;
+}
+
+header .user-actions a:hover {
+    text-decoration: none; /* 悬停时也没有下划线 */
+    color: inherit;        /* 悬停时颜色不变 */
+}
 
         .club-container {
     display: flex;
@@ -67,10 +76,15 @@
         </div>
         <div class="user-actions">
             {% if user.is_authenticated %}
-                <a href="{% url 'user_center' %}">用户中心</a>
-            {% else %}
-                <a href="{% url 'login' %}">登录</a>
-            {% endif %}
+        <button><a href="{% url 'user_center' %}">用户中心</a></button>
+            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" >登出</button>
+            </form>
+        {% else %}
+    <button><a href="{% url 'login' %}">登录</a></button>
+        {% endif %}
+        
         </div>
     </header>
     <main>
