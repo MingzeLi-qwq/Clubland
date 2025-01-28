@@ -35,6 +35,28 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
+        .club-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+.club {
+    flex: 1 1 calc(33.333% - 20px); /* 每行显示三个，减去间距 */
+    margin: 10px;
+    box-sizing: border-box;
+}
+@media (max-width: 768px) {
+    .club {
+        flex: 1 1 calc(50% - 20px); /* 平板设备每行显示两个 */
+    }
+}
+@media (max-width: 480px) {
+    .club {
+        flex: 1 1 100%; /* 手机设备每行显示一个 */
+    }
+}
+
     </style>
 </head>
 <body>

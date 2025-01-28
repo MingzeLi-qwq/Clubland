@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from .views import user_center_view
 from django.http import HttpResponse
+from .views import register
 
 def placeholder_view(request):
     return HttpResponse("This is the users module placeholder.")
@@ -13,5 +14,5 @@ urlpatterns = [
         path('club-requests/', views.club_requests_view, name='club_requests'),
         path('my-clubs/', views.my_clubs_view, name='my_clubs'),
 
-
+    path('register/', register, name='register'),
 ]
