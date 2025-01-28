@@ -1,6 +1,16 @@
-<h1>我的社团</h1>
-<ul>
-    {% for membership in memberships %}
-        <li>{{ membership.club.name }}</li>
-    {% endfor %}
-</ul>
+{% extends 'base.html' %}
+
+{% block title %}我的社团{% endblock %}
+
+{% block content %}
+    <h1>我的社团</h1>
+    {% if clubs %}
+        <ul>
+            {% for club in clubs %}
+                <li>{{ club.name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>您尚未加入任何社团。</p>
+    {% endif %}
+{% endblock %}
