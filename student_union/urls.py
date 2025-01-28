@@ -30,4 +30,11 @@ urlpatterns = [
     path('signin/', views.custom_login, name='login'),
     path('signup/', views.signup, name='signup'),
 
+    path('signup/', views.signup, name='signup'),
+    path('login/', views.custom_login, name='login'),
+    path('profile/', views.profile, name='profile'),
+    path('societies/', views.societies, name='societies'),
+    path('news/', views.news, name='news'),
+    path('events/', views.events, name='events'),
+
 ]

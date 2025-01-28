@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     """Display the application's start/home screen."""
@@ -33,3 +34,19 @@ def custom_login(request):
     else:
         form = AuthenticationForm()
     return render(request, 'auth/login.html', {'form': form})
+@login_required
+def profile(request):
+    """用户个人资料视图"""
+    return render(request, 'profile.html')
+
+def societies(request):
+    """社团列表视图"""
+    return render(request, 'societies.html')
+
+def news(request):
+    """新闻视图"""
+    return render(request, 'news.html')
+
+def events(request):
+    """活动视图"""
+    return render(request, 'events.html')

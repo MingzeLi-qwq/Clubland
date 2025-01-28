@@ -1,13 +1,43 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
   <div class="container">
-    <a class="navbar-brand" href="{% url 'dashboard' %}">
+    <a class="navbar-brand" href="{% url 'home' %}">
       miHoyo
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    {% if user.is_authenticated %}
-      {% include 'partials/menu.html' %}
-    {% endif %}
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'societies' %}">社团列表</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'news' %}">新闻</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'events' %}">活动</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="{% static 'img/profile.jpg' %}" alt="Profile" class="rounded-circle" width="30" height="30">
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="{% url 'profile' %}">我的资料</a></li>
+              <li><a class="dropdown-item" href="{% url 'logout' %}">退出</a></li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">登录</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'signup' %}">注册</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
   </div>
 </nav>
