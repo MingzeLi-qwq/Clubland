@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}用户中心{% endblock %}
+
+{% block content %}
+    <h1>欢迎 {{ user.username }}!</h1>
+
+    {% if user.is_superuser %}
+        <p>您的角色：超级管理员</p>
+    {% else %}
+        <p>您的角色：{{ user.get_role_display }}</p>
+    {% endif %}
+
+    {% if user.is_superuser %}
+        <h2>超级管理员功能</h2>
+        <ul>
+            <li><a href="{% url 'admin:index' %}">管理后台</a></li>
+            <li><a href="{% url 'club_list' %}">查看所有社团</a></li>
+        </ul>
+    {% elif user.role == 'admin' %}
+        <h2>管理员功能</h2>
+        <ul>
+            <li><a href="{% url 'club_requests' %}">审核社团创建申请</a></li>
+            <li><a href="{% url 'club_list' %}">管理社团</a></li>
+        </ul>
+    {% elif user.role == 'club_leader' %}
+        <h2>社团团长功能</h2>
+        <ul>
+            <li><a href="{% url 'club_list' %}">查看我管理的社团</a></li>
+            <li><a href="{% url 'create_news' club_id=1 %}">创建新闻</a></li>
+            <li><a href="{% url 'create_event' club_id=1 %}">创建活动</a></li>
+        </ul>
+    {% elif user.role == 'member' %}
+        <h2>普通成员功能</h2>
+        <ul>
+            <li><a href="{% url 'my_clubs' %}">查看我的社团</a></li>
+            <li><a href="{% url 'club_list' %}">申请加入新社团</a></li>
+        </ul>
+    {% endif %}
+{% endblock %}

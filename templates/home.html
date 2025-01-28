@@ -1,99 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学生会主页</title>
-    {% load static %} 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #f4f4f4;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header input[type="text"] {
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        header .user-actions {
-            display: flex;
-            gap: 10px;
-        }
-        header .user-actions a {
-            text-decoration: none;
-            color: #333;
-            padding: 5px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        main {
-            padding: 20px;
-        }
-        .club-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        .club {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            overflow: hidden;
-            text-align: center;
-        }
-        .club img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-        .club h3 {
-            margin: 10px 0;
-            font-size: 16px;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>学生会主页</h1>
-        <div class="search-bar">
-            <input type="text" placeholder="搜索社团">
-        </div>
-        <div class="user-actions">
-            {% if user.is_authenticated %}
-                <!-- 已登录，显示用户中心 -->
-                <a href="/user-center/">用户中心</a>
-            {% else %}
-                <!-- 未登录，显示登录 -->
-                <a href="/login/">登录</a>
-            {% endif %}
-        </div>
-        
-    </header>
-    <main>
-        <h2>社团列表</h2>
-        <div class="placeholder-image">
-            <img src="/static/images/placeholder.jpg" alt="学生会占位图" style="width: 100%; max-width: 600px; margin: 20px auto; display: block;">
-        </div>
-        <div class="club-container">
-            {% for club in clubs %}
-                <div class="club">
-                    {% if club.logo %}
-                        <img src="{{ club.logo.url }}" alt="社团图片">
-                    {% else %}
-                        <img src="{% static 'images/club_placeholder.jpg' %}" alt="社团图片">
-                    {% endif %}
-                    <h3>{{ club.name }}</h3>
-                </div>
-            {% endfor %}
-        </div>
-        
-    </main>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}学生会主页{% endblock %}
+
+{% block content %}
+    <h2>社团列表</h2>
+    <div class="placeholder-image">
+        <img src="{% static 'images/placeholder.jpg' %}" alt="学生会占位图" style="width: 100%; max-width: 600px; margin: 20px auto; display: block;">
+    </div>
+    <div class="club-container">
+        {% for club in clubs %}
+            <div class="club">
+                {% if club.logo %}
+                    <img src="{{ club.logo.url }}" alt="社团图片">
+                {% else %}
+                    <img src="{% static 'images/club_placeholder.jpg' %}" alt="社团图片">
+                {% endif %}
+                <h3>{{ club.name }}</h3>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

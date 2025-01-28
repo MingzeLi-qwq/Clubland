@@ -1,0 +1,9 @@
+<h1>审核社团创建申请</h1>
+<ul>
+    {% for request in club_requests %}
+        <li>{{ request.name }} (申请人: {{ request.applicant.username }})
+            <a href="{% url 'approve_request' request.id %}">批准</a>
+            <a href="{% url 'reject_request' request.id %}">拒绝</a>
+        </li>
+    {% endfor %}
+</ul>

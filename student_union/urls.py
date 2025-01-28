@@ -23,6 +23,8 @@ from django.shortcuts import render
 
 from django.contrib.auth import views as auth_views
 
+from users.views import user_center_view
+
 
 def home_view(request):
     # 获取所有社团信息
@@ -39,4 +41,5 @@ urlpatterns = [
     path('', home_view, name='home'),       # 根路径路由
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('user-center/', user_center_view, name='user_center'),
 ]

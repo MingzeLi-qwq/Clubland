@@ -1,0 +1,6 @@
+<h1>我的社团</h1>
+<ul>
+    {% for membership in memberships %}
+        <li>{{ membership.club.name }}</li>
+    {% endfor %}
+</ul>

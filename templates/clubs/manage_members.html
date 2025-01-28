@@ -1,0 +1,10 @@
+<h1>管理 {{ club.name }} 成员</h1>
+<ul>
+    {% for member in members %}
+        <li>{{ member.user.username }} ({{ member.role }})
+            {% if member.role != 'leader' %}
+                <a href="{% url 'remove_member' member.id %}">移除</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
