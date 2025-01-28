@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
     <link href="{% static 'custom.css' %}" rel="stylesheet">
-    <!-- 引入 Font Awesome -->
+    <!--  Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <title>miHoyo - Empowering Student Communities</title>
   </head>
   <body>
-    <!-- 导航栏 -->
+    <!-- Navbar-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
       <div class="container">
         <a class="navbar-brand" href="{% url 'home' %}">
@@ -24,13 +24,13 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'societies' %}">社团列表</a>
+              <a class="nav-link" href="{% url 'societies' %}">Societies</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'news' %}">新闻</a>
+              <a class="nav-link" href="{% url 'news' %}">News</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'events' %}">活动</a>
+              <a class="nav-link" href="{% url 'events' %}">Envents</a>
             </li>
           </ul>
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -41,8 +41,8 @@
                   <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="{% url 'profile' %}">我的资料</a></li>
-                  <li><a class="dropdown-item" href="{% url 'logout' %}">退出</a></li>
+                  <li><a class="dropdown-item" href="{% url 'profile' %}">My profile</a></li>
+                  <li><a class="dropdown-item" href="{% url 'logout' %}">Exit</a></li>
                 </ul>
               </li>
             {% else %}
@@ -52,8 +52,8 @@
                   <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="{% url 'login' %}">登录</a></li>
-                  <li><a class="dropdown-item" href="{% url 'signup' %}">注册</a></li>
+                  <li><a class="dropdown-item" href="{% url 'login' %}">Log in</a></li>
+                  <li><a class="dropdown-item" href="{% url 'signup' %}">Sign up</a></li>
                 </ul>
               </li>
             {% endif %}
