@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Club List</title>
+</head>
+<body>
+    <h1>Clubs</h1>
+    <ul>
+        {% for club in clubs %}
+            <li>{{ club.name }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

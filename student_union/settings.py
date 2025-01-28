@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tutorials',
+    'clubs',  # 社团管理模块
+    'users',  # 用户模块
 ]
 
 MIDDLEWARE = [
@@ -52,10 +53,19 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'student_union.urls'
 
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+LOGIN_REDIRECT_URL = '/'  # 登录后跳转到主页
+LOGOUT_REDIRECT_URL = '/'  # 注销后跳转到主页
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

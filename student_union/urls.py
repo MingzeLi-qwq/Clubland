@@ -16,10 +16,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from tutorials.views import views
+from django.urls import include
+from django.http import HttpResponse
 
+from django.shortcuts import render
+
+from django.contrib.auth import views as auth_views
+
+
+def home_view(request):
+    # 获取所有社团信息
+    from clubs.models import Club
+    clubs = Club.objects.all()
+    return render(request, 'home.html', {'clubs': clubs})
+
+
+# 路由配置
 urlpatterns = [
-    # Main pages
-    path('', views.home, name='home'),
-
+    path('admin/', admin.site.urls),        # 管理后台路由
+    path('users/', include('users.urls')),  # 用户管理相关路由
+    path('clubs/', include('clubs.urls')),  # 社团管理相关路由
+    path('', home_view, name='home'),       # 根路径路由
+    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
