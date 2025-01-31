@@ -14,21 +14,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
-from django.urls import path
-from django.urls import include
-from django.http import HttpResponse
-
+from django.urls import path, include
 from django.shortcuts import render
-
 from django.contrib.auth import views as auth_views
 
 from users.views import user_center_view
+from clubs.models import Club
 
 
 def home_view(request):
     # 获取所有社团信息
-    from clubs.models import Club
     clubs = Club.objects.all()
     return render(request, 'home.html', {'clubs': clubs})
 
@@ -42,6 +39,4 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('user-center/', user_center_view, name='user_center'),
-    path('users/', include('users.urls')),
-
 ]

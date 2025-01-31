@@ -4,20 +4,31 @@
 {% block title %}学生会主页{% endblock %}
 
 {% block content %}
-    <h2>社团列表</h2>
-    <div class="placeholder-image">
-        <img src="{% static 'images/placeholder.jpg' %}" alt="学生会占位图" style="width: 100%; max-width: 600px; margin: 20px auto; display: block;">
+<div class="container mt-5">
+    <h2 class="text-center mb-4">社团列表</h2>
+    
+    <!-- Placeholder Image -->
+    <div class="text-center mb-4">
+        <img src="{% static 'images/placeholder.jpg' %}" alt="学生会占位图" class="img-fluid rounded shadow" style="max-width: 600px;">
     </div>
-    <div class="club-container">
+    
+    <!-- Clubs Grid -->
+    <div class="row g-4">
         {% for club in clubs %}
-            <div class="club">
-                {% if club.logo %}
-                    <img src="{{ club.logo.url }}" alt="社团图片">
-                {% else %}
-                    <img src="{% static 'images/club_placeholder.jpg' %}" alt="社团图片">
-                {% endif %}
-                <h3>{{ club.name }}</h3>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    {% if club.logo %}
+                        <img src="{{ club.logo.url }}" alt="社团图片" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'images/club_placeholder.jpg' %}" alt="社团图片" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ club.name }}</h5>
+                    </div>
+                </div>
             </div>
         {% endfor %}
     </div>
+</div>
 {% endblock %}
+
