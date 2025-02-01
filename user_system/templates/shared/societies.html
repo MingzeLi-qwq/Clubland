@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block body %}
 <div class="container mt-5">
   <h1 class="display-4 fw-bold">Societies</h1>
@@ -7,7 +7,6 @@
   <div class="row">
     <div class="col-md-4">
       <div class="card shadow-sm mb-4">
-        <img src="{% static 'img/coding-club.jpg' %}" class="card-img-top" alt="Coding Club">
         <div class="card-body">
           <h5 class="card-title">Coding Club</h5>
           <p class="card-text">Weekly workshops and hackathons.</p>
@@ -17,7 +16,6 @@
     </div>
     <div class="col-md-4">
       <div class="card shadow-sm mb-4">
-        <img src="{% static 'img/debate.jpg' %}" class="card-img-top" alt="Debate Club">
         <div class="card-body">
           <h5 class="card-title">Debate Club</h5>
           <p class="card-text">Monthly inter-school competitions.</p>
@@ -27,7 +25,6 @@
     </div>
     <div class="col-md-4">
       <div class="card shadow-sm mb-4">
-        <img src="{% static 'img/music.jpg' %}" class="card-img-top" alt="Music Society">
         <div class="card-body">
           <h5 class="card-title">Music Society</h5>
           <p class="card-text">Open mic nights every Friday.</p>
