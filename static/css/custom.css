@@ -1,0 +1,143 @@
+/* ===== 导航栏 Apple 风格（黑底白字） ===== */
+.navbar {
+    background-color: #000000 !important; /* 黑色背景 */
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1); /* 白色阴影 */
+    transition: all 0.3s ease;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    color: #ffffff !important; /* 文字变白 */
+}
+
+.navbar-nav .nav-link {
+    color: #ffffff !important; /* 默认白色文字 */
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #0071e3 !important; /* Apple 蓝 */
+    background-color: rgba(255, 255, 255, 0.1) !important; /* 半透明白色 hover 效果 */
+    border-radius: 10px;
+    padding: 5px 10px;
+}
+
+/* ===== 导航栏折叠时的样式（移动端） ===== */
+.navbar-toggler {
+    border: none;
+    outline: none;
+}
+
+.navbar-toggler-icon {
+    filter: invert(0); /* 让汉堡菜单变白色 */
+}
+
+.form-control {
+    border-radius: 12px;  /* 圆角 */
+    border: 1px solid #d1d1d6;  /* Apple 灰色边框 */
+    padding: 10px 15px;  /* 适当的内边距 */
+    font-size: 16px;  /* 适中的字体大小 */
+    transition: all 0.3s ease; /* 平滑过渡效果 */
+}
+
+.form-control:focus {
+    border-color: #0071e3;  /* Apple 蓝色 */
+    box-shadow: 0 0 8px rgba(0, 113, 227, 0.3);  /* 柔和的 Apple 蓝色光晕 */
+    outline: none;  /* 移除默认的轮廓 */
+}
+
+.btn-primary {
+    border-radius: 12px;  /* 统一圆角 */
+    background-color: #0071e3;  /* Apple 蓝 */
+    border: none;
+    padding: 12px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #005bb5;  /* 深一点的蓝色 */
+}
+
+.signup-container {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    min-height: 100vh; /* 让整个界面铺满屏幕高度 */
+    padding: 20px; /* 增加内边距 */
+}
+
+.signup-box {
+    background: white;
+    border-radius: 16px; /* 圆角风格 */
+    padding: 40px; /* 增加内边距 */
+    width: 100%;
+    max-width: 400px; /* 控制最大宽度 */
+}
+
+.signup-box input {
+    border-radius: 8px; /* 圆角风格 */
+    width: 100% !important; /* 确保输入框填充整个 box */
+    box-sizing: border-box; /* 让 padding 和 width 计算更合理 */
+}
+
+.login-container {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    min-height: 100vh; /* 让整个界面铺满屏幕高度 */
+    padding: 20px; /* 增加内边距 */
+}
+
+.auth-box {
+    background: white;
+    border-radius: 16px; /* 圆角风格 */
+    padding: 40px; /* 增加内边距 */
+    width: 100%;
+    max-width: 400px; /* 控制最大宽度 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 轻微阴影 */
+}
+
+.auth-box input {
+    border-radius: 12px; /* Apple 风格的圆角 */
+    width: 100% !important;
+    box-sizing: border-box;
+    border: 1px solid #d1d1d6;
+    padding: 12px 15px; /* 适中 padding */
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.auth-box input:focus {
+    border-color: #0071e3;
+    box-shadow: 0 0 8px rgba(0, 113, 227, 0.3);
+    outline: none;
+}
+
+.auth-box .btn-primary {
+    border-radius: 12px;
+    background-color: #0071e3;
+    border: none;
+    padding: 12px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.auth-box .btn-primary:hover {
+    background-color: #005bb5;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        backdrop-filter: none;
+        box-shadow: none;
+    }
+
+    .navbar-nav .nav-link {
+        padding: 10px 15px;
+        border-radius: 8px;
+    }
+}
+
