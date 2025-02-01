@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from club_system.models import Clubs
+from club_system.models import Club
 
 class Command(BaseCommand):
     """Build automation command to unseed the database."""
@@ -9,4 +9,4 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Unseed the database."""
 
-        Clubs.objects.all().delete()
+        Club.objects.all().delete()
