@@ -27,16 +27,13 @@ $ pip3 install -r requirements.txt
 ```
 $ python manage.py seed_users
 $ python manage.py unseed_users
-
 ```
 测试代码的运行 To ensure everything is working correctly, run all tests:
 ```
 $ python manage.py test
-
 ```
 
 启动 Django 开发服务器，运行本地网站 To run the Django development server, use the following command:
 ```
 $ python manage.py runserver
-
 ```
