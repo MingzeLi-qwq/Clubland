@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container">
+    <h1 class="text-center my-4">Club List</h1>
+    <div class="row">
+        <!-- {% for club in clubs %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ club.name }}</h5>
+                        <p class="card-text">{{ club.description }}</p>
+                        <a href="#" class="btn btn-primary">Details</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %} -->
+
+        {% for club in clubs %}
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h5 class="card-title">{{ club.name }}</h5>
+            <p class="card-text">{{ club.description }}</p>
+            <a href="#" class="btn btn-primary">Details</a>
+          </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+<p class="lead">Latest updates and announcements.</p>
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <h5 class="card-title">New Society Launched!</h5>
+    <p class="card-text">We are excited to announce the launch of the new Coding Club!</p>
+    <a href="#" class="btn btn-primary">Read More</a>
+  </div>
+</div>

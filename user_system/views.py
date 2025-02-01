@@ -54,9 +54,9 @@ def LogOutView(request):
     return redirect('home')
 
 
-def societies(request):
-    """社团列表视图"""
-    return render(request, 'shared/societies.html')
+# def societies(request):
+#     """社团列表视图"""
+#     return render(request, 'shared/societies.html')
 
 def news(request):
     """新闻视图"""
