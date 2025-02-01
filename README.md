@@ -10,6 +10,8 @@
 - *Yu-Tang Huang*
 - *Youyou Wu*
 
+  
+## How to start
 虚拟环境的搭建 To begin, set up and activate a local (virtual) development environment. Make sure download the python(3.13.1). From the root of this project:
 ```
 $ python -m venv venv
