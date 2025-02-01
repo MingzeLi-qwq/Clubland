@@ -18,7 +18,7 @@ $ python -m venv venv
 $ source venv/Scripts/activate
 ```
 
-Install all required packages:
+依赖包的下载 Install all required packages:
 
 ```
 $ pip3 install -r requirements.txt
