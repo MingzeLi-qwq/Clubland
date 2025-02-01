@@ -16,8 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from tutorials.views import views
-from tutorials.views.views import home, signup
+import user_system.views
+from user_system.views import home
 
 app_name = 'accounts'
 
@@ -25,16 +25,15 @@ urlpatterns = [
     # Main pages
     path('admin/', admin.site.urls),
     #path('accounts/', include('accounts.urls')),
-    path('', views.home, name='home'),
-    path('auth/signup/', signup, name='signup'),
-    path('signin/', views.custom_login, name='login'),
-    path('signup/', views.signup, name='signup'),
+    path('', user_system.views.home, name='home'),
+    path('signup/', user_system.views.SignUpView.as_view(), name='signup'),
 
-    path('signup/', views.signup, name='signup'),
-    path('login/', views.custom_login, name='login'),
-    path('profile/', views.profile, name='profile'),
-    path('societies/', views.societies, name='societies'),
-    path('news/', views.news, name='news'),
-    path('events/', views.events, name='events'),
+    path('login/', user_system.views.LogInView.as_view(), name='login'),
+    path('logout/', user_system.views.LogOutView, name='logout'),
+    
+    path('dashboard/', user_system.views.DashboardView.as_view(), name='dashboard'),
+    path('societies/', user_system.views.societies, name='societies'),
+    path('news/', user_system.views.news, name='news'),
+    path('events/', user_system.views.events, name='events'),
 
 ]

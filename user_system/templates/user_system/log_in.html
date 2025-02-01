@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="login-container">
+    <div class="auth-box shadow-lg">
+        <h2 class="text-center fw-bold mb-4">Welcome Back</h2>
+        <p class="text-center text-muted">Log in to continue</p>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="id_username" name="username" required placeholder="Enter your username">
+            </div>
+            <div class="mb-3">
+                <label for="id_password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="id_password" name="password" required placeholder="Enter your password">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Log In</button>
+        </form>
+        <p class="text-center mt-3">
+            <small>Don't have an account? <a href="{% url 'signup' %}" class="text-primary">Sign up</a></small>
+        </p>
+    </div>
+</div>
+{% endblock %}
