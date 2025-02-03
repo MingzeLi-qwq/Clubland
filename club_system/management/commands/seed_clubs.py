@@ -5,14 +5,9 @@ from faker import Faker
 
 fake = Faker()
 
-# club_names = [
-#     "AI Club", "Photography Club", "Music Club", "Chess Club", "Drama Club",
-#     "Sports Club", "Coding Club", "Astronomy Club", "Gaming Club", "Book Club"
-# ]
-
 club_names = [
-    "Photography Club", "Drama Club", "Basketball Club", 
-    "Coding Club", "Astronomy Club", "Gaming Club", "Book Club"
+    "AI Club", "Photography Club", "Music Club", "Chess Club", "Drama Club",
+    "Sports Club", "Coding Club", "Astronomy Club", "Gaming Club", "Book Club"
 ]
 
 def create_clubs(self):
