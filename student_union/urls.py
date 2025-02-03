@@ -40,5 +40,6 @@ urlpatterns = [
 
     # Club related / Club相关页面
     path('clubs/', club_system.views.clubs, name='clubs'),
+    path('clubs/detail/<int:club_id>/', club_system.views.ClubDetailView.as_view(), name='club_detail'),
 
 ]

@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import AccessMixin
-from django.shortcuts import redirect
+# from django.shortcuts import redirect
 from django.http import HttpResponse
-from club_system.models import Membership
+from club_system.models import Club, Membership
 from django.utils.safestring import mark_safe
 
 class ClubMemberRequiredMixin(AccessMixin):
@@ -73,6 +73,30 @@ class NonClubMemberRequiredMixin(AccessMixin):
             <body>
                 <h2 style="text-align:center; margin-top:20%;">❌ 你已经是该社团成员，无法访问此页面</h2>
                 <p style="text-align:center;">即将跳转到首页...</p>
+            </body>
+            </html>
+            """
+            return HttpResponse(mark_safe(message))  # mark_safe 让 HTML 代码生效
+        return super().dispatch(request, *args, **kwargs)
+    
+class ClubExistsRequiredMixin(AccessMixin):
+    """检查 club 是否存在"""
+    def dispatch(self, request, *args, **kwargs):
+        club_id = kwargs.get('club_id')
+        if not Club.objects.filter(pk=club_id).exists():
+            message = """
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <script>
+                    setTimeout(function() {
+                        window.location.href = '/clubs';
+                    }, 3000);  // 3秒后跳转
+                </script>
+            </head>
+            <body>
+                <h2 style="text-align:center; margin-top:20%;">❌ 该社团不存在</h2>
+                <p style="text-align:center;">即将跳转到社团列表...</p>
             </body>
             </html>
             """
