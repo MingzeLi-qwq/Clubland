@@ -6,4 +6,23 @@
     <h1 class="my-4">{{ club.name }}</h1>
     <p>{{ club.description }}</p>
 </div>
+
+<!-- 动态按钮 -->
+<div class="d-flex justify-content-center mt-5">
+    {% if user.is_authenticated %}
+        {% if user in club.members.all %}
+            <a href="{% url 'cancel_membership' club_id=club.club_id %}" class="btn btn-danger btn-lg rounded-pill w-100">
+                Cancel Membership
+            </a>
+        {% else %}
+            <a href="{% url 'register_membership' club_id=club.club_id %}" class="btn btn-primary btn-lg rounded-pill w-100">
+                Register Membership
+            </a>
+        {% endif %}
+    {% else %}
+        <a href="{% url 'register_membership' club_id=club.club_id %}" class="btn btn-primary btn-lg rounded-pill w-100">
+            Register Membership
+        </a>
+    {% endif %}
+    </div>
 {% endblock %}
