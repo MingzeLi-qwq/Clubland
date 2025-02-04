@@ -53,6 +53,30 @@ class ClubManagerRequiredMixin(AccessMixin):
             """
             return HttpResponse(mark_safe(message))  # mark_safe 让 HTML 代码生效
         return super().dispatch(request, *args, **kwargs)
+    
+class NonClubManagerRequiredMixin(AccessMixin):
+    """阻止社团管理员访问"""
+    def dispatch(self, request, *args, **kwargs):
+        club_id = kwargs.get('club_id')
+        if Membership.objects.filter(user=request.user, club_id=club_id, is_manager=True).exists():
+            message = """
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <script>
+                    setTimeout(function() {
+                        window.location.href = '/';
+                    }, 3000);  // 3秒后跳转
+                </script>
+            </head>
+            <body>
+                <h2 style="text-align:center; margin-top:20%;">❌ 你是该社团管理员，无法访问此页面</h2>
+                <p style="text-align:center;">即将跳转到首页...</p>
+            </body>
+            </html>
+            """
+            return HttpResponse(mark_safe(message))  # mark_safe 让 HTML 代码生效
+        return super().dispatch(request, *args, **kwargs)
 
 class NonClubMemberRequiredMixin(AccessMixin):
     """Access is only allowed to non-members of the association"""

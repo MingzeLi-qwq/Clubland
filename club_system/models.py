@@ -35,7 +35,7 @@ class Membership(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
     is_manager = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(auto_now_add=True)  # 可选字段
+    date_joined = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = [('user', 'club')]  # 确保用户不能重复加入同一社团

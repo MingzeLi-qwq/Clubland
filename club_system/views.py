@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from .models import Club, Membership
-from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin
+from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin
 
 def clubs(request):
     clubs = Club.objects.all()
@@ -22,7 +22,7 @@ class RegisterMembershipView(ClubExistsRequiredMixin, NonClubMemberRequiredMixin
         else:
             return redirect('login')
         
-class CancelMembershipView(ClubExistsRequiredMixin, ClubMemberRequiredMixin, View):
+class CancelMembershipView(ClubExistsRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
         if request.user.is_authenticated:
