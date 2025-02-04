@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user_system',
+    'club_system',
 ]
 AUTH_USER_MODEL = 'user_system.User'
 
