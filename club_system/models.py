@@ -11,6 +11,8 @@ class Club(models.Model):
         related_name='clubs_joined'
     )
 
+    """This section is used to implement the logic for incrementing association IDs"""
+    """此部分用来实现社团ID递增的逻辑"""
     def save(self, *args, **kwargs):
         if not self.club_id:  # 当未分配 club_id 时
             last_club = Club.objects.order_by('-club_id').first()
@@ -24,10 +26,15 @@ class Club(models.Model):
         return f"Club_id:{self.club_id} - {self.name}"
     
 
+"""
+The Membership model is used to represent the many-to-many relationship between users and organizations, 
+and contains additional fields to store the user's role in the organization and the date of joining.
+Membership model用于表现用户和社团间多对多的关系,并包含一些额外的字段来存储用户在社团中的角色和加入日期
+"""
 class Membership(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
-    is_admin = models.BooleanField(default=False)
+    is_manager = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)  # 可选字段
 
     class Meta:

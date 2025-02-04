@@ -8,5 +8,5 @@ class ClubAdmin(admin.ModelAdmin):
 
 @admin.register(Membership)
 class MembershipAdmin(admin.ModelAdmin):
-    list_display = ('user', 'club', 'is_admin', 'date_joined')
+    list_display = ('user', 'club', 'is_manager', 'date_joined')
     search_fields = ('user__username', 'club__name')

@@ -6,7 +6,7 @@ from faker import Faker
 
 
 class Command(BaseCommand):
-    help = 'Seeds the clubs database with 10 default data, and assign members for them. / 为俱乐部数据库提供10个默认数据, 并为它们分配成员'
+    help = 'Assigning members to Clubs. / 为Clubs分配成员'
 
 
     def assign_members(self):
@@ -25,7 +25,7 @@ class Command(BaseCommand):
                     Membership.objects.create(
                         user=user,
                         club=club,
-                        is_admin=(i < 2)  # 索引 0 和 1 为管理员
+                        is_manager=(i < 2)  # 索引 0 和 1 为管理员
                     )
 
             self.stdout.write("Club member assignments are complete! / Club 成员分配完成！")

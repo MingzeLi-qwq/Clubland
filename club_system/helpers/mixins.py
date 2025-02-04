@@ -29,12 +29,12 @@ class ClubMemberRequiredMixin(AccessMixin):
             return HttpResponse(mark_safe(message))  # mark_safe 让 HTML 代码生效
         return super().dispatch(request, *args, **kwargs)
 
-class ClubAdminRequiredMixin(AccessMixin):
-    """Only allow access to club administrators"""
+class ClubManagerRequiredMixin(AccessMixin):
+    """Only allow access to club managers"""
     """只允许社团管理员访问"""
     def dispatch(self, request, *args, **kwargs):
         club_id = kwargs.get('club_id')
-        if not Membership.objects.filter(user=request.user, club_id=club_id, is_admin=True).exists():
+        if not Membership.objects.filter(user=request.user, club_id=club_id, is_manager=True).exists():
             message = """
             <html>
             <head>
