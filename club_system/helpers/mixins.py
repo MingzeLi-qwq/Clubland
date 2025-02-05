@@ -21,8 +21,8 @@ class ClubMemberRequiredMixin(AccessMixin):
                 </script>
             </head>
             <body>
-                <h2 style="text-align:center; margin-top:20%;">❌ 你不是该社团成员，无法访问此页面</h2>
-                <p style="text-align:center;">即将跳转到首页...</p>
+                <h2 style="text-align:center; margin-top:20%;">❌ You are not a member of this club and cannot access this page</h2>
+                <p style="text-align:center;">Coming soon to the home page...</p>
             </body>
             </html>
             """
@@ -46,8 +46,8 @@ class ClubManagerRequiredMixin(AccessMixin):
                 </script>
             </head>
             <body>
-                <h2 style="text-align:center; margin-top:20%;">❌ 你不是该社团管理员，无法访问此页面</h2>
-                <p style="text-align:center;">即将跳转到首页...</p>
+                <h2 style="text-align:center; margin-top:20%;">❌ You are not an administrator of this organization and cannot access this page.</h2>
+                <p style="text-align:center;">Coming soon to the home page...</p>
             </body>
             </html>
             """
@@ -70,8 +70,8 @@ class NonClubManagerRequiredMixin(AccessMixin):
                 </script>
             </head>
             <body>
-                <h2 style="text-align:center; margin-top:20%;">❌ 你是该社团管理员，无法访问此页面</h2>
-                <p style="text-align:center;">即将跳转到首页...</p>
+                <h2 style="text-align:center; margin-top:20%;">❌ You are the club administrator and cannot access this page.</h2>
+                <p style="text-align:center;">Coming soon to the home page...</p>
             </body>
             </html>
             """
@@ -95,8 +95,8 @@ class NonClubMemberRequiredMixin(AccessMixin):
                 </script>
             </head>
             <body>
-                <h2 style="text-align:center; margin-top:20%;">❌ 你已经是该社团成员，无法访问此页面</h2>
-                <p style="text-align:center;">即将跳转到首页...</p>
+                <h2 style="text-align:center; margin-top:20%;">❌ You are already a member of the society and cannot access this page</h2>
+                <p style="text-align:center;">Coming soon to the home page...</p>
             </body>
             </html>
             """
@@ -114,13 +114,13 @@ class ClubExistsRequiredMixin(AccessMixin):
                 <meta charset="UTF-8">
                 <script>
                     setTimeout(function() {
-                        window.location.href = '/clubs';
+                        window.location.href = '/';
                     }, 3000);  // 3秒后跳转
                 </script>
             </head>
             <body>
-                <h2 style="text-align:center; margin-top:20%;">❌ 该社团不存在</h2>
-                <p style="text-align:center;">即将跳转到社团列表...</p>
+                <h2 style="text-align:center; margin-top:20%;">❌ The club does not exist</h2>
+                <p style="text-align:center;">Coming soon to the home page...</p>
             </body>
             </html>
             """
