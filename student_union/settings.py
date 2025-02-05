@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user_system',
     'club_system',
+    'event_system',
 ]
 AUTH_USER_MODEL = 'user_system.User'
 

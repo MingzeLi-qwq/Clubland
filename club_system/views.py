@@ -2,11 +2,16 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from .models import Club, Membership
 from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin
+from event_system.models import Event
 
 def clubs(request):
     clubs = Club.objects.all()
     return render(request, 'clubs.html', {'clubs': clubs})
 
+def home(request):
+    clubs = Club.objects.all()
+    events = Event.objects.all().order_by('-start_time')[:5]  # 显示最新5个活动
+    return render(request, 'home.html', {'clubs': clubs, 'events': events})
 
 class ClubDetailView(ClubExistsRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
@@ -30,3 +35,5 @@ class CancelMembershipView(ClubExistsRequiredMixin, ClubMemberRequiredMixin, Non
             return redirect('club_detail', club_id=club_id)
         else:
             return redirect('login')
+
+

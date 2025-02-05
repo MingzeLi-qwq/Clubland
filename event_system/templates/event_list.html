@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<!-- 主页活动列表 -->
+<h2>所有活动</h2>
+{% for event in events %}
+<div class="event">
+  <h3>{{ event.name }}</h3>
+  <p>主办方: {{ event.club.name }}</p>
+  <p>时间: {{ event.start_time|date:"Y-m-d H:i" }}</p>
+  <p>地点: {{ event.location }}</p>
+
+  <!-- RSVP 按钮 -->
+  <form action="{% url 'rsvp_event' event.name %}" method="post">
+    {% csrf_token %}
+    <button type="submit">
+      {% if request.user in event.participants.all %}
+        取消参加
+      {% else %}
+        我要参加
+      {% endif %}
+    </button>
+  </form>
+
+  <!-- 管理员查看参与者 -->
+  {% if request.user == event.club.admin %}
+  <div class="participants">
+    <h4>已报名用户:</h4>
+    <ul>
+      {% for user in event.participants.all %}
+      <li>{{ user.username }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+{% endblock %}

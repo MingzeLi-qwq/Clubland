@@ -19,6 +19,7 @@ from django.urls import path,include
 import user_system.views
 import club_system.views
 from user_system.views import home
+import event_system.views
 
 app_name = 'accounts'
 
@@ -35,7 +36,7 @@ urlpatterns = [
     path('dashboard/', user_system.views.DashboardView.as_view(), name='dashboard'),
     # path('societies/', user_system.views.societies, name='societies'),
     path('news/', user_system.views.news, name='news'),
-    path('events/', user_system.views.events, name='events'),
+    path('events/', event_system.views.event_list, name='events'),
 
 
     # Club related / Club相关页面
@@ -43,4 +44,7 @@ urlpatterns = [
     path('clubs/detail/<int:club_id>/', club_system.views.ClubDetailView.as_view(), name='club_detail'),
     path('clubs/detail/register_membership/<int:club_id>/', club_system.views.RegisterMembershipView.as_view(), name='register_membership'),
     path('clubs/detail/cancel_membership/<int:club_id>/', club_system.views.CancelMembershipView.as_view(), name='cancel_membership'),
+
+    # Events related / Events相关页面
+    path('events/rsvp/<str:event_name>/', event_system.views.rsvp_event, name='rsvp_event'),
 ]
