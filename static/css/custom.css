@@ -34,6 +34,60 @@
     filter: invert(0); /* 让汉堡菜单变白色 */
 }
 
+.event-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.event-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.rsvp-btn.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+
+/* 分页样式 */
+.pagination {
+    margin: 2rem 0;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.pagination a, .current-page {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.current-page {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+/* 分类标签 */
+.category-tag {
+    background: #f0f0f0;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.9em;
+    margin-right: 0.5rem;
+}
+
+/* 空状态提示 */
+.no-events {
+    padding: 2rem;
+    text-align: center;
+    color: #666;
+}
+
 .form-control {
     border-radius: 12px;  /* 圆角 */
     border: 1px solid #d1d1d6;  /* Apple 灰色边框 */

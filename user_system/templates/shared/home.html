@@ -86,6 +86,26 @@
   </div>
 </section>
 
+
+
+<!-- Showing Events -->
+<section class="upcoming-events">
+    <h2>Upcoming Events</h2>
+    <div class="event-grid">
+        {% for event in upcoming_events %}
+        <div class="event-card">
+          <div class="text-center mt-4">
+            <a href="{% url 'event_list' %}" class="btn btn-primary">View All Events</a>
+        </div>
+            <h3>{{ event.name }}</h3>
+            <p class="meta">
+                {{ event.start_time|date:"M d" }} • {{ event.location }}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
 <!-- Featured Communities -->
 <section class="bg-light py-6">
   <div class="container">

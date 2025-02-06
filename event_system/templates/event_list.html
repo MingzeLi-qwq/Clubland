@@ -1,38 +1,143 @@
-{% extends 'base.html' %}
 
-{% block body %}
-<!-- 主页活动列表 -->
-<h2>所有活动</h2>
-{% for event in events %}
-<div class="event">
-  <h3>{{ event.name }}</h3>
-  <p>主办方: {{ event.club.name }}</p>
-  <p>时间: {{ event.start_time|date:"Y-m-d H:i" }}</p>
-  <p>地点: {{ event.location }}</p>
+<section class="container py-5">
+  <!-- 搜索过滤区 -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form method="GET" class="row g-3 align-items-center">
+        <div class="col-md-4">
+          <input type="text" name="search" class="form-control" 
+                 placeholder="Search events..." value="{{ current_search }}">
+        </div>
+        
+        <div class="col-md-3">
+          <select name="date" class="form-select">
+            <option value="">All Dates</option>
+            <option value="upcoming" {% if current_date_filter == "upcoming" %}selected{% endif %}>
+              Upcoming
+            </option>
+            <option value="past" {% if current_date_filter == "past" %}selected{% endif %}>
+              Past
+            </option>
+          </select>
+        </div>
 
-  <!-- RSVP 按钮 -->
-  <form action="{% url 'rsvp_event' event.name %}" method="post">
-    {% csrf_token %}
-    <button type="submit">
-      {% if request.user in event.participants.all %}
-        取消参加
-      {% else %}
-        我要参加
-      {% endif %}
-    </button>
-  </form>
+        <div class="col-md-3">
+          <select name="category" class="form-select">
+            <option value="all">All Categories</option>
+            {% for category in categories %}
+            <option value="{{ category.name }}" {% if current_category == category.name %}selected{% endif %}>
+              {{ category.name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
 
-  <!-- 管理员查看参与者 -->
-  {% if request.user == event.club.admin %}
-  <div class="participants">
-    <h4>已报名用户:</h4>
-    <ul>
-      {% for user in event.participants.all %}
-      <li>{{ user.username }}</li>
-      {% endfor %}
-    </ul>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi-funnel me-2"></i>Filter
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
+  
+
+
+  <!-- 事件列表 -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for event in events %}
+    <div class="col">
+      <div class="card h-100 shadow-sm hover-scale">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">{{ event.name }}</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex flex-column gap-3">
+            <div class="badge-group">
+              {% for category in event.categories.all %}
+              <span class="badge bg-secondary">{{ category.name }}</span>
+              {% endfor %}
+            </div>
+            
+            <div class="event-time text-muted">
+              <i class="bi-calendar-event me-2"></i>
+              {{ event.start_time|date:"M d, Y H:i" }} 
+              <span class="mx-2">-</span>
+              {{ event.end_time|date:"H:i" }}
+            </div>
+
+            <div class="event-location">
+              <i class="bi-geo-alt me-2"></i>
+              {{ event.location|truncatechars:35 }}
+            </div>
+
+            <div class="mt-auto">
+              <a href="{% url 'event_detail' event.pk %}" 
+                 class="btn btn-outline-primary w-100">
+                View Details <i class="bi-arrow-right ms-2"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="alert alert-info text-center">
+        <i class="bi-calendar-x me-2"></i>No events found
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+
+  <!-- 分页导航 -->
+  {% if is_paginated %}
+  <nav class="mt-5">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page=1{% if current_search %}&search={{ current_search }}{% endif %}{% if current_date_filter %}&date={{ current_date_filter }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">
+          <i class="bi-chevron-double-left"></i>
+        </a>
+      </li>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+      <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+        <a class="page-link" href="?page={{ num }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_date_filter %}&date={{ current_date_filter }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">
+          {{ num }}
+        </a>
+      </li>
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_date_filter %}&date={{ current_date_filter }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">
+          <i class="bi-chevron-double-right"></i>
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
   {% endif %}
-</div>
-{% endfor %}
-{% endblock %}
+</section>
+
+
+<style>
+  .hover-scale {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .hover-scale:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15)!important;
+  }
+  .badge-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .event-time {
+    font-size: 0.9rem;
+  }
+</style>

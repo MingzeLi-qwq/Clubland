@@ -36,7 +36,8 @@ urlpatterns = [
     path('dashboard/', user_system.views.DashboardView.as_view(), name='dashboard'),
     # path('societies/', user_system.views.societies, name='societies'),
     path('news/', user_system.views.news, name='news'),
-    path('events/', event_system.views.event_list, name='events'),
+
+    
 
 
     # Club related / Club相关页面
@@ -46,5 +47,9 @@ urlpatterns = [
     path('clubs/detail/cancel_membership/<int:club_id>/', club_system.views.CancelMembershipView.as_view(), name='cancel_membership'),
 
     # Events related / Events相关页面
-    path('events/rsvp/<str:event_name>/', event_system.views.rsvp_event, name='rsvp_event'),
+    path('events/home/', event_system.views.events_home, name='events_home'),
+    path('events/', event_system.views.EventListView.as_view(), name='event_list'),
+    path('events/<int:pk>/', event_system.views.event_detail, name='event_detail'),
+    path('events/<int:pk>/rsvp/', event_system.views.rsvp_toggle, name='rsvp_toggle'),
+    
 ]
