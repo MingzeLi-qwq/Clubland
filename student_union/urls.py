@@ -45,6 +45,8 @@ urlpatterns = [
     path('clubs/detail/<int:club_id>/', club_system.views.ClubDetailView.as_view(), name='club_detail'),
     path('clubs/detail/register_membership/<int:club_id>/', club_system.views.RegisterMembershipView.as_view(), name='register_membership'),
     path('clubs/detail/cancel_membership/<int:club_id>/', club_system.views.CancelMembershipView.as_view(), name='cancel_membership'),
+    path('club-dashboard/<int:club_id>/', club_system.views.club_dashboard, name='club_dashboard'),
+    path('api/club-widgets/<int:club_id>/', club_system.views.ClubWidgetAPI.as_view(), name='club_widgets_api'),
 
     # Events related / Events相关页面
     path('events/home/', event_system.views.events_home, name='events_home'),
