@@ -43,4 +43,5 @@ urlpatterns = [
     path('clubs/detail/<int:club_id>/', club_system.views.ClubDetailView.as_view(), name='club_detail'),
     path('clubs/detail/register_membership/<int:club_id>/', club_system.views.RegisterMembershipView.as_view(), name='register_membership'),
     path('clubs/detail/cancel_membership/<int:club_id>/', club_system.views.CancelMembershipView.as_view(), name='cancel_membership'),
+    path('clubs/dashboard/<int:club_id>/', club_system.views.clubDashboard, name='club_dashboard'),
 ]
