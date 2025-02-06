@@ -1,0 +1,22 @@
+{% extends "club_manager/club_manager_base.html" %}
+
+{% block manager_title %}General{% endblock %}
+
+{% block manager_content %}
+<div class="mb-4">
+  <h3>Club name</h3>
+  <div>
+    <input type="text" class="form-control" name="club_name" value="{{ club.name }}">
+    <button class="btn btn-primary mt-2" type="button">Update name</button>
+  </div>
+</div>
+
+<div class="mb-4">
+  <h3>Club description</h3>
+  <div>
+    <textarea class="form-control" name="club_description" rows="4">{{ club.description }}</textarea>
+    <button class="btn btn-primary mt-2" type="button">Update description</button>
+  </div>
+</div>
+{% endblock %}
+

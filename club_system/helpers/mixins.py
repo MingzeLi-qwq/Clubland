@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import AccessMixin
 # from django.shortcuts import redirect
 from django.http import HttpResponse
 from club_system.models import Club, Membership
+from user_system.models import User
 from django.utils.safestring import mark_safe
 
 class ClubMemberRequiredMixin(AccessMixin):
@@ -34,6 +35,11 @@ class ClubManagerRequiredMixin(AccessMixin):
     """只允许社团管理员访问"""
     def dispatch(self, request, *args, **kwargs):
         club_id = kwargs.get('club_id')
+        """给予@superuser越过club manager检查的权限 (建议上线前删除)"""
+        """Give @superuser permission to override club manager checks (recommended to remove before going live)"""
+        if request.user.username == "@superuser":
+            return super().dispatch(request, *args, **kwargs)
+
         if not Membership.objects.filter(user=request.user, club_id=club_id, is_manager=True).exists():
             message = """
             <html>

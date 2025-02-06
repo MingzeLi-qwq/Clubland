@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from .models import Club, Membership
-from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin
+from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin, ClubManagerRequiredMixin
 from user_system.helpers.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
@@ -51,18 +51,41 @@ class CancelMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMemb
             return redirect('login')
         
 
-class ClubDashboardGeneral(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'club_dashboard/general.html')
+"""下面是个方法用于渲染Club Manager页面"""
+
+
+class ClubManagerGeneral(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, *args, **kwargs):
+        club = Club.objects.get(pk=club_id)
+
+        return render(request, 'club_manager/general.html', {
+            'club_id': club_id,
+            'club': club,
+        })
     
-class ClubDashboardMembers(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'club_dashboard/members.html')
+class ClubManagerMembers(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, *args, **kwargs):
+        club = Club.objects.get(pk=club_id)
+
+        return render(request, 'club_manager/members.html', {
+            'club_id': club_id,
+            'club': club,
+        })
     
-class ClubDashboardNews(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'club_dashboard/news.html')
+class ClubManagerNews(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, *args, **kwargs):
+        club = Club.objects.get(pk=club_id)
+
+        return render(request, 'club_manager/news.html', {
+            'club_id': club_id,
+            'club': club,
+        })
     
-class ClubDashboardEvents(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'club_dashboard/events.html')
+class ClubManagerEvents(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, *args, **kwargs):
+        club = Club.objects.get(pk=club_id)
+
+        return render(request, 'club_manager/events.html', {
+            'club_id': club_id,
+            'club': club,
+        })
