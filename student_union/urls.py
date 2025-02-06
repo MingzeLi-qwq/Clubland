@@ -19,6 +19,7 @@ from django.urls import path,include
 import user_system.views
 import club_system.views
 from user_system.views import home
+from user_system.views import change_password 
 
 app_name = 'accounts'
 
@@ -31,6 +32,7 @@ urlpatterns = [
 
     path('login/', user_system.views.LogInView.as_view(), name='login'),
     path('logout/', user_system.views.LogOutView, name='logout'),
+    path('change-password/', user_system.views.change_password, name='change_password'), 
 
     #Personal Dashboard / 个人资料页
     path('dashboard/', user_system.views.DashboardView.as_view(), name='dashboard'),

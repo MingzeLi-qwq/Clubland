@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from user_system.forms import LoginForm, SignUpForm
 from user_system.helpers.mixins import UserTypeRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 
 
 def home(request):
@@ -81,4 +83,19 @@ class DashboardView(LoginRequiredMixin, UserTypeRequiredMixin, TemplateView):
             context["page_template"] = "user_system/my_club.html"
             
         return context
+    
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('dashboard')  
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    
+    return render(request, 'user_system/change_password.html', {'form': form})
 
