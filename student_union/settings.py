@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user_system',
     'club_system',
+    'notification_system',
 ]
 AUTH_USER_MODEL = 'user_system.User'
 
@@ -66,6 +67,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'notification_system.views.base_notifications',
             ],
         },
     },
