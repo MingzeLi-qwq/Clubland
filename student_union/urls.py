@@ -48,7 +48,7 @@ urlpatterns = [
 
     # Events related / Events相关页面
     path('events/home/', event_system.views.events_home, name='events_home'),
-    path('events/', event_system.views.EventListView.as_view(), name='event_list'),
+    path('events/', event_system.views.EventListView.as_view(), name='events'),
     path('events/<int:pk>/', event_system.views.event_detail, name='event_detail'),
     path('events/<int:pk>/rsvp/', event_system.views.rsvp_toggle, name='rsvp_toggle'),
     

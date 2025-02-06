@@ -37,18 +37,18 @@ class EventListView(ListView):
         
         #Search filter /搜索过滤
         if search:
-            queryset = queryset.filter(
-                Q(title__icontains=search) |
-                Q(description__icontains=search)
-            )
+             queryset = queryset.filter(name__icontains=search)
+
         #time filter /时间过滤
         
         if date_filter == 'upcoming':
             queryset = queryset.filter(start_time__gte=timezone.now())
         elif date_filter == 'past':
             queryset = queryset.filter(end_time__lt=timezone.now())
-        if category:
+         # 处理类别过滤
+        if category and category != 'all':
             queryset = queryset.filter(categories__name=category)
+
         return queryset
     
     def get_context_data(self, **kwargs):
