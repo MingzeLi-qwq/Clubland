@@ -69,3 +69,16 @@ def events(request):
 class DashboardView(LoginRequiredMixin, UserTypeRequiredMixin, TemplateView):
     template_name = "user_system/dashboard.html"
     allowed_types = ['User']
+
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        page = self.request.GET.get('page', 'dashboard')
+
+        if page == "personal_information":
+            context["page_template"] = "user_system/personal_information.html"
+        elif page == "my_club":
+            context["page_template"] = "user_system/my_club.html"
+            
+        return context
+
