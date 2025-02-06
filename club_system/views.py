@@ -51,5 +51,18 @@ class CancelMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMemb
             return redirect('login')
         
 
-def clubDashboard(request):
-    return render(request, 'club_dashboard.html')
+class ClubDashboardGeneral(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'club_dashboard/general.html')
+    
+class ClubDashboardMembers(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'club_dashboard/members.html')
+    
+class ClubDashboardNews(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'club_dashboard/news.html')
+    
+class ClubDashboardEvents(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'club_dashboard/events.html')

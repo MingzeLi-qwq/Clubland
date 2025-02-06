@@ -43,5 +43,11 @@ urlpatterns = [
     path('clubs/detail/<int:club_id>/', club_system.views.ClubDetailView.as_view(), name='club_detail'),
     path('clubs/detail/register_membership/<int:club_id>/', club_system.views.RegisterMembershipView.as_view(), name='register_membership'),
     path('clubs/detail/cancel_membership/<int:club_id>/', club_system.views.CancelMembershipView.as_view(), name='cancel_membership'),
-    path('clubs/dashboard/<int:club_id>/', club_system.views.clubDashboard, name='club_dashboard'),
+
+    # Club Dashboard
+    path('clubs/dashboard/general', club_system.views.ClubDashboardGeneral.as_view(), name='club_dashboard_general'),
+    path('clubs/dashboard/members', club_system.views.ClubDashboardMembers.as_view(), name='club_dashboard_members'),
+    path('clubs/dashboard/news', club_system.views.ClubDashboardNews.as_view(), name='club_dashboard_news'),
+    path('clubs/dashboard/events', club_system.views.ClubDashboardEvents.as_view(), name='club_dashboard_events'),
+
 ]
