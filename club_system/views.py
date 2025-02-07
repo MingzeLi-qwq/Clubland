@@ -13,6 +13,8 @@ def clubs(request):
     clubs = Club.objects.all()
     return render(request, 'clubs.html', {'clubs': clubs})
 
+"""此方法用于检查Club name是否重复, 更重要的是忽略了大小写和空格"""
+"""This method checks for duplicate Club names, and more importantly, ignores case and spaces."""
 def isSameClubNameExist(name):
     normalized_name = ''.join(name.split()).lower()
     clubs = Club.objects.all()
