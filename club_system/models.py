@@ -4,7 +4,7 @@ from user_system.models import User
 class Club(models.Model):
     club_id = models.PositiveIntegerField(primary_key=True, unique=True, editable=False)  # 从1开始递增的纯数字编号
     name = models.CharField(max_length=50, unique=True, blank=False)  # 社团名称，不能为空，允许空格, 不可以重复
-    description = models.CharField(max_length=200, blank=True, null=True)  # 社团简介，最多200字符，可为空
+    description = models.TextField(default="This Club hasn't added a Description yet", blank=True, null=True)  # 社团简介，无长度限制，默认内容
     members = models.ManyToManyField(
         User,
         through='Membership',
