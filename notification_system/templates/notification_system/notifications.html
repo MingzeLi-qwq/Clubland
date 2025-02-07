@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>Notifications</h2>
+    <ul class="list-group">
+        {% for notification in notifications %}
+            <li class="list-group-item {% if not notification.is_read %}list-group-item-warning{% endif %}">
+                <a href="{% url 'notification_detail' notification.id %}">{{ notification.message }}</a>
+                <small class="text-muted d-block">{{ notification.created_at }}</small>
+            </li>
+        {% empty %}
+            <li class="list-group-item text-muted">No notifications</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
