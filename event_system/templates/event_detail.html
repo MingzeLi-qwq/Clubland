@@ -3,25 +3,25 @@
 
 {% block body %}
 <section class="container py-5">
-  <div class="card shadow-lg">
+  <div class="card shadow-lg event-card">
     <!-- 活动头图区 -->
-    <div class="card-header bg-primary text-white position-relative">
+    <div class="card-header text-white position-relative">
       <div class="d-flex justify-content-between align-items-center">
         <h1 class="h3 mb-0">{{ event.name }}</h1>
         {% if event.is_featured %}
         <span class="badge bg-warning text-dark">
-          <i class="bi-star-fill me-1"></i>Featured
+          <i class="bi-star-fill me-1"></i> Featured Event
         </span>
         {% endif %}
       </div>
     </div>
 
     <div class="card-body">
-      <!-- 元信息 -->
+      <!-- 活动基本信息 -->
       <div class="row g-4 mb-4">
         <div class="col-md-6">
           <div class="d-flex align-items-center gap-3">
-            <div class="icon-circle bg-primary text-white">
+            <div class="icon-circle text-white">
               <i class="bi-calendar-event fs-4"></i>
             </div>
             <div>
@@ -36,7 +36,7 @@
 
         <div class="col-md-6">
           <div class="d-flex align-items-center gap-3">
-            <div class="icon-circle bg-primary text-white">
+            <div class="icon-circle text-white">
               <i class="bi-geo-alt fs-4"></i>
             </div>
             <div>
@@ -58,21 +58,21 @@
       <!-- 操作按钮 -->
       <div class="d-flex gap-3 border-top pt-4">
         {% if user.is_authenticated %}
-        <button class="btn btn-lg {% if user_rsvp.status %}btn-outline-danger{% else %}btn-primary{% endif %} rsvp-btn"
-                data-event-id="{{ event.pk }}">
-          {% if user_rsvp.status %}
-            <i class="bi-x-circle me-2"></i>Cancel RSVP
-          {% else %}
-            <i class="bi-check-circle me-2"></i>RSVP Now
-          {% endif %}
-        </button>
+            <button class="btn btn-lg rsvp-btn {% if user_rsvp and user_rsvp.status %}btn-outline-danger{% else %}btn-primary{% endif %}"
+                    data-event-id="{{ event.pk }}">
+                {% if user_rsvp and user_rsvp.status %}
+                    <i class="bi-x-circle me-2"></i>Cancel RSVP
+                {% else %}
+                    <i class="bi-check-circle me-2"></i>RSVP Now
+                {% endif %}
+            </button>
         {% else %}
-        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-lg">
-          <i class="bi-box-arrow-in-right me-2"></i>Login to RSVP
-        </a>
+            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-lg btn-primary btn-lg">
+                <i class="bi-arrow-left me-2"></i>Login to RSVP
+            </a>
         {% endif %}
-        <a href="{% url 'events' %}" class="btn btn-outline-secondary btn-lg">
-          <i class="bi-arrow-left me-2"></i>Back to Events
+        <a href="{% url 'events' %}" class="btn btn-outline-primary back-to-events-btn">
+            <i class="bi-arrow-left me-2"></i>Back to Events
         </a>
       </div>
     </div>
@@ -80,50 +80,42 @@
 </section>
 {% endblock %}
 
-{% block extra_css %}
-<style>
-  .icon-circle {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .event-description {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #444;
-  }
-</style>
-{% endblock %}
-
 {% block extra_js %}
 <script>
-document.querySelector('.rsvp-btn').addEventListener('click', function() {
-    const eventId = this.dataset.eventId;
-    const btn = this;
-    
-    fetch(`/events/${eventId}/rsvp/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            btn.classList.toggle('btn-primary');
-            btn.classList.toggle('btn-outline-danger');
-            const iconClass = data.new_status ? 'bi-x-circle' : 'bi-check-circle';
-            btn.innerHTML = `
-                <i class="${iconClass} me-2"></i>
-                ${data.new_status ? 'Cancel RSVP' : 'RSVP Now'}
-            `;
-        }
-    });
-});
+  document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".rsvp-btn").forEach(button => {
+          button.addEventListener("click", async function () {
+              let eventId = this.getAttribute("data-event-id");
+              let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+  
+              try {
+                  let response = await fetch(`/events/${eventId}/rsvp/`, {
+                      method: "POST",
+                      headers: {
+                          "X-CSRFToken": csrfToken,
+                          "Content-Type": "application/json"
+                      },
+                      body: JSON.stringify({})
+                  });
+  
+                  let data = await response.json();
+                  console.log("RSVP Response:", data);
+  
+                  if (data.status === "success") {
+                      this.innerHTML = data.new_status
+                          ? '<i class="bi-x-circle me-2"></i>Cancel RSVP'
+                          : '<i class="bi-check-circle me-2"></i>RSVP Now';
+  
+                      this.classList.toggle("btn-primary", !data.new_status);
+                      this.classList.toggle("btn-outline-danger", data.new_status);
+                  } else {
+                      alert("Error: " + data.message);
+                  }
+              } catch (error) {
+                  console.error("request failed:", error);
+              }
+          });
+      });
+  });
 </script>
 {% endblock %}

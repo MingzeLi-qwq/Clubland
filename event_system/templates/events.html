@@ -43,18 +43,14 @@
       </form>
     </div>
   </div>
-  
-
 
   <!-- 事件列表 -->
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
     {% for event in events %}
     <div class="col">
-      <div class="card h-100 shadow-sm hover-scale">
-        <div class="card-header bg-primary text-white">
-          <h5 class="card-title mb-0">{{ event.name }}</h5>
-        </div>
+      <div class="card h-100 shadow-sm hover-scale event-card">
         <div class="card-body">
+          <h5 class="card-title text-dark fw-bold">{{ event.name }}</h5>
           <div class="d-flex flex-column gap-3">
             <div class="badge-group">
               {% for category in event.categories.all %}
@@ -63,20 +59,20 @@
             </div>
             
             <div class="event-time text-muted">
-              <i class="bi-calendar-event me-2"></i>
+              <i class="bi-calendar-event me-2 text-primary"></i>
               {{ event.start_time|date:"M d, Y H:i" }} 
               <span class="mx-2">-</span>
               {{ event.end_time|date:"H:i" }}
             </div>
 
-            <div class="event-location">
-              <i class="bi-geo-alt me-2"></i>
+            <div class="event-location text-muted">
+              <i class="bi-geo-alt me-2 text-primary"></i>
               {{ event.location|truncatechars:35 }}
             </div>
 
             <div class="mt-auto">
               <a href="{% url 'event_detail' event.pk %}" 
-                 class="btn btn-outline-primary w-100">
+                 class="btn btn-primary w-100">
                 View Details <i class="bi-arrow-right ms-2"></i>
               </a>
             </div>
@@ -92,7 +88,6 @@
     </div>
     {% endfor %}
   </div>
-
 
   <!-- 分页导航 -->
   {% if is_paginated %}
@@ -125,23 +120,5 @@
   </nav>
   {% endif %}
 </section>
-
-
-<style>
-  .hover-scale {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  .hover-scale:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15)!important;
-  }
-  .badge-group {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-  .event-time {
-    font-size: 0.9rem;
-  }
-</style>
 {% endblock %}
+

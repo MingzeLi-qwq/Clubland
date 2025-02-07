@@ -67,11 +67,22 @@ def event_detail(request, pk):
 
 @login_required
 def rsvp_toggle(request, pk):
+    """ 处理 RSVP 状态切换 """
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+
     event = get_object_or_404(Event, pk=pk)
     rsvp, created = RSVP.objects.get_or_create(user=request.user, event=event)
-    
-    if request.method == 'POST':
+
+    if created:
+        rsvp.status = True
+    else:
         rsvp.status = not rsvp.status
-        rsvp.save()
-        return JsonResponse({'status': 'success', 'new_status': rsvp.status})
-    return JsonResponse({'status': 'error'})
+    rsvp.save()
+
+    return JsonResponse({
+        'status': 'success',
+        'new_status': rsvp.status,
+        'message': 'RSVP status updated'
+    })
+

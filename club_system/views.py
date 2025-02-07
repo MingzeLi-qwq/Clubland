@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from .models import Club, Membership, WidgetInstance
 from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin
+from user_system.helpers.mixins import LoginRequiredMixin
 from event_system.models import Event
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -10,11 +11,6 @@ from django.contrib.auth.decorators import login_required
 def clubs(request):
     clubs = Club.objects.all()
     return render(request, 'clubs.html', {'clubs': clubs})
-
-def home(request):
-    clubs = Club.objects.all()
-    events = Event.objects.all().order_by('-start_time')[:5]  # 显示最新5个活动
-    return render(request, 'home.html', {'clubs': clubs, 'events': events})
 
 class ClubDetailView(ClubExistsRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
@@ -39,18 +35,24 @@ class CancelMembershipView(ClubExistsRequiredMixin, ClubMemberRequiredMixin, Non
         else:
             return redirect('login')
 
-@login_required
-def club_dashboard(request, club_id):
-    club = get_object_or_404(Club, club_id=club_id)
-    if not Membership.objects.filter(club=club, user=request.user, club__isnull=False).exists():
-        return render(request, '403.html', status=403)
-    
-    return render(request, 'club_website/club_dashboard.html', {
-        'club': club,
-        'widgets': club.widgets.all(),
-        'customization': club.customization,
-        'membership': Membership.objects.get(club=club, user=request.user)
-    })
+class ClubWebView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMemberRequiredMixin, View):
+    template_name = 'club_website/club_dashboard.html'
+
+    def get(self, request, club_id):
+        club = get_object_or_404(Club, club_id=club_id)
+        
+        # 验证用户是否是该 club 的成员
+        if not Membership.objects.filter(club=club, user=request.user, club__isnull=False).exists():
+            return render(request, '403.html', status=403)
+
+        membership = Membership.objects.get(club=club, user=request.user)
+
+        return render(request, self.template_name, {
+            'club': club,
+            'widgets': club.widgets.all(),
+            'customization': club.customization,
+            'membership': membership
+        })
 
 class ClubWidgetAPI(View):
     def get(self, request, club_id):
