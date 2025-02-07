@@ -19,6 +19,8 @@ from django.urls import path,include
 import user_system.views
 import club_system.views
 from user_system.views import home
+from user_system.views import change_password
+from notification_system.views import notification_list
 import event_system.views
 
 app_name = 'accounts'
@@ -32,13 +34,17 @@ urlpatterns = [
 
     path('login/', user_system.views.LogInView.as_view(), name='login'),
     path('logout/', user_system.views.LogOutView, name='logout'),
-    
+    path('change-password/', user_system.views.change_password, name='change_password'), 
+
+    #Personal Dashboard / 个人资料页
     path('dashboard/', user_system.views.DashboardView.as_view(), name='dashboard'),
+
     # path('societies/', user_system.views.societies, name='societies'),
     path('news/', user_system.views.news, name='news'),
 
-    
-
+    path('events/', user_system.views.events, name='events'),
+    #Notification related / 通知相关页面
+    path('notifications/', notification_list, name='notifications'),
 
     # Club related / Club相关页面
     path('clubs/', club_system.views.clubs, name='clubs'),

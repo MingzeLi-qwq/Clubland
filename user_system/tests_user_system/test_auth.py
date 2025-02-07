@@ -60,3 +60,24 @@ class UserAuthTests(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+    def test_change_password(self):
+        """测试用户修改密码"""
+        self.client.login(username="@testuser", password="TestPassword123!")
+        
+        # 发送修改密码请求
+        response = self.client.post(reverse('password_change'), {
+            'old_password': 'TestPassword123!',
+            'new_password1': 'NewTestPassword456!',
+            'new_password2': 'NewTestPassword456!',
+        })
+        self.assertEqual(response.status_code, 302) 
+        
+        '''旧密码无法登录'''
+        self.client.logout()
+        login_failed = self.client.login(username="@testuser", password="TestPassword123!")
+        self.assertFalse(login_failed)
+
+        '''新密码可以登录'''
+        login_success = self.client.login(username="@testuser", password="NewTestPassword456!")
+        self.assertTrue(login_success)
