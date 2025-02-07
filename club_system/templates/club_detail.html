@@ -50,7 +50,7 @@
                                 <!-- 如果此用户是club成员 -->
                                  {% if is_manager %}
                                     <p>
-                                        You are the club manager, you can manage this club in <a href="{% url 'club_dashboard' club_id=club.club_id %}" class="btn btn-link p-0">club dashboard</a>.
+                                        You are the club manager, you can manage this club in <a href="{% url 'club_manager_general' club_id=club.club_id %}" class="btn btn-link p-0">club manager page</a>.
                                     </p>
                                  {% else %}
                                     <a href="{% url 'cancel_membership' club_id=club.club_id %}" class="btn btn-danger btn-lg rounded-pill w-100">
