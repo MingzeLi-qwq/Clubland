@@ -4,12 +4,14 @@ from user_system.models import User
 class Club(models.Model):
     club_id = models.PositiveIntegerField(primary_key=True, unique=True, editable=False)  # 从1开始递增的纯数字编号
     name = models.CharField(max_length=50, unique=True, blank=False)  # 社团名称，不能为空，允许空格, 不可以重复
-    description = models.CharField(max_length=200, blank=True, null=True)  # 社团简介，最多200字符，可为空
+    description = models.TextField(default="This Club hasn't added a Description yet", blank=True, null=True)  # 社团简介，无长度限制，默认内容
     members = models.ManyToManyField(
         User,
         through='Membership',
         related_name='clubs_joined'
     )
+
+    customization = models.OneToOneField('ClubCustomization', on_delete=models.SET_NULL, null=True)
 
     """This section is used to implement the logic for incrementing association IDs"""
     """此部分用来实现社团ID递增的逻辑"""
@@ -39,3 +41,20 @@ class Membership(models.Model):
 
     class Meta:
         unique_together = [('user', 'club')]  # 确保用户不能重复加入同一社团
+
+class ClubCustomization(models.Model):
+    background = models.CharField(max_length=100, default='#ffffff')
+    layout_mode = models.CharField(max_length=20, choices=[
+        ('grid', '网格布局'), 
+        ('free', '自由布局')
+    ], default='grid')
+    updated_at = models.DateTimeField(auto_now=True)
+
+class WidgetInstance(models.Model):
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='widgets')
+    widget_type = models.CharField(max_length=50)
+    position_x = models.IntegerField()
+    position_y = models.IntegerField()
+    width = models.IntegerField(default=4)
+    height = models.IntegerField(default=4)
+    config = models.JSONField(default=dict)

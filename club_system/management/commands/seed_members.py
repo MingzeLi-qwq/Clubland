@@ -29,6 +29,18 @@ class Command(BaseCommand):
                     )
 
             self.stdout.write("Club member assignments are complete! / Club 成员分配完成！")
+
+
+        # 为 @john_doe 用户设定为 Book Club 的管理员
+        john_doe = User.objects.get(username='@john_doe')
+        book_club = Club.objects.get(name='Book Club')
+        membership, created = Membership.objects.get_or_create(user=john_doe, club=book_club)
+        if created or not membership.is_manager:
+            membership.is_manager = True
+            membership.save()
+            self.stdout.write("Assigned @john_doe as manager of Book Club. / 将 @john_doe 设为 Book Club 的管理员。")
+
+
     
 
     def handle(self, *args, **kwargs):

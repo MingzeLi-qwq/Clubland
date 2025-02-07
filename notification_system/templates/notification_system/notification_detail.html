@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>Notification</h2>
+    <div class="card">
+        <div class="card-body">
+            <p>{{ notification.message }}</p>
+            <small class="text-muted">Received on {{ notification.created_at }}</small>
+        </div>
+    </div>
+    <a href="{% url 'notifications' %}" class="btn btn-primary mt-3">Back to Notifications</a>
+</div>
+{% endblock %}
