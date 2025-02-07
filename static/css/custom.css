@@ -246,6 +246,7 @@
         border-radius: 8px;
     }
 
+
     .event-card {
         border-radius: 12px;
         box-shadow: none;
@@ -255,3 +256,18 @@
         width: 100%;
     }
 }
+
+/* 邮件图标样式 */
+.email-icon {
+    margin-right: 5px;
+    color: #007bff; /* 蓝色 */
+}
+
+/* 调整文字按钮的样式 */
+.btn-link.p-0 {
+    line-height: 2.0; /* 调整行高 */
+    font-size: 1rem;  /* 调整字体大小 */
+    vertical-align: baseline; /* 调整垂直对齐 */
+    padding: 0; /* 移除填充 */
+}
+

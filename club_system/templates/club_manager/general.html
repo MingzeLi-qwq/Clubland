@@ -1,0 +1,46 @@
+{% extends "club_manager/club_manager_base.html" %}
+
+{% block manager_title %}General{% endblock %}
+
+{% block manager_content %}
+
+<!-- 错误信息框样式  -->
+<style>
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+</style>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} mt-2">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<div class="mb-4">
+  <h4>Club name</h4>
+  <div>
+    <form method="post" action="{% url 'update_club_name' club_id=club_id %}">
+      {% csrf_token %}
+      <input type="text" class="form-control" name="club_name" value="{{ club.name }}">
+      <button class="btn btn-primary mt-2" type="submit">Update name</button>
+    </form>
+  </div>
+</div>
+
+<div class="mb-4">
+  <h4>Club description</h4>
+  <div>
+    <form method="post" action="{% url 'update_club_description' club_id=club_id %}">
+      {% csrf_token %}
+      <textarea class="form-control" name="club_description" rows="4">{{ club.description }}</textarea>
+      <button class="btn btn-primary mt-2" type="submit">Update description</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

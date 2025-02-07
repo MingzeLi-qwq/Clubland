@@ -27,6 +27,7 @@ class Migration(migrations.Migration):
                 ('is_manager', models.BooleanField(default=False)),
                 ('date_joined', models.DateTimeField(auto_now_add=True)),
                 ('club', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='club_system.club')),
+
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
