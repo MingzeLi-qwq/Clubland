@@ -54,6 +54,9 @@ urlpatterns = [
     path('clubs/manager/update_name/<int:club_id>/', club_system.views.UpdateClubName.as_view(), name='update_club_name'),
     path('clubs/manager/update_description/<int:club_id>/', club_system.views.UpdateClubDescription.as_view(), name='update_club_description'),
 
+    # Club manager remove manager
+    path('clubs/manager/remove_manager/<int:club_id>/<str:username>/', club_system.views.RemoveManagerView.as_view(), name='remove_manager'),
+    path('clubs/manager/set_manager/<int:club_id>/<str:username>/', club_system.views.SetManagerView.as_view(), name='set_manager'),
     #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
 
 ]

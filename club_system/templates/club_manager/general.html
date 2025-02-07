@@ -22,7 +22,7 @@
 {% endif %}
 
 <div class="mb-4">
-  <h3>Club name</h3>
+  <h4>Club name</h4>
   <div>
     <form method="post" action="{% url 'update_club_name' club_id=club_id %}">
       {% csrf_token %}
@@ -33,7 +33,7 @@
 </div>
 
 <div class="mb-4">
-  <h3>Club description</h3>
+  <h4>Club description</h4>
   <div>
     <form method="post" action="{% url 'update_club_description' club_id=club_id %}">
       {% csrf_token %}

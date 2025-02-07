@@ -22,7 +22,61 @@
   {% endif %}
   
   <div class="mb-4">
-    <h3>Club managers</h3>
+    <h4>Club managers</h4>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for manager in managers %}
+          <tr>
+            <td>{{ manager.user.get_full_name }}</td>
+            <td>{{ manager.user.email }}</td>
+            <td>
+              {% if manager.user != user %}
+                <form method="post" action="{% url 'remove_manager' club_id=club_id username=manager.user.username %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger btn-sm">Remove Manager</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mb-4 mt-4">
+    <h4>Club members</h4>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for muggle in muggles %}
+          <tr>
+            <td>{{ muggle.user.get_full_name }}</td>
+            <td>{{ muggle.user.email }}</td>
+            <td>
+              {% if muggle.user != user %}
+                <form method="post" action="{% url 'set_manager' club_id=club_id username=muggle.user.username %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-success btn-sm">Set Manager</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
   
   {% endblock %}

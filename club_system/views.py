@@ -1,11 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from .models import Club, Membership
+from user_system.models import User
 from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin, ClubManagerRequiredMixin
 from user_system.helpers.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import IntegrityError
+from django.http import JsonResponse
 
 """此方法用来渲染Club列表页"""
 """This method is used to render the Club list page"""
@@ -79,10 +81,15 @@ class ClubManagerGeneral(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManage
 class ClubManagerMembers(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
+        managers = club.membership_set.filter(is_manager=True)
+        muggles = club.membership_set.filter(is_manager=False)
 
         return render(request, 'club_manager/members.html', {
             'club_id': club_id,
             'club': club,
+            'managers': managers,
+            'muggles' : muggles,
+            'user': request.user,
         })
     
 class ClubManagerNews(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
@@ -151,3 +158,33 @@ class UpdateClubDescription(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMan
         messages.success(request, "Description updated successfully.")
         
         return redirect('club_manager_general', club_id=club_id)
+    
+
+class RemoveManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
+    def post(self, request, club_id, username):
+        club = get_object_or_404(Club, pk=club_id)
+        user = get_object_or_404(User, username=username)
+        membership = get_object_or_404(Membership, club=club, user=user)
+
+        # 检查是否是最后一个管理员
+        if Membership.objects.filter(club=club, is_manager=True).count() <= 1:
+            messages.error(request, "At least one manager is required.")
+            return redirect('club_manager_members', club_id=club_id)
+
+        # 移除管理员资格
+        membership.is_manager = False
+        membership.save()
+        messages.success(request, f"{user.get_full_name} is no longer a manager.")
+        return redirect('club_manager_members', club_id=club_id)
+    
+class SetManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
+    def post(self, request, club_id, username):
+        club = get_object_or_404(Club, pk=club_id)
+        user = get_object_or_404(User, username=username)
+        membership = get_object_or_404(Membership, club=club, user=user)
+
+        # 设置为管理员
+        membership.is_manager = True
+        membership.save()
+        messages.success(request, f"{user.get_full_name} is now a manager.")
+        return redirect('club_manager_members', club_id=club_id)
