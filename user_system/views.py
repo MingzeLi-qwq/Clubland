@@ -17,6 +17,9 @@ def home(request):
     """Display the application's start/home screen."""
     return render(request, 'shared/home.html')
 
+
+
+
 class SignUpView(View):
     template_name = "user_system/sign_up.html"
 

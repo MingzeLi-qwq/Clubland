@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'user_system',
     'club_system',
     'notification_system',
+    'event_system',
 ]
 AUTH_USER_MODEL = 'user_system.User'
 
