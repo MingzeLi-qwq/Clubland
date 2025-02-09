@@ -1,0 +1,134 @@
+{% extends "club_manager/club_manager_base.html" %}
+{% block manager_title %}
+
+{% endblock %}
+{% block manager_content %}
+<div class="container">
+    <h3 class="mb-4">Club Events</h3>
+
+    <!-- 显示活动列表 -->
+    <div class="list-group">
+        {% for event in events %}
+            <a href="#" class="list-group-item list-group-item-action event-link"
+            data-event-id="{{ event.id }}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>{{ event.name }}</span>
+                    <span class="badge bg-primary">
+                        {{ event.rsvp_set.count }} RSVPs
+                    </span>
+                </div>
+            </a>
+        {% endfor %}
+        {% if events %}
+        <h10>Total {{events | length }} events</h10>
+        {% endif %}
+    </div>
+    <!-- 活动详细 RSVP 列表 -->
+    <div class="mt-5">
+        <h4 id="event-title">Event Members</h4>
+        <ul class="list-group" id="rsvp-list">
+            <li class="list-group-item text-muted">Select an event to view RSVPs.</li>
+        </ul>
+    </div>
+    <div>
+        {% if event %}
+        <h10>Total {{event | length }} events</h10>
+        {% endif %}
+    </div>
+
+    <!-- 添加成员 RSVP 表单 -->
+    <div class="mt-4">
+        <h5>Add RSVP</h5>
+        <form id="add-rsvp-form">
+            <input type="hidden" id="selected-event-id">
+            <div class="input-group">
+                <input type="text" class="form-control" id="username" placeholder="Enter username">
+                <button type="submit" class="btn btn-success">Add</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+
+    document.querySelectorAll(".event-link").forEach(eventLink => {
+        eventLink.addEventListener("click", function (e) {
+            e.preventDefault();
+            let eventId = this.getAttribute("data-event-id");
+            document.getElementById("selected-event-id").value = eventId;
+            document.getElementById("event-title").innerText = this.innerText.trim();
+            fetchEventRSVPs(eventId);
+        });
+    });
+
+    function fetchEventRSVPs(eventId) {
+        fetch(`/club_manager/events/${eventId}/rsvps/`)
+            .then(response => response.json())
+            .then(data => {
+                console.log("📌 RSVP 数据:", data);  
+
+
+
+
+                
+                let list = document.getElementById("rsvp-list");
+                list.innerHTML = "";
+                data.members.forEach(member => {
+                    let listItem = document.createElement("li");
+                    listItem.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+                    listItem.innerHTML = `<span>${member.username}</span>
+                        <button class="btn btn-danger btn-sm remove-rsvp-btn" data-user-id="${member.id}">Remove</button>`;
+                    list.appendChild(listItem);
+                });
+
+                document.querySelectorAll(".remove-rsvp-btn").forEach(btn => {
+                    btn.addEventListener("click", function () {
+                        removeRSVP(eventId, this.getAttribute("data-user-id"));
+                    });
+                });
+            });
+    }
+
+    function removeRSVP(eventId, userId) {
+        fetch(`/club_manager/events/${eventId}/remove_rsvp/${userId}/`, {
+            method: "POST",
+            headers: { "X-CSRFToken": csrfToken }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                fetchEventRSVPs(eventId);
+            } else {
+                alert(data.message);
+            }
+        });
+    }
+
+    document.getElementById("add-rsvp-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        let eventId = document.getElementById("selected-event-id").value;
+        let username = document.getElementById("username").value;
+
+        fetch(`/club_manager/events/${eventId}/add_rsvp/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ username })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                fetchEventRSVPs(eventId);
+                document.getElementById("username").value = "";
+            } else {
+                alert(data.message);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -5,7 +5,7 @@ from .models import Club, Membership, WidgetInstance
 from user_system.models import User
 from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin, ClubManagerRequiredMixin
 from user_system.helpers.mixins import LoginRequiredMixin
-from event_system.models import Event
+from event_system.models import Event, RSVP
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -152,15 +152,6 @@ class ClubManagerNews(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRe
             'club_id': club_id,
             'club': club,
         })
-    
-class ClubManagerEvents(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
-    def get(self, request, club_id, *args, **kwargs):
-        club = Club.objects.get(pk=club_id)
-
-        return render(request, 'club_manager/events.html', {
-            'club_id': club_id,
-            'club': club,
-        })
 
 """This method is used to handle name update requests from the manager general."""
 """此方法用于处理来自manager general更新club name请求"""
@@ -241,4 +232,62 @@ class SetManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerReq
         membership.save()
         messages.success(request, f"{user.get_full_name} is now a manager.")
         return redirect('club_manager_members', club_id=club_id)
+class ClubManagerEvents(LoginRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, *args, **kwargs):
+        club = Club.objects.get(pk=club_id)
+        # 获取当前用户管理的社团
+        clubs_managed = Club.objects.filter(membership__user=request.user, membership__is_manager=True)
 
+        # 获取这些社团的活动
+        event = Event.objects.filter(club__in=clubs_managed)
+
+        # 终端调试
+
+        return render(request, 'club_manager/club_manager_events.html', {
+            'club_id': club_id,
+            'club': club,
+            "events": event
+        })
+
+
+
+class EventRSVPListView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin,View):
+    """ 获取某活动的 RSVP 成员 """
+    def get(self, request, event_id):
+        event = get_object_or_404(Event, id=event_id)
+        if not Membership.objects.filter(club=event.club, user=request.user, is_manager=True).exists():
+            return JsonResponse({"status": "error", "message": "You are not authorized"}, status=403)
+        
+        members = [{"id": rsvp.user.id, "username": rsvp.user.username} for rsvp in event.rsvp_set.all()]
+        return JsonResponse({"status": "success", "members": members})
+
+
+class AddRSVPView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin,View):
+    """ 管理员添加 RSVP """
+    def post(self, request, event_id):
+        event = get_object_or_404(Event, id=event_id)
+        if not Membership.objects.filter(club=event.club, user=request.user, is_manager=True).exists():
+            return JsonResponse({"status": "error", "message": "Unauthorized"}, status=403)
+        
+        username = request.POST.get("username")
+        user = get_object_or_404(User, username=username)
+        if RSVP.objects.filter(event=event, user=user).exists():
+            return JsonResponse({"status": "error", "message": "User already RSVP'd"}, status=400)
+        
+        RSVP.objects.create(event=event, user=user, status=True)
+        return JsonResponse({"status": "success", "message": "User RSVP'd"})
+
+
+class RemoveRSVPView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin,View):
+    """ 管理员移除 RSVP """
+    def post(self, request, event_id, user_id):
+        event = get_object_or_404(Event, id=event_id)
+        if not Membership.objects.filter(club=event.club, user=request.user, is_manager=True).exists():
+            return JsonResponse({"status": "error", "message": "Unauthorized"}, status=403)
+        
+        rsvp = RSVP.objects.filter(event=event, user_id=user_id).first()
+        if not rsvp:
+            return JsonResponse({"status": "error", "message": "User not found"}, status=404)
+
+        rsvp.delete()
+        return JsonResponse({"status": "success", "message": "RSVP removed"})

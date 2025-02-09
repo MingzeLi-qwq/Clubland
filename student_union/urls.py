@@ -65,7 +65,6 @@ urlpatterns = [
     path('clubs/manager/general/<int:club_id>/', club_system.views.ClubManagerGeneral.as_view(), name='club_manager_general'),
     path('clubs/manager/members/<int:club_id>/', club_system.views.ClubManagerMembers.as_view(), name='club_manager_members'),
     path('clubs/manager/news/<int:club_id>/', club_system.views.ClubManagerNews.as_view(), name='club_manager_news'),
-    path('clubs/manager/events/<int:club_id>/', club_system.views.ClubManagerEvents.as_view(), name='club_manager_events'),
 
     # Club manager change name and description
     path('clubs/manager/update_name/<int:club_id>/', club_system.views.UpdateClubName.as_view(), name='update_club_name'),
@@ -76,4 +75,8 @@ urlpatterns = [
     path('clubs/manager/set_manager/<int:club_id>/<str:username>/', club_system.views.SetManagerView.as_view(), name='set_manager'),
     #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
 
+    path('clubs/manager/events/<int:club_id>/', club_system.views.ClubManagerEvents.as_view(), name='club_manager_events'),
+    path("club_manager/events/<int:event_id>/rsvps/", club_system.views.EventRSVPListView.as_view(), name="event_rsvps"),
+    path("club_manager/events/<int:event_id>/add_rsvp/", club_system.views.AddRSVPView.as_view(), name="add_rsvp"),
+    path("club_manager/events/<int:event_id>/remove_rsvp/<int:user_id>/", club_system.views.RemoveRSVPView.as_view(), name="remove_rsvp"),
 ]
