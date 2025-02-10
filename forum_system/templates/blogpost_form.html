@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}  {# 如果使用 crispy-forms 优化表单渲染，可加载此标签 #}
+
+{% block content %}
+  <h2>新建博客文章</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <!-- {{ form.as_p }} -->
+    <button type="submit">提交</button>
+  </form>
+  <a href="{% url 'blog_list' %}">返回列表</a>
+{% endblock %}

@@ -76,4 +76,8 @@ urlpatterns = [
     path('clubs/manager/set_manager/<int:club_id>/<str:username>/', club_system.views.SetManagerView.as_view(), name='set_manager'),
     #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
 
+    # Forum related / 论坛相关页面
+        path('ckeditor/', include('ckeditor_uploader.urls')),  # 富文本编辑器图片上传
+        path('forum/', include('forum_system.urls', namespace='forum_system')),
+
 ]
