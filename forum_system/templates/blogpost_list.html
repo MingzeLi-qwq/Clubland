@@ -1,28 +1,77 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block body %}
-  <h2>博客文章列表</h2>
-  <a href="{% url 'forum_system:blog_create' %}">写新文章</a>
-  <ul>
+<div class="container mt-4">
+  <h2 class="mb-4">博客文章列表</h2>
+  
+  <!-- 写新文章按钮 -->
+  <div class="mb-3">
+    <a href="{% url 'forum_system:blog_create' %}" class="btn btn-primary">写新文章</a>
+  </div>
+  
+  <!-- 排序选择框：选择发布时间的正序或倒序 -->
+  <div class="mb-3">
+    <form method="get" class="form-inline">
+      <label class="mr-2" for="orderSelect">排序：</label>
+      <select name="order" id="orderSelect" class="form-control mr-2" onchange="this.form.submit()">
+        <option value="desc" {% if request.GET.order == "desc" or not request.GET.order %}selected{% endif %}>时间倒序</option>
+        <option value="asc" {% if request.GET.order == "asc" %}selected{% endif %}>时间正序</option>
+      </select>
+    </form>
+  </div>
+  
+  <!-- 博客文章列表，使用 Bootstrap 的 list-group 美化 -->
+  <div class="list-group">
     {% for post in posts %}
-      <li>
-        <a href="{% url 'forum_system:blog_detail' post.pk %}">{{ post.title }}</a>
-        <small>{{ post.created_at|date:"Y-m-d H:i" }}</small>
-      </li>
+      <a href="{% url 'forum_system:blog_detail' post.pk %}" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">{{ post.title }}</h5>
+          <small>{{ post.created_at|date:"Y-m-d H:i" }}</small>
+        </div>
+      </a>
     {% empty %}
-      <li>暂无文章</li>
+      <div class="list-group-item">暂无文章</div>
     {% endfor %}
-  </ul>
-
+  </div>
+  
+  <!-- 分页，使用 Bootstrap 的 pagination 组件 -->
   {% if is_paginated %}
-    <div class="pagination">
-      {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}">上一页</a>
-      {% endif %}
-      <span>第 {{ page_obj.number }} 页，共 {{ paginator.num_pages }} 页</span>
-      {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">下一页</a>
-      {% endif %}
-    </div>
+    <nav aria-label="Page navigation" class="mt-4">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link" aria-hidden="true">&laquo;</span>
+          </li>
+        {% endif %}
+
+        {% for num in paginator.page_range %}
+          {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+          {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}">{{ num }}</a></li>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link" aria-hidden="true">&raquo;</span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
   {% endif %}
+</div>
 {% endblock %}

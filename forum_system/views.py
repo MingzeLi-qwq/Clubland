@@ -10,6 +10,12 @@ class BlogPostListView(ListView):
     context_object_name = 'posts'         # 在模板中通过 'posts' 变量访问查询结果
     paginate_by = 10                      # 可选：每页显示 10 篇
 
+    def get_queryset(self):
+        order = self.request.GET.get('order', 'desc')
+        if order == 'asc':
+            return BlogPost.objects.all().order_by('created_at')
+        return BlogPost.objects.all().order_by('-created_at')
+
 # 博客详情页：显示单篇博客文章的内容
 class BlogPostDetailView(DetailView):
     model = BlogPost
