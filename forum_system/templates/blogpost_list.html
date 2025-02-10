@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block body %}
   <h2>博客文章列表</h2>
-  <a href="{% url 'blog_create' %}">写新文章</a>
+  <a href="{% url 'forum_system:blog_create' %}">写新文章</a>
   <ul>
     {% for post in posts %}
       <li>
-        <a href="{% url 'blog_detail' post.pk %}">{{ post.title }}</a>
+        <a href="{% url 'forum_system:blog_detail' post.pk %}">{{ post.title }}</a>
         <small>{{ post.created_at|date:"Y-m-d H:i" }}</small>
       </li>
     {% empty %}

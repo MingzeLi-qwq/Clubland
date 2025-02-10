@@ -1,13 +1,21 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}  {# 如果使用 crispy-forms 优化表单渲染，可加载此标签 #}
+{% load static %}
 
-{% block content %}
+{% block body %}
+  <!-- 输出 CKEditor 的媒体文件 -->
+  {{ form.media }}
   <h2>新建博客文章</h2>
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form|crispy }}
-    <!-- {{ form.as_p }} -->
-    <button type="submit">提交</button>
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}" class="text-dark">{{ field.label }}:</label>
+        {{ field }}
+      </div>
+    {% endfor %}
+    <div class="row justify-content-center">
+      <input type="submit" class="btn btn-info btn-lg" value="提交">
+    </div>
   </form>
-  <a href="{% url 'blog_list' %}">返回列表</a>
+  <a href="{% url 'forum_system:blog_list' %}" class="btn btn-secondary mt-3">返回列表</a>
 {% endblock %}
