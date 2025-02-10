@@ -5,7 +5,7 @@ from .models import BlogPost
 from .forms import BlogPostForm
 
 from .models import Comment
-from .forms import CommentForm  # 假设你有 CommentForm
+# from .forms import CommentForm  # 假设你有 CommentForm
 
 
 # 博客列表页：显示所有博客文章
@@ -49,7 +49,7 @@ class BlogPostCreateView(LoginRequiredMixin, CreateView):
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
-    form_class = CommentForm
+    # form_class = CommentForm
     template_name = 'comment_form.html'
     # 成功后重定向到对应文章详情页，比如：
     # success_url = reverse_lazy('forum_system:blog_detail')
