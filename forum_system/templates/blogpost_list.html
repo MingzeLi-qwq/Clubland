@@ -10,13 +10,22 @@
     <a href="{% url 'forum_system:blog_create' %}" class="btn btn-primary">写新文章</a>
   </div>
   
-  <!-- 排序选择框：选择发布时间的正序或倒序 -->
+  <!-- 筛选条件表单：排序和每页显示数量 -->
   <div class="mb-3">
     <form method="get" class="form-inline">
+      <!-- 排序选择框 -->
       <label class="mr-2" for="orderSelect">排序：</label>
       <select name="order" id="orderSelect" class="form-control mr-2" onchange="this.form.submit()">
         <option value="desc" {% if request.GET.order == "desc" or not request.GET.order %}selected{% endif %}>时间倒序</option>
         <option value="asc" {% if request.GET.order == "asc" %}selected{% endif %}>时间正序</option>
+      </select>
+      <!-- 每页显示数量选择框 -->
+      <label class="mr-2" for="perPageSelect">每页显示：</label>
+      <select name="per_page" id="perPageSelect" class="form-control mr-2" onchange="this.form.submit()">
+        <option value="5" {% if request.GET.per_page == "5" %}selected{% endif %}>5</option>
+        <option value="10" {% if request.GET.per_page == "10" or not request.GET.per_page %}selected{% endif %}>10</option>
+        <option value="20" {% if request.GET.per_page == "20" %}selected{% endif %}>20</option>
+        <option value="50" {% if request.GET.per_page == "50" %}selected{% endif %}>50</option>
       </select>
     </form>
   </div>
@@ -41,7 +50,7 @@
       <ul class="pagination justify-content-center">
         {% if page_obj.has_previous %}
           <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}" aria-label="Previous">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}" aria-label="Previous">
               <span aria-hidden="true">&laquo;</span>
             </a>
           </li>
@@ -50,18 +59,22 @@
             <span class="page-link" aria-hidden="true">&laquo;</span>
           </li>
         {% endif %}
-
+        
         {% for num in paginator.page_range %}
           {% if page_obj.number == num %}
-            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            <li class="page-item active">
+              <span class="page-link">{{ num }}</span>
+            </li>
           {% else %}
-            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}">{{ num }}</a></li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ num }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}">{{ num }}</a>
+            </li>
           {% endif %}
         {% endfor %}
-
+        
         {% if page_obj.has_next %}
           <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}" aria-label="Next">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
             </a>
           </li>
