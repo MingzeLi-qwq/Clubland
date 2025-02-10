@@ -1,7 +1,12 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
 from .models import BlogPost
 from .forms import BlogPostForm
+
+from .models import Comment
+from .forms import CommentForm  # 假设你有 CommentForm
+
 
 # 博客列表页：显示所有博客文章
 class BlogPostListView(ListView):
@@ -29,8 +34,28 @@ class BlogPostDetailView(DetailView):
     context_object_name = 'post'
 
 # 博客创建页：提供一个表单供用户创建新的博客文章
-class BlogPostCreateView(CreateView):
+class BlogPostCreateView(LoginRequiredMixin, CreateView):
     model = BlogPost
     form_class = BlogPostForm
     template_name = 'blogpost_form.html'
     success_url = reverse_lazy('forum_system:blog_list')  # 提交成功后重定向到列表页
+
+
+    def form_valid(self, form):
+        # 自动将当前登录用户赋值给作者字段
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'comment_form.html'
+    # 成功后重定向到对应文章详情页，比如：
+    # success_url = reverse_lazy('forum_system:blog_detail')
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        # 假设评论关联的 BlogPost 是通过 URL 参数传递的 blog_post_id
+        form.instance.blog_post_id = self.kwargs.get('blog_post_id')
+        return super().form_valid(form)
