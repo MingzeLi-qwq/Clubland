@@ -7,7 +7,6 @@ from .forms import BlogPostForm
 from .models import Comment
 # from .forms import CommentForm  # 假设你有 CommentForm
 
-
 # 博客列表页：显示所有博客文章
 class BlogPostListView(ListView):
     model = BlogPost
