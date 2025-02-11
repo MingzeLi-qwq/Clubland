@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path,include, re_path
 import user_system.views
 import club_system.views
 from user_system.views import home
@@ -76,7 +76,7 @@ urlpatterns = [
     #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
 
     path('clubs/manager/events/<int:club_id>/', club_system.views.ClubManagerEvents.as_view(), name='club_manager_events'),
-    path("club_manager/events/<int:event_id>/rsvps/", club_system.views.EventRSVPListView.as_view(), name="event_rsvps"),
-    path("club_manager/events/<int:event_id>/add_rsvp/", club_system.views.AddRSVPView.as_view(), name="add_rsvp"),
-    path("club_manager/events/<int:event_id>/remove_rsvp/<int:user_id>/", club_system.views.RemoveRSVPView.as_view(), name="remove_rsvp"),
+    path("clubs/manager/events/<int:event_id>/rsvps/", club_system.views.EventRSVPListView.as_view(), name="event_rsvps"),
+    path("clubs/manager/events/<int:event_id>/add_rsvp/<int:user_id>/", club_system.views.AddRSVPView.as_view(), name="add_rsvp"),
+    re_path(r"^clubs/manager/events/(?P<event_id>\d+)/remove_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.RemoveRSVPView.as_view(), name="remove_rsvp"),
 ]

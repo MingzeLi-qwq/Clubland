@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import IntegrityError
-
+import urllib.parse
 
 """此方法用来渲染Club列表页"""
 """This method is used to render the Club list page"""
@@ -239,29 +239,54 @@ class ClubManagerEvents(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         clubs_managed = Club.objects.filter(membership__user=request.user, membership__is_manager=True)
 
         # 获取这些社团的活动
-        event = Event.objects.filter(club__in=clubs_managed)
+        events = Event.objects.filter(club__in=clubs_managed)
 
         # 终端调试
 
         return render(request, 'club_manager/club_manager_events.html', {
             'club_id': club_id,
             'club': club,
-            "events": event
+            'events': events
         })
 
 
-
-class EventRSVPListView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin,View):
+class EventRSVPListView(LoginRequiredMixin, View):
     """ 获取某活动的 RSVP 成员 """
-    def get(self, request, event_id):
-        event = get_object_or_404(Event, id=event_id)
-        if not Membership.objects.filter(club=event.club, user=request.user, is_manager=True).exists():
-            return JsonResponse({"status": "error", "message": "You are not authorized"}, status=403)
+    def get(self, request, event_id, *args, **kwargs):
+        try:
+            event = get_object_or_404(Event, pk=event_id)
+            rsvp_members = RSVP.objects.filter(event=event).select_related("user")
+            members_data = [
+            {
+                "email": rsvp.user.email,
+                "username": rsvp.user.username
+            }
+            for rsvp in rsvp_members
+        ]
+            return JsonResponse({"status": "success", "members": members_data, "event_id": event_id})
         
-        members = [{"id": rsvp.user.id, "username": rsvp.user.username} for rsvp in event.rsvp_set.all()]
-        return JsonResponse({"status": "success", "members": members})
+        except Exception as e:
+            print(f" {str(e)}")
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+class RemoveRSVPView(LoginRequiredMixin, View):
+    """ 管理员通过 username 移除 RSVP """
+
+    def post(self, request, event_id, username, *args, **kwargs):
+        username = urllib.parse.unquote(username)
 
 
+        event = get_object_or_404(Event, pk=event_id)
+        user = get_object_or_404(User, username=username)
+        rsvp = RSVP.objects.filter(event=event, user=user).first()
+
+        if not rsvp:
+            return JsonResponse({"status": "error", "message": "RSVP record not found"}, status=404)
+
+        rsvp.delete()
+        return JsonResponse({"status": "success", "message": "RSVP removed successfully"})
+
+    
 class AddRSVPView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin,View):
     """ 管理员添加 RSVP """
     def post(self, request, event_id):
@@ -276,18 +301,3 @@ class AddRSVPView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequir
         
         RSVP.objects.create(event=event, user=user, status=True)
         return JsonResponse({"status": "success", "message": "User RSVP'd"})
-
-
-class RemoveRSVPView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin,View):
-    """ 管理员移除 RSVP """
-    def post(self, request, event_id, user_id):
-        event = get_object_or_404(Event, id=event_id)
-        if not Membership.objects.filter(club=event.club, user=request.user, is_manager=True).exists():
-            return JsonResponse({"status": "error", "message": "Unauthorized"}, status=403)
-        
-        rsvp = RSVP.objects.filter(event=event, user_id=user_id).first()
-        if not rsvp:
-            return JsonResponse({"status": "error", "message": "User not found"}, status=404)
-
-        rsvp.delete()
-        return JsonResponse({"status": "success", "message": "RSVP removed"})
