@@ -77,6 +77,7 @@ urlpatterns = [
 
     path('clubs/manager/events/<int:club_id>/', club_system.views.ClubManagerEvents.as_view(), name='club_manager_events'),
     path("clubs/manager/events/<int:event_id>/rsvps/", club_system.views.EventRSVPListView.as_view(), name="event_rsvps"),
-    path("clubs/manager/events/<int:event_id>/add_rsvp/<int:user_id>/", club_system.views.AddRSVPView.as_view(), name="add_rsvp"),
     re_path(r"^clubs/manager/events/(?P<event_id>\d+)/remove_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.RemoveRSVPView.as_view(), name="remove_rsvp"),
+    re_path(r"^clubs/manager/events/(?P<event_id>\d+)/add_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.AddRSVPView.as_view(), name="add_rsvp"),
+
 ]

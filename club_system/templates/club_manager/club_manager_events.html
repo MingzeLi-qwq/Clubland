@@ -63,7 +63,7 @@
             fetch(`/clubs/manager/events/${eventId}/rsvps/`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log("📌 RSVP 数据:", data);
+                    console.log("RSVP 数据:", data);
                     const rsvpList = document.getElementById("rsvp-list");
                     rsvpList.innerHTML = '';
         
@@ -71,7 +71,7 @@
                         rsvpList.innerHTML = '<li class="list-group-item text-muted">No RSVPs yet.</li>';
                     } else {
                         data.members.forEach(member => {
-                            console.log("📌 检查 member.username:", member.username);  
+                            console.log("检查 member.username:", member.username);  
                             const li = document.createElement('li');
                             li.className = 'list-group-item d-flex justify-content-between align-items-center';
                             li.innerHTML = `
@@ -115,38 +115,43 @@
             });
         }     
         window.removeRSVP = removeRSVP;
-        
-        
     
         document.getElementById("add-rsvp-form").addEventListener("submit", function (e) {
             e.preventDefault();
+            
             let eventId = document.getElementById("selected-event-id").value;
-            let username = document.getElementById("username").value;
-    
-    
-            console.log(`📡 正在添加 RSVP /clubs/manager/events/${eventId}/add_rsvp/`);
-    
-            fetch(`/clubs/manager/events/${eventId}/add_rsvp/`, {
+            let username = document.getElementById("username").value.trim();  
+            if (!username.startsWith("@")) {
+                console.error("错误: Username 必须以 '@' 开头:", username);
+                alert("请输入正确的用户名");
+                return;
+            }
+        
+            console.log(`正在添加 RSVP /clubs/manager/events/${eventId}/add_rsvp/${username}/`);
+        
+            fetch(`/clubs/manager/events/${eventId}/add_rsvp/${username}/`, {
                 method: "POST",
                 headers: {
                     "X-CSRFToken": csrfToken,
-                    "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ username })
+                body: JSON.stringify({ username: username })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === "success") {
+                    console.log("RSVP 添加成功");
                     fetchEventRSVPs(eventId);
                     document.getElementById("username").value = "";
+                    location.reload();
                 } else {
                     alert(data.message);
                 }
             })
             .catch(error => {
-                console.error("❌ 添加 RSVP 失败:", error);
+                console.error("添加 RSVP 失败:", error);
             });
         });
+        
     });
     
 </script>

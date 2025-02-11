@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import IntegrityError
 import urllib.parse
+import json
 
 """此方法用来渲染Club列表页"""
 """This method is used to render the Club list page"""
@@ -287,17 +288,22 @@ class RemoveRSVPView(LoginRequiredMixin, View):
         return JsonResponse({"status": "success", "message": "RSVP removed successfully"})
 
     
-class AddRSVPView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin,View):
+
+
+
+class AddRSVPView(LoginRequiredMixin, View):
     """ 管理员添加 RSVP """
-    def post(self, request, event_id):
+
+    def post(self, request, event_id, username, *args, **kwargs):
         event = get_object_or_404(Event, id=event_id)
-        if not Membership.objects.filter(club=event.club, user=request.user, is_manager=True).exists():
-            return JsonResponse({"status": "error", "message": "Unauthorized"}, status=403)
-        
-        username = request.POST.get("username")
         user = get_object_or_404(User, username=username)
+
         if RSVP.objects.filter(event=event, user=user).exists():
             return JsonResponse({"status": "error", "message": "User already RSVP'd"}, status=400)
-        
+
         RSVP.objects.create(event=event, user=user, status=True)
+
         return JsonResponse({"status": "success", "message": "User RSVP'd"})
+
+
+
