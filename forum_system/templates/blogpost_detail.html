@@ -2,7 +2,7 @@
 
 {% block body %}
 <div class="container my-4">
-  <div class="card">
+  <div class="card mb-3">
     <div class="card-header">
       <h2 class="card-title mb-0">{{ post.title }}</h2>
       <p class="card-subtitle text-muted">
@@ -20,6 +20,41 @@
       </div>
     </div>
   </div>
+  
+  <!-- 显示评论列表 -->
+  <div class="mb-4">
+    <h4>评论</h4>
+    {% if post.commentsBelongToPost.all %}
+      {% for comment in post.commentsBelongToPost.all %}
+        <div class="card mb-2">
+          <div class="card-body">
+            <p>{{ comment.text }}</p>
+            <small class="text-muted">
+              评论者: {% if comment.author %}{{ comment.author }}{% else %}匿名{% endif %} 
+              | 日期: {{ comment.created_at|date:"Y-m-d H:i" }}
+            </small>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>暂无评论</p>
+    {% endif %}
+  </div>
+  
+  <!-- 添加评论表单 -->
+  <div class="mb-3">
+    {% if user.is_authenticated %}
+      <h4>添加评论</h4>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-secondary">提交评论</button>
+      </form>
+    {% else %}
+      <p>请<a href="{% url 'login' %}">登录</a>后评论</p>
+    {% endif %}
+  </div>
+  
   <div class="mt-3">
     <a href="{% url 'forum_system:blog_list' %}" class="btn btn-primary">返回列表</a>
   </div>
