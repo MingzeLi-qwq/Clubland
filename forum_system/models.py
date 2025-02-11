@@ -16,7 +16,7 @@ class BlogPost(TimestampMixin, models.Model):
         User,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='blog_posts'
+        related_name='blogPostAuthorship'
     )
 
     class Meta:
@@ -26,7 +26,7 @@ class Comment(TimestampMixin, models.Model):
     blog_post = models.ForeignKey(
         BlogPost, 
         on_delete=models.CASCADE, 
-        related_name='comments'
+        related_name='commentsBelongToPost'
     )
     text = models.TextField()
     # 直接使用 ForeignKey 表示每条评论只有一个作者
@@ -34,5 +34,5 @@ class Comment(TimestampMixin, models.Model):
         User,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='comments'
+        related_name='commentAuthorship'
     )
