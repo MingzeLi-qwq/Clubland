@@ -280,8 +280,25 @@ class SearchUsersView(LoginRequiredMixin, View):
 class RemoveMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, username, *args, **kwargs):
         club = get_object_or_404(Club, club_id=club_id)
-        user_to_remove = get_object_or_404(User, username=username)
-        Membership.objects.filter(user=user_to_remove, club=club).delete()
+        user_to_remove = User.objects.filter(username=username).first()
+        
+        # 检查用户是否存在
+        if not user_to_remove:
+            messages.error(request, "用户不存在")
+            return redirect('club_manager_members', club_id=club_id)
+
+        membership = Membership.objects.filter(user=user_to_remove, club=club).first()
+        # 检查是否有此会员关系
+        if not membership:
+            messages.error(request, "该用户不属于此社团")
+            return redirect('club_manager_members', club_id=club_id)
+        
+        # 检查是否为管理员
+        if membership.is_manager:
+            messages.error(request, "该用户是管理员，无法直接移除")
+            return redirect('club_manager_members', club_id=club_id)
+
+        membership.delete()
         messages.success(request, f"{user_to_remove.username} has been removed from the club.")
         return redirect('club_manager_members', club_id=club_id)
 
