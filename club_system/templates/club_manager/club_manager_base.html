@@ -6,18 +6,11 @@
     <!-- 标题 -->
     <div class="d-flex justify-content-between align-items-center">
         <h2>Club Management - {{ club.name }}</h2>
-        <!-- <a href="{% url 'logout' %}" class="btn btn-primary">Sign Out</a> -->
     </div>
-    <!-- <p class="text-muted">Manage Club setting.</p> -->
 
-    <!-- <div class="d-flex align-items-center">
-      <div class="ms-3 mt-4">
-          <h3>{{ club.name }}</h3>
-      </div>
-    </div> -->
-
-    <div class="row mt-4">
-        <div class="col-md-4">
+    <div class="row mt-4 gy-3">
+        <!-- 侧边菜单栏 -->
+        <div class="col-md-3">
             <div class="list-group">
                 <a href="{% url 'club_manager_general' club_id=club_id %}" class="list-group-item list-group-item-action">
                     General
@@ -35,7 +28,7 @@
         </div>
 
         <!-- 主内容 -->
-        <div class="col-md-8">
+        <div class="col-md-9">
           {% block manager_content %}
           <!-- 动态内容区域 -->
           {% endblock %}

@@ -74,6 +74,10 @@ urlpatterns = [
     # Club manager remove manager
     path('clubs/manager/remove_manager/<int:club_id>/<str:username>/', club_system.views.RemoveManagerView.as_view(), name='remove_manager'),
     path('clubs/manager/set_manager/<int:club_id>/<str:username>/', club_system.views.SetManagerView.as_view(), name='set_manager'),
+
+    path('clubs/manager/search_users/', club_system.views.SearchUsersView.as_view(), name='search_users'),
+    path('clubs/manager/add_member/<int:club_id>/<str:username>/', club_system.views.AddMemberView.as_view(), name='add_member'),
+    path('clubs/manager/remove_member/<int:club_id>/<str:username>/', club_system.views.RemoveMemberView.as_view(), name='remove_member'),
     #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
 
 ]

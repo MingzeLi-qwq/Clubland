@@ -1,6 +1,6 @@
+import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-
 from .models import Club, Membership, WidgetInstance
 from user_system.models import User
 from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin, ClubManagerRequiredMixin
@@ -10,6 +10,10 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import IntegrityError
+from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 
 
 """此方法用来渲染Club列表页"""
@@ -229,7 +233,7 @@ class RemoveManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManager
         messages.success(request, f"{user.get_full_name} is no longer a manager.")
         return redirect('club_manager_members', club_id=club_id)
     
-    """此部分用于处理来自club manager 新增 manager的请求"""
+"""此部分用于处理来自club manager 新增 manager的请求"""
 class SetManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, username):
         club = get_object_or_404(Club, pk=club_id)
@@ -241,4 +245,65 @@ class SetManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerReq
         membership.save()
         messages.success(request, f"{user.get_full_name} is now a manager.")
         return redirect('club_manager_members', club_id=club_id)
+    
+"""此部分用于处理来自club manager 移除 Membership 的请求"""
+class RemoveMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
+    def post(self, request, club_id, username, *args, **kwargs):
+        club = get_object_or_404(Club, id=club_id)
+        user_to_remove = get_object_or_404(User, username=username)
+        Membership.objects.filter(user=user_to_remove, club=club).delete()
+        messages.success(request, f"{user_to_remove.username} has been removed from the club.")
+        return redirect('club_members', club_id=club_id)
 
+"""此部分用来实现club manager - Membership - Add members - 自动搜索框的自动搜索功能"""
+class SearchUsersView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('q', '')
+        club_id = request.GET.get('club_id')
+        
+        users = User.objects.filter(
+            Q(username__icontains=query) |
+            Q(email__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query)
+        ).exclude(membership__club_id=club_id)  # 添加排除现有成员的过滤
+
+        results = [{
+            'username': user.username,
+            'email': user.email,
+            'full_name' : user.first_name + user.last_name,
+        } for user in users]
+        
+        return JsonResponse(results, safe=False)
+    
+"""此部分用来实现club manager 移除 Membership 的功能"""
+class RemoveMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
+    def post(self, request, club_id, username, *args, **kwargs):
+        club = get_object_or_404(Club, club_id=club_id)
+        user_to_remove = get_object_or_404(User, username=username)
+        Membership.objects.filter(user=user_to_remove, club=club).delete()
+        messages.success(request, f"{user_to_remove.username} has been removed from the club.")
+        return redirect('club_manager_members', club_id=club_id)
+
+"""此部分用来实现club manager - 添加member的功能"""
+class AddMemberView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
+    def post(self, request, club_id, username):
+        try:
+            club = Club.objects.get(club_id=club_id)
+            user = User.objects.get(username=username)
+            
+            if Membership.objects.filter(user=user, club=club).exists():
+                messages.error(request, f"{user.username} 已是社团成员")
+                return redirect('club_manager_members', club_id=club_id)
+                
+            Membership.objects.create(user=user, club=club)
+            messages.success(request, f"成功添加成员 {user.get_full_name()}")
+            return redirect('club_manager_members', club_id=club_id)
+            
+        except User.DoesNotExist:
+            messages.error(request, "用户不存在")
+            return redirect('club_manager_members', club_id=club_id)
+            
+        except Exception as e:
+            messages.error(request, f"添加失败: {str(e)}")
+            return redirect('club_manager_members', club_id=club_id)
