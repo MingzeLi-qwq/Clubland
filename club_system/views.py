@@ -43,7 +43,6 @@ def isSameClubNameExist(name):
 
 """此方法用来渲染Club详情页"""
 """This method is used to render the Club details page"""
-
 class ClubDetailView(ClubExistsRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
@@ -145,7 +144,9 @@ class ClubManagerMembers(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManage
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
         managers = club.membership_set.filter(is_manager=True)
+        manager_count = managers.count()
         muggles = club.membership_set.filter(is_manager=False)
+        muggle_count = muggles.count()
 
         return render(request, 'club_manager/members.html', {
             'club_id': club_id,
@@ -153,6 +154,8 @@ class ClubManagerMembers(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManage
             'managers': managers,
             'muggles' : muggles,
             'user': request.user,
+            'manager_count': manager_count,
+            'muggle_count': muggle_count
         })
     
 class ClubManagerNews(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):

@@ -1,6 +1,5 @@
 {% extends "club_manager/club_manager_base.html" %}
 
-Members
 
 {% block manager_content %}
 
@@ -27,7 +26,7 @@ Members
   <!-- Club managers表格 -->
   <div class="mb-4">
     <div class="card p-3 mb-3">
-      <h5>Club managers</h5>
+      <h5>Club managers ({{manager_count}})</h5>
       <table class="table table-striped">
         <thead>
           <tr>
@@ -60,7 +59,7 @@ Members
   <!-- Club members表格 -->
   <div class="mb-4">
     <div class="card p-3 mb-3">
-      <h5>Club members</h5>
+      <h5>Club members ({{muggle_count}})</h5>
       <table class="table table-striped">
         <thead>
           <tr>
