@@ -15,15 +15,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path,include, re_path
 import user_system.views
 import club_system.views
+import event_system.views
+import club_hub.views
 from user_system.views import home
 from user_system.views import change_password
 from notification_system.views import notification_list
-import event_system.views
+from rest_framework.routers import DefaultRouter
+from club_hub.views import WidgetViewSet
+
 
 app_name = 'accounts'
+router = DefaultRouter()
+router.register(r'clubs/(?P<club_id>\d+)/widgets', WidgetViewSet, basename="widgets")
 
 urlpatterns = [
     # Main pages
@@ -44,9 +50,6 @@ urlpatterns = [
 
     #Notification related / 通知相关页面
     path('notifications/', notification_list, name='notifications'),
-  
-    path('club-dashboard/<int:club_id>/', club_system.views.ClubWebView.as_view(), name='club_dashboard'),
-    path('api/club-widgets/<int:club_id>/', club_system.views.ClubWidgetAPI.as_view(), name='club_widgets_api'),
 
     # Events related / Events相关页面
     path('events/home/', event_system.views.events_home, name='events_home'),
@@ -65,7 +68,6 @@ urlpatterns = [
     path('clubs/manager/general/<int:club_id>/', club_system.views.ClubManagerGeneral.as_view(), name='club_manager_general'),
     path('clubs/manager/members/<int:club_id>/', club_system.views.ClubManagerMembers.as_view(), name='club_manager_members'),
     path('clubs/manager/news/<int:club_id>/', club_system.views.ClubManagerNews.as_view(), name='club_manager_news'),
-    path('clubs/manager/events/<int:club_id>/', club_system.views.ClubManagerEvents.as_view(), name='club_manager_events'),
 
     # Club manager change name and description
     path('clubs/manager/update_name/<int:club_id>/', club_system.views.UpdateClubName.as_view(), name='update_club_name'),
@@ -76,4 +78,11 @@ urlpatterns = [
     path('clubs/manager/set_manager/<int:club_id>/<str:username>/', club_system.views.SetManagerView.as_view(), name='set_manager'),
     #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
 
-]
+    path('clubs/manager/events/<int:club_id>/', club_system.views.ClubManagerEvents.as_view(), name='club_manager_events'),
+    path("clubs/manager/events/<int:event_id>/rsvps/", club_system.views.EventRSVPListView.as_view(), name="event_rsvps"),
+    re_path(r"^clubs/manager/events/(?P<event_id>\d+)/remove_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.RemoveRSVPView.as_view(), name="remove_rsvp"),
+    re_path(r"^clubs/manager/events/(?P<event_id>\d+)/add_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.AddRSVPView.as_view(), name="add_rsvp"),
+
+    path('api/', include('club_hub.urls')),
+    path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
+]   

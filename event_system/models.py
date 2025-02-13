@@ -32,3 +32,4 @@ class RSVP(models.Model):
     
     class Meta:
         unique_together = ('user', 'event')
+
