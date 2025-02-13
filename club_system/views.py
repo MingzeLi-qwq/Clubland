@@ -19,8 +19,15 @@ from django.db.models import Q
 """此方法用来渲染Club列表页"""
 """This method is used to render the Club list page"""
 def clubs(request):
-    clubs = Club.objects.all()
-    return render(request, 'clubs.html', {'clubs': clubs})
+    search_query = request.GET.get('search', '')
+    if search_query:
+        clubs = Club.objects.filter(name__icontains=search_query)
+    else:
+        clubs = Club.objects.all()
+    return render(request, 'clubs.html', {
+        'clubs': clubs,
+        'search_query': search_query
+    })
 
 
 """此方法用于检查Club name是否重复, 更重要的是忽略了大小写和空格"""
