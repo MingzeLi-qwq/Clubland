@@ -6,6 +6,11 @@
   <div class="mb-3 p-4 border rounded" style="background-color: #ffffff;">
     <h2 class="mb-2">
       <span>{{ post.title }}</span>
+      {% if user == post.author %}
+      <div class="d-flex justify-content-end mt-3">
+        <a href="{% url 'forum_system:blog_delete' post.pk %}" class="btn btn-danger btn-sm flex-shrink-0">删除文章</a>
+      </div>
+    {% endif %}
     </h2>
     <hr/>
     <div class="mb-2">
@@ -19,11 +24,6 @@
     <div>
       {{ post.content|safe }}
     </div>
-    <div class="d-flex justify-content-end mt-3">
-      {% if user == post.author %}
-        <a href="{% url 'forum_system:blog_delete' post.pk %}" class="btn btn-danger btn-sm">删除文章</a>
-      {% endif %}
-    </div>
   </div>
   
   <div class="mb-4">
@@ -32,23 +32,25 @@
       {% for comment in post.commentsBelongToPost.all %}
         <div class="card mb-3">
           <div class="card-header bg-light">
-            <div>
-              {% if comment.author %}
-                {{ comment.author.first_name }} {{ comment.author.last_name }}&nbsp;&nbsp;<small class="text-muted">{{ comment.author.username }}</small>
-              {% else %}
-                用户不存在
-              {% endif %}
-              &nbsp;
-              <small class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</small>
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                {% if comment.author %}
+                  {{ comment.author.first_name }} {{ comment.author.last_name }}&nbsp;&nbsp;<small class="text-muted">{{ comment.author.username }}</small>
+                {% else %}
+                  用户不存在
+                {% endif %}
+                &nbsp;
+                <small class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</small>
+              </div>
+              <div>
+                {% if user == comment.author %}
+                  <a href="{% url 'forum_system:comment_delete' comment.pk %}" class="btn btn-danger btn-sm">删除评论</a>
+                {% endif %}
+              </div>
             </div>
           </div>
           <div class="card-body">
             <p class="card-text">{{ comment.text }}</p>
-            {% if user == comment.author %}
-              <div class="d-flex justify-content-end">
-                <a href="{% url 'forum_system:comment_delete' comment.pk %}" class="btn btn-danger btn-sm">删除评论</a>
-              </div>
-            {% endif %}
           </div>
         </div>
       {% endfor %}
