@@ -42,8 +42,6 @@ INSTALLED_APPS = [
     'club_system',
     'notification_system',
     'event_system',
-    'ckeditor',
-    'ckeditor_uploader',
     'forum_system.apps.ForumSystemConfig',  # 推荐写法
 ]
 
@@ -155,21 +153,3 @@ else:
     AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
-
-
-# CKEditor Settings
-# 如果你使用上传功能，需要配置上传路径（例如结合对象存储，默认会调用 DEFAULT_FILE_STORAGE）
-CKEDITOR_UPLOAD_PATH = "uploads/ckeditor/"
-CKEDITOR_IMAGE_BACKEND = "pillow"
-CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js' 
-
-CKEDITOR_CONFIGS = {
-    'default':
-        {
-            'toolbar': 'full',
-            'width': 'auto',
-            'extraPlugins': ','.join([
-                'codesnippet',
-            ]),
-        },
-}

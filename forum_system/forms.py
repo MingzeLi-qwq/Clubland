@@ -1,5 +1,5 @@
 from django import forms
-from ckeditor_uploader.widgets import CKEditorUploadingWidget
+
 from .models import BlogPost, Comment
 
 class BlogPostForm(forms.ModelForm):
