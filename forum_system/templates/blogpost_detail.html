@@ -28,17 +28,23 @@
     <h4>评论</h4>
     {% if post.commentsBelongToPost.all %}
       {% for comment in post.commentsBelongToPost.all %}
-        <div class="card mb-2">
+        <div class="card mb-3">
+          <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                {% if comment.author %}
+                  {{ comment.author.first_name }} {{ comment.author.last_name }} ({{ comment.author.username }})
+                {% else %}
+                  用户不存在
+                {% endif %}
+              </div>
+              <div>
+                <small class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</small>
+              </div>
+            </div>
+          </div>
           <div class="card-body">
-            <small class="text-muted">
-              评论者: {% if comment.author %}
-                {{ comment.author.first_name }} {{ comment.author.last_name }}&nbsp;&nbsp;{{ comment.author.username }}
-              {% else %}
-              用户不存在
-              {% endif %} 
-              &nbsp;|&nbsp; 日期: {{ comment.created_at|date:"Y-m-d H:i" }}
-            </small>
-            <p>{{ comment.text }}</p>
+            <p class="card-text">{{ comment.text }}</p>
           </div>
         </div>
       {% endfor %}
