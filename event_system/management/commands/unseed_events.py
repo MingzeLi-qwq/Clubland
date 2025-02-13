@@ -14,3 +14,4 @@ class Command(BaseCommand):
         category_count = Category.objects.count()
         Category.objects.all().delete()
         self.stdout.write(self.style.SUCCESS(f"成功删除 {category_count} 个活动分类"))
+

@@ -75,9 +75,9 @@ class Command(BaseCommand):
 
     def generate_event_name(self):
         """生成符合真实场景的活动标题"""
-        prefixes = ["年度", "新生", "春季", "冬季", "周末"]
+        prefixes = ["崩坏学园3", "崩坏：星穹铁道", "未定事件铺", "元神", "大别野"]
         types = [
-            "工作坊", "训练营", "之夜", "比赛", "交流会",
-            "分享会", "研讨会", "体验课", "马拉松"
+            "学妹认识", "学姐鉴赏", "宅男电竞", "猛男健身", "多人交流",
+            "单人运动", "多人交配", "多人玩耍", "多人运动"
         ]
         return f"{random.choice(prefixes)} {fake.word().capitalize()} {random.choice(types)}"
