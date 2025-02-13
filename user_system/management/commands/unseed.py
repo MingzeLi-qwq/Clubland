@@ -20,10 +20,16 @@ class Command(BaseCommand):
             call_command("unseed_users")
             self.stdout.write(self.style.SUCCESS("✅ Users removed successfully!"))
 
-            self.stdout.write(self.style.SUCCESS("🎉 All unseeding operations completed!"))
-
             call_command("unseed_events")
             self.stdout.write(self.style.SUCCESS("✅ Users removed successfully!"))
+
+            call_command("unseed_rsvp")
+            self.stdout.write(self.style.SUCCESS("✅ RSVP removed successfully!"))
+
+            call_command("unseed_blogposts")
+            self.stdout.write(self.style.SUCCESS("✅ BlogPosts removed successfully!"))
+
+            self.stdout.write(self.style.SUCCESS("🎉 All unseeding operations completed!"))
 
         except CommandError as e:
             self.stderr.write(self.style.ERROR(f"❌ Error: {e}"))
