@@ -4,8 +4,14 @@
 <div class="container my-4">
   <!-- 修改文章展示盒：使用简洁的白色背景和边框 -->
   <div class="mb-3 p-4 border rounded" style="background-color: #ffffff;">
-    <h2 class="mb-2">{{ post.title }} <hr/> </h2>
-    <div>
+    <h2 class="mb-2">
+      {{ post.title }}
+      {% if user == post.author %}
+        <a href="{% url 'forum_system:blog_delete' post.pk %}" class="btn btn-danger btn-sm">删除文章</a>
+      {% endif %}
+      <hr/>
+    </h2>
+    <div class="mb-2">
       <small class="text-muted">{{ post.created_at|date:"Y-m-d H:i" }}&nbsp;&nbsp;|&nbsp;</small>
       {% if post.author %}
       {{ post.author.first_name }} {{ post.author.last_name }}&nbsp;&nbsp;<small class="text-muted">{{ post.author.username }}</small>
@@ -37,6 +43,9 @@
           </div>
           <div class="card-body">
             <p class="card-text">{{ comment.text }}</p>
+            {% if user == comment.author %}
+              <a href="{% url 'forum_system:comment_delete' comment.pk %}" class="btn btn-danger btn-sm">删除评论</a>
+            {% endif %}
           </div>
         </div>
       {% endfor %}

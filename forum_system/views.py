@@ -1,6 +1,6 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse, reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.views.generic.edit import FormMixin
 from django.http import HttpResponseRedirect
 from .models import BlogPost, Comment
@@ -84,3 +84,22 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     
     def get_success_url(self):
         return reverse('forum_system:blog_detail', kwargs={'pk': self.kwargs.get('blog_post_id')})
+
+
+class BlogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = BlogPost
+    template_name = 'blogpost_confirm_delete.html'
+    success_url = reverse_lazy('forum_system:blog_list')
+
+    def test_func(self):
+        return self.request.user == self.get_object().author
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    template_name = 'comment_confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse('forum_system:blog_detail', kwargs={'pk': self.get_object().blog_post.pk})
+
+    def test_func(self):
+        return self.request.user == self.get_object().author
