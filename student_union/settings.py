@@ -167,6 +167,7 @@ CKEDITOR_CONFIGS = {
     'default':
         {
             'toolbar': 'full',
+            'filebrowserImageUploadUrl': '/uploadimg/',  # 替换成你的上传接口地址
             'width': 'auto',
             'extraPlugins': ','.join([
                 'codesnippet',

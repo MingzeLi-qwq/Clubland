@@ -22,6 +22,8 @@ from user_system.views import home
 from user_system.views import change_password
 from notification_system.views import notification_list
 import event_system.views
+import forum_system.views
+from forum_system.views import ckeditor_image_upload
 
 app_name = 'accounts'
 
@@ -78,6 +80,7 @@ urlpatterns = [
 
     # Forum related / 论坛相关页面
         path('ckeditor/', include('ckeditor_uploader.urls')),  # 富文本编辑器图片上传
+        path('ckeditor/upload/', ckeditor_image_upload, name='ckeditor_upload'),
         path('forum/', include('forum_system.urls', namespace='forum_system')),
 
 ]
