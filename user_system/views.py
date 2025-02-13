@@ -11,6 +11,7 @@ from user_system.helpers.mixins import UserTypeRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+from club_system.models import Membership
 
 
 def home(request):
@@ -70,23 +71,9 @@ def news(request):
 def events(request):
     """活动视图"""
     return render(request, 'shared/events.html')
-
-# class DashboardView(LoginRequiredMixin, UserTypeRequiredMixin, TemplateView):
-#     template_name = "user_system/dashboard.html"
-#     allowed_types = ['User']
-
     
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         page = self.request.GET.get('page', 'dashboard')
 
-#         if page == "personal_information":
-#             context["page_template"] = "user_system/personal_information.html"
-#         elif page == "my_club":
-#             context["page_template"] = "user_system/my_club.html"
-            
-#         return context
-    
+"""此方法用来处理来自User Dashboard的密码修改请求"""
 def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
@@ -110,4 +97,13 @@ class DashboardPersonalInformation(LoginRequiredMixin, View):
 
 class DashboardMyClub(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'user_system/dashboard/my_club.html')
+        user = request.user
+        # 获取用户作为管理员的社团
+        managed_clubs = Membership.objects.filter(user=user, is_manager=True)
+        # 获取用户作为普通成员的社团
+        member_clubs = Membership.objects.filter(user=user, is_manager=False)
+        
+        return render(request, 'user_system/dashboard/my_club.html', {
+            'managed_clubs': managed_clubs,
+            'member_clubs': member_clubs
+    })
