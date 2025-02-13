@@ -9,8 +9,10 @@
         <small>
           {{ post.created_at|date:"Y-m-d H:i" }}
           {% if post.author %}
-            &nbsp;|&nbsp; 作者：{{ post.author }}
-          {% endif %}
+            &nbsp;|&nbsp; 作者: {{ post.author.first_name }} {{ post.author.last_name }}&nbsp;&nbsp;{{ post.author.username }}
+            {% else %}
+            用户不存在
+            {% endif %} 
         </small>
       </p>
     </div>
@@ -28,11 +30,15 @@
       {% for comment in post.commentsBelongToPost.all %}
         <div class="card mb-2">
           <div class="card-body">
-            <p>{{ comment.text }}</p>
             <small class="text-muted">
-              评论者: {% if comment.author %}{{ comment.author }}{% else %}匿名{% endif %} 
-              | 日期: {{ comment.created_at|date:"Y-m-d H:i" }}
+              评论者: {% if comment.author %}
+                {{ comment.author.first_name }} {{ comment.author.last_name }}&nbsp;&nbsp;{{ comment.author.username }}
+              {% else %}
+              用户不存在
+              {% endif %} 
+              &nbsp;|&nbsp; 日期: {{ comment.created_at|date:"Y-m-d H:i" }}
             </small>
+            <p>{{ comment.text }}</p>
           </div>
         </div>
       {% endfor %}
