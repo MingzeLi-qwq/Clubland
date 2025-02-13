@@ -1,0 +1,83 @@
+{% extends "user_system/dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+
+<style>
+    .club-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+        overflow: hidden;
+    }
+    .club-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.15);
+    }
+    .role-bar {
+        height: 8px;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    .manager-bar {
+        background: linear-gradient(45deg, #ffd700, #c5a900);
+    }
+    .member-bar {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+    }
+</style>
+
+<h4>Personal Information</h4>
+<p>Check all your membership card.</p>
+
+<!-- My clubs as manager -->
+<div class="mb-5">
+    <div class="card p-3 mb-4">
+        <h5 class="text-muted">My clubs as manager</h5>
+        <div class="row">
+            {% for membership in managed_clubs %}
+            <div class="col-md-4 mb-4" onclick="window.location='{% url 'club_detail' club_id=membership.club.club_id %}'">
+                <div class="club-card card h-100">
+                    <div class="role-bar manager-bar"></div>
+                    <div class="card-body bg-white text-dark">
+                        <h3 class="card-title">{{ membership.club.name }}</h3>
+                        <p class="card-text text-muted">
+                            <small>Joined: {{ membership.date_joined|date:"M d, Y" }}</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-warning">You are not managing any clubs yet</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- My clubs as member -->
+<div class="mb-5">
+    <div class="card p-3 mb-4">
+        <h5 class="text-muted">My clubs as member</h5>
+        <div class="row">
+            {% for membership in member_clubs %}
+            <div class="col-md-4 mb-4" onclick="window.location='{% url 'club_detail' club_id=membership.club.club_id %}'">
+                <div class="club-card card h-100">
+                    <div class="role-bar member-bar"></div>
+                    <div class="card-body bg-white text-dark">
+                        <h3 class="card-title">{{ membership.club.name }}</h3>
+                        <p class="card-text text-muted">
+                            <small>Joined: {{ membership.date_joined|date:"M d, Y" }}</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">You have not joined any clubs yet</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

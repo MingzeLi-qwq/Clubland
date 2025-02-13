@@ -43,7 +43,9 @@ urlpatterns = [
     path('change-password/', user_system.views.change_password, name='change_password'), 
 
     #Personal Dashboard / 个人资料页
-    path('dashboard/', user_system.views.DashboardView.as_view(), name='dashboard'),
+    path('dashboard/personal_information', user_system.views.DashboardPersonalInformation.as_view(), name='dashboard_personal_information'),
+    path('dashboard/my_club', user_system.views.DashboardMyClub.as_view(), name='dashboard_my_club'),
+
 
     # path('societies/', user_system.views.societies, name='societies'),
     path('news/', user_system.views.news, name='news'),
@@ -76,6 +78,13 @@ urlpatterns = [
     # Club manager remove manager
     path('clubs/manager/remove_manager/<int:club_id>/<str:username>/', club_system.views.RemoveManagerView.as_view(), name='remove_manager'),
     path('clubs/manager/set_manager/<int:club_id>/<str:username>/', club_system.views.SetManagerView.as_view(), name='set_manager'),
+
+    # js搜索用户
+    path('clubs/manager/search_users/', club_system.views.SearchUsersView.as_view(), name='search_users'),
+
+    # 添加与删除member
+    path('clubs/manager/add_member/<int:club_id>/<str:username>/', club_system.views.AddMemberView.as_view(), name='add_member'),
+    path('clubs/manager/remove_member/<int:club_id>/<str:username>/', club_system.views.RemoveMemberView.as_view(), name='remove_member'),
 
     # Events
     path('clubs/manager/events/<int:club_id>/', club_system.views.ClubManagerEvents.as_view(), name='club_manager_events'),
