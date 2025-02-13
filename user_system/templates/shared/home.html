@@ -30,7 +30,7 @@
         <!-- Action Buttons -->
         <div class="d-flex justify-content-center gap-3 mb-5">
           {% if user.is_authenticated %}
-            <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg px-4 py-3">
+            <a href="{% url 'dashboard_personal_information' %}" class="btn btn-primary btn-lg px-4 py-3">
               <i class="bi-speedometer2 me-2"></i>Go to Dashboard
             </a>
           {% else %}

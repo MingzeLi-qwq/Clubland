@@ -37,7 +37,9 @@ urlpatterns = [
     path('change-password/', user_system.views.change_password, name='change_password'), 
 
     #Personal Dashboard / 个人资料页
-    path('dashboard/', user_system.views.DashboardView.as_view(), name='dashboard'),
+    path('dashboard/personal_information', user_system.views.DashboardPersonalInformation.as_view(), name='dashboard_personal_information'),
+    path('dashboard/my_club', user_system.views.DashboardMyClub.as_view(), name='dashboard_my_club'),
+
 
     # path('societies/', user_system.views.societies, name='societies'),
     path('news/', user_system.views.news, name='news'),

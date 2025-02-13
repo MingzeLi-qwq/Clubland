@@ -71,21 +71,21 @@ def events(request):
     """活动视图"""
     return render(request, 'shared/events.html')
 
-class DashboardView(LoginRequiredMixin, UserTypeRequiredMixin, TemplateView):
-    template_name = "user_system/dashboard.html"
-    allowed_types = ['User']
+# class DashboardView(LoginRequiredMixin, UserTypeRequiredMixin, TemplateView):
+#     template_name = "user_system/dashboard.html"
+#     allowed_types = ['User']
 
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        page = self.request.GET.get('page', 'dashboard')
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         page = self.request.GET.get('page', 'dashboard')
 
-        if page == "personal_information":
-            context["page_template"] = "user_system/personal_information.html"
-        elif page == "my_club":
-            context["page_template"] = "user_system/my_club.html"
+#         if page == "personal_information":
+#             context["page_template"] = "user_system/personal_information.html"
+#         elif page == "my_club":
+#             context["page_template"] = "user_system/my_club.html"
             
-        return context
+#         return context
     
 def change_password(request):
     if request.method == 'POST':
@@ -102,3 +102,12 @@ def change_password(request):
     
     return render(request, 'user_system/change_password.html', {'form': form})
 
+
+"""以下内容负责渲染Personal Dashboard"""
+class DashboardPersonalInformation(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'user_system/dashboard/personal_informations.html')
+
+class DashboardMyClub(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'user_system/dashboard/my_club.html')
