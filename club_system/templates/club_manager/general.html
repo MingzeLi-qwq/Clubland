@@ -1,7 +1,5 @@
 {% extends "club_manager/club_manager_base.html" %}
 
-{% block manager_title %}General{% endblock %}
-
 {% block manager_content %}
 
 <!-- 错误信息框样式  -->
@@ -14,16 +12,19 @@
 </style>
 
 {% if messages %}
-  {% for message in messages %}
-    <div class="alert alert-{{ message.tags }} mt-2">
-      {{ message }}
-    </div>
-  {% endfor %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} mt-2">
+  {{ message }}
+</div>
+{% endfor %}
 {% endif %}
 
+<h4>General</h4>
+<p>Manage Club name and description.</p>
+
 <div class="mb-4">
-  <h4>Club name</h4>
-  <div>
+  <div class="card p-3 mb-3">
+    <h5>Club name</h5>
     <form method="post" action="{% url 'update_club_name' club_id=club_id %}">
       {% csrf_token %}
       <input type="text" class="form-control" name="club_name" value="{{ club.name }}">
@@ -33,8 +34,8 @@
 </div>
 
 <div class="mb-4">
-  <h4>Club description</h4>
-  <div>
+  <div class="card p-3 mb-3">
+    <h5>Club description</h5>
     <form method="post" action="{% url 'update_club_description' club_id=club_id %}">
       {% csrf_token %}
       <textarea class="form-control" name="club_description" rows="4">{{ club.description }}</textarea>
@@ -43,4 +44,3 @@
   </div>
 </div>
 {% endblock %}
-

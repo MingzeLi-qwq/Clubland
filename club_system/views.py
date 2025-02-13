@@ -204,6 +204,8 @@ class SetManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerReq
         membership.save()
         messages.success(request, f"{user.get_full_name} is now a manager.")
         return redirect('club_manager_members', club_id=club_id)
+    
+"""-----------------------------Club Manager Event 相关-------------------------------------------------------"""
 class ClubManagerEvents(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
