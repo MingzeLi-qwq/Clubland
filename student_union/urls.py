@@ -23,6 +23,8 @@ import club_hub.views
 from user_system.views import home
 from user_system.views import change_password
 from notification_system.views import notification_list
+from notification_system.views import notification_detail
+from notification_system.views import mark_all_as_read
 
 import event_system.views
 import forum_system.views
@@ -56,6 +58,8 @@ urlpatterns = [
 
     #Notification related / 通知相关页面
     path('notifications/', notification_list, name='notifications'),
+    path('notifications/<int:notification_id>/', notification_detail, name='notification_detail'),
+    path('notifications/mark_all_as_read/', mark_all_as_read, name='mark_all_as_read'),
 
     # Events related / Events相关页面
     path('events/home/', event_system.views.events_home, name='events_home'),
