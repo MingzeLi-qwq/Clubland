@@ -22,3 +22,10 @@ class CommentForm(forms.ModelForm):
         labels = {
             'text': '评论内容',
         }
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 3, 
+                'placeholder': '请输入评论内容...'
+            }),
+        }

@@ -5,16 +5,13 @@
   <!-- 修改文章展示盒：使用简洁的白色背景和边框 -->
   <div class="mb-3 p-4 border rounded" style="background-color: #ffffff;">
     <h2 class="mb-2">
-      {{ post.title }}
-      {% if user == post.author %}
-        <a href="{% url 'forum_system:blog_delete' post.pk %}" class="btn btn-danger btn-sm">删除文章</a>
-      {% endif %}
-      <hr/>
+      <span>{{ post.title }}</span>
     </h2>
+    <hr/>
     <div class="mb-2">
       <small class="text-muted">{{ post.created_at|date:"Y-m-d H:i" }}&nbsp;&nbsp;|&nbsp;</small>
       {% if post.author %}
-      {{ post.author.first_name }} {{ post.author.last_name }}&nbsp;&nbsp;<small class="text-muted">{{ post.author.username }}</small>
+        {{ post.author.first_name }} {{ post.author.last_name }}&nbsp;&nbsp;<small class="text-muted">{{ post.author.username }}</small>
       {% else %}
         用户不存在
       {% endif %}
@@ -22,9 +19,13 @@
     <div>
       {{ post.content|safe }}
     </div>
+    <div class="d-flex justify-content-end mt-3">
+      {% if user == post.author %}
+        <a href="{% url 'forum_system:blog_delete' post.pk %}" class="btn btn-danger btn-sm">删除文章</a>
+      {% endif %}
+    </div>
   </div>
   
-  <!-- 评论列表和添加评论部分保持不变 -->
   <div class="mb-4">
     <h4>评论</h4>
     {% if post.commentsBelongToPost.all %}
@@ -44,7 +45,9 @@
           <div class="card-body">
             <p class="card-text">{{ comment.text }}</p>
             {% if user == comment.author %}
-              <a href="{% url 'forum_system:comment_delete' comment.pk %}" class="btn btn-danger btn-sm">删除评论</a>
+              <div class="d-flex justify-content-end">
+                <a href="{% url 'forum_system:comment_delete' comment.pk %}" class="btn btn-danger btn-sm">删除评论</a>
+              </div>
             {% endif %}
           </div>
         </div>
@@ -53,20 +56,8 @@
       <p>暂无评论</p>
     {% endif %}
   </div>
-  
-  <!-- 添加评论表单 -->
-  <div class="mb-3">
-    {% if user.is_authenticated %}
-      <h4>添加评论</h4>
-      <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-secondary">提交评论</button>
-      </form>
-    {% else %}
-      <p>请<a href="{% url 'login' %}">登录</a>后评论</p>
-    {% endif %}
-  </div>
+
+  {% include "comment_form.html" %}
   
   <div class="mt-3">
     <a href="{% url 'forum_system:blog_list' %}" class="btn btn-primary">返回列表</a>
