@@ -23,9 +23,13 @@ import club_hub.views
 from user_system.views import home
 from user_system.views import change_password
 from notification_system.views import notification_list
+
+import event_system.views
+import forum_system.views
+from forum_system.views import ckeditor_image_upload
+
 from rest_framework.routers import DefaultRouter
 from club_hub.views import WidgetViewSet
-
 
 app_name = 'accounts'
 router = DefaultRouter()
@@ -93,7 +97,13 @@ urlpatterns = [
     re_path(r"^clubs/manager/events/(?P<event_id>\d+)/add_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.AddRSVPView.as_view(), name="add_rsvp"),
     #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
 
+    # Forum related / 论坛相关页面
+        path('ckeditor/', include('ckeditor_uploader.urls')),  # 富文本编辑器图片上传
+        path('ckeditor/upload/', ckeditor_image_upload, name='ckeditor_upload'),
+        path('forum/', include('forum_system.urls', namespace='forum_system')),
+
 
     path('api/', include('club_hub.urls')),
     path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
 ]   
+
