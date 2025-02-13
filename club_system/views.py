@@ -1,7 +1,7 @@
 import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from .models import Club, Membership, WidgetInstance
+from .models import Club, Membership
 from user_system.models import User
 from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin, ClubManagerRequiredMixin
 from user_system.helpers.mixins import LoginRequiredMixin
