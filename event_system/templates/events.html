@@ -1,48 +1,78 @@
 {% extends 'base.html' %}
+{% load param_replace %}
 {% load static %}
 
 {% block body %}
-<section class="container py-5">
-  <!-- 搜索过滤区 -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-body">
-      <form method="GET" class="row g-3 align-items-center">
-        <div class="col-md-4">
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <form method="GET" class="row g-3">
+      <!-- 搜索栏 -->
+      <div class="col-lg-4">
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="bi-search"></i>
+          </span>
           <input type="text" name="search" class="form-control" 
                  placeholder="Search events..." value="{{ current_search }}">
         </div>
-        
-        <div class="col-md-3">
-          <select name="date" class="form-select">
-            <option value="">All Dates</option>
-            <option value="upcoming" {% if current_date_filter == "upcoming" %}selected{% endif %}>
-              Upcoming
-            </option>
-            <option value="past" {% if current_date_filter == "past" %}selected{% endif %}>
-              Past
-            </option>
-          </select>
-        </div>
+      </div>
 
-        <div class="col-md-3">
-          <select name="category" class="form-select">
-            <option value="all">All Categories</option>
-            {% for category in categories %}
-            <option value="{{ category.name }}" {% if current_category == category.name %}selected{% endif %}>
-              {{ category.name }}
-            </option>
-            {% endfor %}
-          </select>
-        </div>
+      <!-- 日期筛选 -->
+      <div class="col-lg-2">
+        <select name="date" class="form-select">
+          <option value="">All Dates</option>
+          <option value="upcoming" {% if current_date_filter == "upcoming" %}selected{% endif %}>
+            Upcoming
+          </option>
+          <option value="past" {% if current_date_filter == "past" %}selected{% endif %}>
+            Past
+          </option>
+        </select>
+      </div>
 
-        <div class="col-md-2">
-          <button type="submit" class="btn btn-primary w-100">
-            <i class="bi-funnel me-2"></i>Filter
-          </button>
-        </div>
-      </form>
-    </div>
+      <!-- 分类筛选 -->
+      <div class="col-lg-2">
+        <select name="category" class="form-select">
+          <option value="all">All Categories</option>
+          {% for category in categories %}
+          <option value="{{ category.name }}" {% if current_category == category.name %}selected{% endif %}>
+            {{ category.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- 自定义日期范围 -->
+      <div class="col-lg-2">
+        <input type="date" name="start_date" class="form-control" 
+               value="{{ start_date }}" placeholder="From date">
+      </div>
+      <div class="col-lg-2">
+        <input type="date" name="end_date" class="form-control"
+               value="{{ end_date }}" placeholder="To date">
+      </div>
+
+      <!-- 精选活动开关 -->
+      <div class="col-lg-2 form-check form-switch d-flex align-items-center">
+        <input class="form-check-input" type="checkbox" name="is_featured" 
+               id="isFeatured" {% if is_featured %}checked{% endif %}>
+        <label class="form-check-label ms-2" for="isFeatured">
+          Featured Only
+        </label>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="col-lg-12 text-end mt-3">
+        <button type="submit" class="btn btn-primary px-4">
+          </i>Search
+        </button>
+        <a href="{% url 'events' %}" class="btn btn-outline-secondary ms-2">
+          Clear
+        </a>
+      </div>
+    </form>
   </div>
+</div>
 
   <!-- 事件列表 -->
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -89,36 +119,37 @@
     {% endfor %}
   </div>
 
-  <!-- 分页导航 -->
-  {% if is_paginated %}
-  <nav class="mt-5">
-    <ul class="pagination justify-content-center">
-      {% if page_obj.has_previous %}
-      <li class="page-item">
-        <a class="page-link" href="?page=1{% if current_search %}&search={{ current_search }}{% endif %}{% if current_date_filter %}&date={{ current_date_filter }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">
-          <i class="bi-chevron-double-left"></i>
-        </a>
-      </li>
-      {% endif %}
+<!-- 分页导航 -->
+{% if is_paginated %}
+<nav class="mt-5">
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+    <li class="page-item">
+      <a class="page-link" href="?{% param_replace page=1 %}">
+        <i class="bi-chevron-double-left"></i>
+      </a>
+    </li>
+    {% endif %}
 
-      {% for num in page_obj.paginator.page_range %}
-      <li class="page-item {% if page_obj.number == num %}active{% endif %}">
-        <a class="page-link" href="?page={{ num }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_date_filter %}&date={{ current_date_filter }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">
-          {{ num }}
-        </a>
-      </li>
-      {% endfor %}
+    {% for num in page_obj.paginator.page_range %}
+    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+      <a class="page-link" href="?{% param_replace page=num %}">
+        {{ num }}
+      </a>
+    </li>
+    {% endfor %}
 
-      {% if page_obj.has_next %}
-      <li class="page-item">
-        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_date_filter %}&date={{ current_date_filter }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">
-          <i class="bi-chevron-double-right"></i>
-        </a>
-      </li>
-      {% endif %}
-    </ul>
-  </nav>
-  {% endif %}
-</section>
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?{% param_replace page=page_obj.paginator.num_pages %}">
+        <i class="bi-chevron-double-right"></i>
+      </a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+
 {% endblock %}
 
