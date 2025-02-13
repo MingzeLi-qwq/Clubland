@@ -22,5 +22,8 @@ class Command(BaseCommand):
 
             self.stdout.write(self.style.SUCCESS("🎉 All unseeding operations completed!"))
 
+            call_command("unseed_events")
+            self.stdout.write(self.style.SUCCESS("✅ Users removed successfully!"))
+
         except CommandError as e:
             self.stderr.write(self.style.ERROR(f"❌ Error: {e}"))

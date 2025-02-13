@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'forum_system.apps.ForumSystemConfig',  # 推荐写法
+    'club_hub',
+    "rest_framework",
 ]
 
 AUTH_USER_MODEL = 'user_system.User'
