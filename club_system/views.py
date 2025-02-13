@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 
-from .models import Club, Membership, WidgetInstance
+from .models import Club, Membership
 from user_system.models import User
 from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin, ClubManagerRequiredMixin
 from user_system.helpers.mixins import LoginRequiredMixin
@@ -90,35 +90,6 @@ class ClubWebView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMemberRequire
             'customization': club.customization,
             'membership': membership
         })
-
-class ClubWidgetAPI(View):
-    def get(self, request, club_id):
-        club = get_object_or_404(Club, club_id=club_id)
-        widgets = list(club.widgets.values(
-            'widget_type', 'position_x', 'position_y', 'width', 'height', 'config'))
-        return JsonResponse({'layout': widgets})
-
-    def post(self, request, club_id):
-        club = get_object_or_404(Club, club_id=club_id)
-        if not Membership.objects.filter(club=club, user=request.user, is_manager=True).exists():
-            return JsonResponse({'status': 'forbidden'}, status=403)
-        
-        # 清空旧布局
-        club.widgets.all().delete()
-        
-        # 保存新布局
-        widgets = request.JSON.get('widgets', [])
-        for widget in widgets:
-            WidgetInstance.objects.create(
-                club=club,
-                widget_type=widget['type'],
-                position_x=widget['x'],
-                position_y=widget['y'],
-                width=widget['w'],
-                height=widget['h'],
-                config=widget.get('config', {})
-            )
-        return JsonResponse({'status': 'success'})
         
 
 """下面是个方法用于渲染Club Manager页面"""
@@ -250,7 +221,6 @@ class ClubManagerEvents(LoginRequiredMixin, ClubManagerRequiredMixin, View):
             'events': events
         })
 
-
 class EventRSVPListView(LoginRequiredMixin, View):
     """ 获取某活动的 RSVP 成员 """
     def get(self, request, event_id, *args, **kwargs):
@@ -286,11 +256,6 @@ class RemoveRSVPView(LoginRequiredMixin, View):
 
         rsvp.delete()
         return JsonResponse({"status": "success", "message": "RSVP removed successfully"})
-
-    
-
-
-
 class AddRSVPView(LoginRequiredMixin, View):
     """ 管理员添加 RSVP """
 

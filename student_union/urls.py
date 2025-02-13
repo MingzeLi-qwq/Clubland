@@ -18,12 +18,18 @@ from django.contrib import admin
 from django.urls import path,include, re_path
 import user_system.views
 import club_system.views
+import event_system.views
+import club_hub.views
 from user_system.views import home
 from user_system.views import change_password
 from notification_system.views import notification_list
-import event_system.views
+from rest_framework.routers import DefaultRouter
+from club_hub.views import WidgetViewSet
+
 
 app_name = 'accounts'
+router = DefaultRouter()
+router.register(r'clubs/(?P<club_id>\d+)/widgets', WidgetViewSet, basename="widgets")
 
 urlpatterns = [
     # Main pages
@@ -44,9 +50,6 @@ urlpatterns = [
 
     #Notification related / 通知相关页面
     path('notifications/', notification_list, name='notifications'),
-  
-    path('club-dashboard/<int:club_id>/', club_system.views.ClubWebView.as_view(), name='club_dashboard'),
-    path('api/club-widgets/<int:club_id>/', club_system.views.ClubWidgetAPI.as_view(), name='club_widgets_api'),
 
     # Events related / Events相关页面
     path('events/home/', event_system.views.events_home, name='events_home'),
@@ -80,4 +83,6 @@ urlpatterns = [
     re_path(r"^clubs/manager/events/(?P<event_id>\d+)/remove_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.RemoveRSVPView.as_view(), name="remove_rsvp"),
     re_path(r"^clubs/manager/events/(?P<event_id>\d+)/add_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.AddRSVPView.as_view(), name="add_rsvp"),
 
-]
+    path('api/', include('club_hub.urls')),
+    path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
+]   
