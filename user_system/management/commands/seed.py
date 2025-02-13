@@ -20,6 +20,9 @@ class Command(BaseCommand):
             call_command("seed_events")
             self.stdout.write(self.style.SUCCESS("✅ Events seeded successfully!"))
 
+            call_command("seed_blogposts")
+            self.stdout.write(self.style.SUCCESS("✅ BlogPosts seeded successfully!"))
+
             self.stdout.write(self.style.SUCCESS("🎉 All seeding operations completed!"))
 
         except CommandError as e:
