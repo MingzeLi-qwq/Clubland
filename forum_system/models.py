@@ -1,6 +1,6 @@
 from django.db import models
 from user_system.models import User
-from ckeditor_uploader.fields import RichTextUploadingField
+
 
 class TimestampMixin(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
