@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'notification_system',
     'event_system',
     'forum_system.apps.ForumSystemConfig',  # 推荐写法
+    'club_hub',
+    "rest_framework",
 ]
 
 AUTH_USER_MODEL = 'user_system.User'
@@ -153,3 +155,4 @@ else:
     AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+
