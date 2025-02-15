@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 from django.views.generic import TemplateView
 from django.contrib import messages
@@ -12,11 +12,47 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from club_system.models import Membership
+from event_system.models import Event
+from django.utils import timezone
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.template.loader import render_to_string
 
 
 def home(request):
     """Display the application's start/home screen."""
-    return render(request, 'shared/home.html')
+    page = request.GET.get('page', 1)
+    events_per_page = 3
+    
+    upcoming_events_list = Event.objects.filter(
+        start_time__gte=timezone.now()
+    ).order_by('start_time')
+    
+    paginator = Paginator(upcoming_events_list, events_per_page)
+    try:
+        events = paginator.page(page)
+    except PageNotAnInteger:
+        events = paginator.page(1)
+    except EmptyPage:
+        events = paginator.page(paginator.num_pages)
+    
+    # 处理 AJAX 请求
+    if request.GET.get('ajax'):
+        # 渲染部分模板
+        events_html = render_to_string('shared/events_list.html', {'events': events})
+        pagination_html = render_to_string('shared/pagination.html', {'events': events})
+        
+        return JsonResponse({
+            'events_html': events_html,
+            'pagination_html': pagination_html,
+            'current_page': events.number,
+            'total_pages': paginator.num_pages,
+            'has_next': events.has_next(),
+            'has_previous': events.has_previous(),
+        })
+    
+    return render(request, 'shared/home.html', {
+        'events': events,
+    })
 
 
 
