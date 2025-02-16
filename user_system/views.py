@@ -79,15 +79,15 @@ def change_password(request):
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
-            update_session_auth_hash(request, user)  
+            update_session_auth_hash(request, user)  # 防止用户被登出
             messages.success(request, 'Your password was successfully updated!')
-            return redirect('dashboard')  
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
-        form = PasswordChangeForm(request.user)
-    
-    return render(request, 'user_system/change_password.html', {'form': form})
+        form = PasswordChangeForm(request.user)  # 确保 `GET` 也能访问表单
+
+    return render(request, 'user_system/dashboard/personal_information.html', {'form': form})
+
 
 
 """以下内容负责渲染Personal Dashboard"""
