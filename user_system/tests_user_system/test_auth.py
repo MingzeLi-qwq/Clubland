@@ -66,7 +66,7 @@ class UserAuthTests(TestCase):
         self.client.login(username="@testuser", password="TestPassword123!")
         
         # 发送修改密码请求
-        response = self.client.post(reverse('password_change'), {
+        response = self.client.post(reverse('change_password'), {
             'old_password': 'TestPassword123!',
             'new_password1': 'NewTestPassword456!',
             'new_password2': 'NewTestPassword456!',
