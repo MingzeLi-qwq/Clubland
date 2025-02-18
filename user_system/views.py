@@ -12,6 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from club_system.models import Membership, NewClubRequest
+from club_system.helpers.mixins import ClubMemberRequiredMixin
 
 
 def home(request):
@@ -114,7 +115,7 @@ class DashboardMyRequests(LoginRequiredMixin, View):
 
 
 """以下内容用来处理Personal Dashboard查看New Club Requests的请求"""
-class NewClubRequestsView(View):
+class NewClubRequestsView(LoginRequiredMixin, View):
     def get(self, request):
         pending_requests = NewClubRequest.objects.filter(creator=request.user, status=NewClubRequest.STATUS_PENDING)
         approved_requests = NewClubRequest.objects.filter(creator=request.user, status=NewClubRequest.STATUS_APPROVED)
@@ -126,3 +127,24 @@ class NewClubRequestsView(View):
             'rejected_requests': rejected_requests,
         }
         return render(request, 'user_system/dashboard/requests/new_club_requests.html', context)
+    
+"""以下内容用来渲染personal dashboard查看club memebership detail的请求"""
+class ClubMembershipDetail(LoginRequiredMixin, View):
+    def get(self, request, club_id):
+        try:
+            # 尝试获取当前用户在指定俱乐部的会员资格
+            membership = Membership.objects.get(user=request.user, club_id=club_id)
+        except Membership.DoesNotExist:
+            # 如果会员资格不存在，添加错误消息并重定向
+            messages.error(request, "The specified membership does not exist.")
+            return redirect('dashboard_my_club')
+
+        # 如果会员资格存在，渲染详情页面
+        context = {
+            'membership': membership
+        }
+        return render(request, 'user_system/dashboard/my_club_detail.html', context)
+
+
+
+

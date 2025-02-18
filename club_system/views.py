@@ -88,7 +88,8 @@ class CancelMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMemb
         club = Club.objects.get(pk=club_id)
         if request.user.is_authenticated:
             Membership.objects.filter(user=request.user, club=club).delete()
-            return redirect('club_detail', club_id=club_id)
+            messages.success(request, f"You have successfully cancelled your membership in {club.name}.")
+            return redirect('dashboard_my_club')
         else:
             return redirect('login')
 

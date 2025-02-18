@@ -34,7 +34,7 @@
         <h5 class="text-muted">My clubs as manager</h5>
         <div class="row">
             {% for membership in managed_clubs %}
-            <div class="col-md-4 mb-4" onclick="window.location='{% url 'club_detail' club_id=membership.club.club_id %}'">
+            <div class="col-md-4 mb-4" onclick="window.location='{% url 'dashboard_my_club_detail' club_id=membership.club.club_id %}'">
                 <div class="bubble-card card h-100">
                     <div class="role-bar manager-bar"></div>
                     <div class="card-body bg-white text-dark">
@@ -60,7 +60,7 @@
         <h5 class="text-muted">My clubs as member</h5>
         <div class="row">
             {% for membership in member_clubs %}
-            <div class="col-md-4 mb-4" onclick="window.location='{% url 'club_detail' club_id=membership.club.club_id %}'">
+            <div class="col-md-4 mb-4" onclick="window.location='{% url 'dashboard_my_club_detail' club_id=membership.club.club_id %}'">
                 <div class="bubble-card card h-100">
                     <div class="role-bar member-bar"></div>
                     <div class="card-body bg-white text-dark">

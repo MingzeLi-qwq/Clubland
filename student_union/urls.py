@@ -46,11 +46,13 @@ urlpatterns = [
     path('logout/', user_system.views.LogOutView, name='logout'),
     path('change-password/', user_system.views.change_password, name='change_password'), 
 
-    #Personal Dashboard / 个人资料页
+    # Personal Dashboard / 个人资料页
     path('dashboard/personal_information', user_system.views.DashboardPersonalInformation.as_view(), name='dashboard_personal_information'),
     path('dashboard/my_club', user_system.views.DashboardMyClub.as_view(), name='dashboard_my_club'),
     path('dashboard/my_requests', user_system.views.DashboardMyRequests.as_view(), name='dashboard_my_requests'),
     path('dashboard/requests/new_club/', user_system.views.NewClubRequestsView.as_view(), name='dashboard_new_club_requests'),
+    # 个人资料页下的membership details
+    path('dashboard/my_club/detail/<int:club_id>/', user_system.views.ClubMembershipDetail.as_view(), name='dashboard_my_club_detail'),
 
 
     # path('societies/', user_system.views.societies, name='societies'),

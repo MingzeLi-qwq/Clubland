@@ -53,9 +53,9 @@
                                         You are the club manager, you can manage this club in <a href="{% url 'club_manager_general' club_id=club.club_id %}" class="btn btn-link p-0">club manager page</a>.
                                     </p>
                                  {% else %}
-                                    <a href="{% url 'cancel_membership' club_id=club.club_id %}" class="btn btn-danger btn-lg rounded-pill w-100">
-                                        Cancel Membership
-                                    </a>
+                                    <p>
+                                        You are already a club member. Check your membership at <a href="{% url 'dashboard_my_club_detail' club_id=club.club_id %}" class="btn btn-link p-0">dashboard</a>.
+                                    </p>
                                  {% endif %}
                             {% else %}
                                 <!-- 如果此用户不是club成员 -->
