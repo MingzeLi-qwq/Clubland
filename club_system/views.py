@@ -44,6 +44,15 @@ def isSameClubNameExist(name):
             return True
     return False
 
+def isSameClubNameExistInRequest(name):
+    normalized_name = ''.join(name.split()).lower()
+    requests = NewClubRequest.objects.all()
+    for request in requests:
+        normalized_request_name = ''.join(request.name.split()).lower()
+        if normalized_name == normalized_request_name:
+            return True
+    return False
+
 """此方法用来渲染Club详情页"""
 """This method is used to render the Club details page"""
 class ClubDetailView(ClubExistsRequiredMixin, View):
@@ -392,7 +401,7 @@ class ApplyNewClubView(LoginRequiredMixin, View):
                 return render(request, self.template_name, {'form': form})
             
             # 检查是否与待审核的请求重名
-            if NewClubRequest.objects.filter(name__iexact=club_name, status=NewClubRequest.STATUS_PENDING).exists():
+            if isSameClubNameExistInRequest(club_name):
                 messages.error(request, "A request for a club with this name is already pending.")
                 return render(request, self.template_name, {'form': form})
             
