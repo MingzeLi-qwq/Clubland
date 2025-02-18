@@ -28,10 +28,30 @@
                     <a href="{% url 'dashboard_my_club' %}" class="list-group-item list-group-item-action">
                         My Club
                     </a>
+                    <a href="{% url 'dashboard_my_requests' %}" class="list-group-item list-group-item-action">
+                        My Requests
+                    </a>
                 </div>
             </div>
     
             <div class="col-md-8">
+                <!-- 错误信息框样式  -->
+                <style>
+                    .alert-error {
+                        background-color: #f8d7da;
+                        color: #721c24;
+                        border-color: #f5c6cb;
+                    }
+                </style>
+
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} mt-2">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
                 {% block dashboard_content %}
                 <!-- 动态内容区域 -->
                 {% endblock %}       

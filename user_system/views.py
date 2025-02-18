@@ -11,7 +11,7 @@ from user_system.helpers.mixins import UserTypeRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-from club_system.models import Membership
+from club_system.models import Membership, NewClubRequest
 
 
 def home(request):
@@ -107,3 +107,22 @@ class DashboardMyClub(LoginRequiredMixin, View):
             'managed_clubs': managed_clubs,
             'member_clubs': member_clubs
     })
+
+class DashboardMyRequests(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'user_system/dashboard/requests/my_requests.html')
+
+
+"""以下内容用来处理Personal Dashboard查看New Club Requests的请求"""
+class NewClubRequestsView(View):
+    def get(self, request):
+        pending_requests = NewClubRequest.objects.filter(creator=request.user, status=NewClubRequest.STATUS_PENDING)
+        approved_requests = NewClubRequest.objects.filter(creator=request.user, status=NewClubRequest.STATUS_APPROVED)
+        rejected_requests = NewClubRequest.objects.filter(creator=request.user, status=NewClubRequest.STATUS_REJECTED)
+
+        context = {
+            'pending_requests': pending_requests,
+            'approved_requests': approved_requests,
+            'rejected_requests': rejected_requests,
+        }
+        return render(request, 'user_system/dashboard/requests/new_club_requests.html', context)

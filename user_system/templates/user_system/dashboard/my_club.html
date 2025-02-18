@@ -3,12 +3,12 @@
 {% block dashboard_content %}
 
 <style>
-    .club-card {
+    .bubble-card {
         transition: transform 0.2s, box-shadow 0.2s;
         cursor: pointer;
         overflow: hidden;
     }
-    .club-card:hover {
+    .bubble-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.15);
     }
@@ -35,7 +35,7 @@
         <div class="row">
             {% for membership in managed_clubs %}
             <div class="col-md-4 mb-4" onclick="window.location='{% url 'club_detail' club_id=membership.club.club_id %}'">
-                <div class="club-card card h-100">
+                <div class="bubble-card card h-100">
                     <div class="role-bar manager-bar"></div>
                     <div class="card-body bg-white text-dark">
                         <h3 class="card-title">{{ membership.club.name }}</h3>
@@ -61,7 +61,7 @@
         <div class="row">
             {% for membership in member_clubs %}
             <div class="col-md-4 mb-4" onclick="window.location='{% url 'club_detail' club_id=membership.club.club_id %}'">
-                <div class="club-card card h-100">
+                <div class="bubble-card card h-100">
                     <div class="role-bar member-bar"></div>
                     <div class="card-body bg-white text-dark">
                         <h3 class="card-title">{{ membership.club.name }}</h3>

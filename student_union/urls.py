@@ -49,6 +49,8 @@ urlpatterns = [
     #Personal Dashboard / 个人资料页
     path('dashboard/personal_information', user_system.views.DashboardPersonalInformation.as_view(), name='dashboard_personal_information'),
     path('dashboard/my_club', user_system.views.DashboardMyClub.as_view(), name='dashboard_my_club'),
+    path('dashboard/my_requests', user_system.views.DashboardMyRequests.as_view(), name='dashboard_my_requests'),
+    path('dashboard/requests/new_club/', user_system.views.NewClubRequestsView.as_view(), name='dashboard_new_club_requests'),
 
 
     # path('societies/', user_system.views.societies, name='societies'),
@@ -95,6 +97,9 @@ urlpatterns = [
     path("clubs/manager/events/<int:event_id>/rsvps/", club_system.views.EventRSVPListView.as_view(), name="event_rsvps"),
     re_path(r"^clubs/manager/events/(?P<event_id>\d+)/remove_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.RemoveRSVPView.as_view(), name="remove_rsvp"),
     re_path(r"^clubs/manager/events/(?P<event_id>\d+)/add_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.AddRSVPView.as_view(), name="add_rsvp"),
+
+    # 创建新的Club
+    path('clubs/apply-new-club/', club_system.views.ApplyNewClubView.as_view(), name='apply_new_club'),
     #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
 
     # Forum related / 论坛相关页面

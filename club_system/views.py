@@ -1,7 +1,7 @@
 import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from .models import Club, Membership
+from .models import Club, Membership, NewClubRequest
 from user_system.models import User
 from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin, ClubManagerRequiredMixin
 from user_system.helpers.mixins import LoginRequiredMixin
@@ -14,6 +14,7 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
+from .forms import NewClubRequestForm
 
 import urllib.parse
 import json
@@ -368,3 +369,41 @@ class AddMemberView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         except Exception as e:
             messages.error(request, f"添加失败: {str(e)}")
             return redirect('club_manager_members', club_id=club_id)
+
+"""--------------------------------------------------------------------------------------------------------------"""
+
+
+"""此方法用来渲染用户申请新Club的form"""
+class ApplyNewClubView(LoginRequiredMixin, View):
+    template_name = 'apply_new_club.html'
+
+    def get(self, request):
+        form = NewClubRequestForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = NewClubRequestForm(request.POST)
+        if form.is_valid():
+            club_name = form.cleaned_data['name']
+            
+            # 检查是否与现有Club重名
+            if isSameClubNameExist(club_name):
+                messages.error(request, "A club with this name already exists.")
+                return render(request, self.template_name, {'form': form})
+            
+            # 检查是否与待审核的请求重名
+            if NewClubRequest.objects.filter(name__iexact=club_name, status=NewClubRequest.STATUS_PENDING).exists():
+                messages.error(request, "A request for a club with this name is already pending.")
+                return render(request, self.template_name, {'form': form})
+            
+            # 创建新的请求
+            new_request = form.save(commit=False)
+            new_request.creator = request.user
+            new_request.save()
+            
+            messages.success(request, "Your club creation request has been submitted and is pending approval.")
+            return redirect('dashboard_new_club_requests')  # 假设你有一个名为'club_list'的URL模式
+        
+        # 如果表单无效
+        messages.error(request, "Please correct the errors below.")
+        return render(request, self.template_name, {'form': form})
