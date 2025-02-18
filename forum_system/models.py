@@ -1,6 +1,6 @@
 from django.db import models
 from user_system.models import User
-
+from club_system.models import Club  # 引入 Club 模型
 
 class TimestampMixin(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -10,7 +10,14 @@ class TimestampMixin(models.Model):
 
 class BlogPost(TimestampMixin, models.Model):
     title = models.CharField(max_length=200)
-    content = RichTextUploadingField()
+    content = models.TextField()
+    # 添加 category 字段，表示该博文属于哪个社团
+    category = models.ForeignKey(
+        Club,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='blogPosts'
+    )
     # 直接使用 ForeignKey 表示每篇文章只有一个作者
     author = models.ForeignKey(
         User,

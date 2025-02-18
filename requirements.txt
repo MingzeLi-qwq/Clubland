@@ -14,3 +14,4 @@ six==1.16.0
 sqlparse==0.5.1
 typing_extensions==4.12.2
 nodeenv==1.8.0
+django-summernote==0.8.20.0

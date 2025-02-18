@@ -8,21 +8,37 @@
       <h2 class="mb-0">新建博客文章</h2>
     </div>
     <div class="card-body">
-      <!-- 自动加载 CKEditor 所需的媒体文件 -->
+      <!-- 自动加载 django-summernote 所需的媒体文件 -->
       {{ form.media }}
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {% for field in form %}
-          <div class="form-group">
-            <label for="{{ field.id_for_label }}" class="col-form-label">{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}
-              <div class="text-danger small">
-                {{ field.errors }}
-              </div>
-            {% endif %}
-          </div>
-        {% endfor %}
+        <div class="form-group">
+          <label for="{{ form.title.id_for_label }}" class="col-form-label">{{ form.title.label }}</label>
+          {{ form.title }}
+          {% if form.title.errors %}
+            <div class="text-danger small">
+              {{ form.title.errors }}
+            </div>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.category.id_for_label }}" class="col-form-label">{{ form.category.label }}</label>
+          {{ form.category }}
+          {% if form.category.errors %}
+            <div class="text-danger small">
+              {{ form.category.errors }}
+            </div>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.content.id_for_label }}" class="col-form-label">{{ form.content.label }}</label>
+          {{ form.content }}
+          {% if form.content.errors %}
+            <div class="text-danger small">
+              {{ form.content.errors }}
+            </div>
+          {% endif %}
+        </div>
         <div class="form-group text-center">
           <button type="submit" class="btn btn-outline-secondary">提交</button>
         </div>
