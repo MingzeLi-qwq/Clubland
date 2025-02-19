@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views import View
 from django.db.models import Q
 from user_system.helpers.mixins import LoginRequiredMixin, UserTypeRequiredMixin
@@ -9,7 +9,6 @@ from user_system.models import User
 """-----------------------------------------以下内容负责渲染Admin Panel---------------------------------------------------"""
 class AdminPanelClubs(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
-
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get('search', '')
         if search_query:
@@ -26,7 +25,6 @@ class AdminPanelClubs(LoginRequiredMixin, UserTypeRequiredMixin, View):
     
 class AdminPanelUsers(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
-
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get('search', '')
         if search_query:
@@ -48,13 +46,11 @@ class AdminPanelUsers(LoginRequiredMixin, UserTypeRequiredMixin, View):
     
 class AdminPanelEvents(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
-
     def get(self, request, *args, **kwargs):
         return render(request, 'admin_panel/events.html')
     
 class AdminPanelRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
-
     def get(self, request, *args, **kwargs):
         return render(request, 'admin_panel/requests.html')
 """-----------------------------------------以上内容负责渲染Admin Panel---------------------------------------------------"""
@@ -67,7 +63,6 @@ class AdminPanelRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
 """-----------------------------------------以下内容负责渲染Admin Panel Club---------------------------------------------------"""
 class AdminPanelClubsGeneral(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
-
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
         return render(request, "admin_panel/admin_panel_club/general.html", {
@@ -77,7 +72,6 @@ class AdminPanelClubsGeneral(LoginRequiredMixin, UserTypeRequiredMixin, View):
     
 class AdminPanelClubsMembers(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
-
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
         return render(request, "admin_panel/admin_panel_club/members.html", {
@@ -87,7 +81,6 @@ class AdminPanelClubsMembers(LoginRequiredMixin, UserTypeRequiredMixin, View):
     
 class AdminPanelClubsNews(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
-
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
         return render(request, "admin_panel/admin_panel_club/news.html", {
@@ -105,3 +98,39 @@ class AdminPanelClubsEvents(LoginRequiredMixin, UserTypeRequiredMixin, View):
             'club_id':club_id,
         })
 """-----------------------------------------以上内容负责渲染Admin Panel Club---------------------------------------------------"""
+
+
+
+
+
+
+
+"""-----------------------------------------以下内容负责渲染Admin Panel User---------------------------------------------------"""
+class AdminPanelUserInformation(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+    def get(self, request, username, *args, **kwargs):
+        user = get_object_or_404(User, username=username)
+        return render(request, "admin_panel/admin_panel_user/information.html", {
+            'user':user,
+            'username':username,
+        })
+
+class AdminPanelUserMemberships(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+    def get(self, request, username, *args, **kwargs):
+        user = get_object_or_404(User, username=username)
+        return render(request, "admin_panel/admin_panel_user/memberships.html", {
+            'user':user,
+            'username':username,
+        })
+    
+class AdminPanelUserRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+    def get(self, request, username, *args, **kwargs):
+        user = get_object_or_404(User, username=username)
+        return render(request, "admin_panel/admin_panel_user/requests.html", {
+            'user':user,
+            'username':username,
+        })
+
+"""-----------------------------------------以上内容负责渲染Admin Panel User---------------------------------------------------"""

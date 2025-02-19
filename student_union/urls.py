@@ -127,6 +127,11 @@ urlpatterns = [
     path('admin_panel/clubs/news/int:<club_id>', admin_system.views.AdminPanelClubsNews.as_view(), name='admin_panel_club_news'),
     path('admin_panel/clubs/event/int:<club_id>', admin_system.views.AdminPanelClubsEvents.as_view(), name='admin_panel_club_events'),
 
+    #Admin Panel User
+    path('admin_panel/user/information/<str:username>/', admin_system.views.AdminPanelUserInformation.as_view(), name='admin_panel_user_information'),
+    path('admin_panel/user/memberships/<str:username>/', admin_system.views.AdminPanelUserMemberships.as_view(), name='admin_panel_user_memberships'),
+    path('admin_panel/user/requests/<str:username>/', admin_system.views.AdminPanelUserRequests.as_view(), name='admin_panel_user_requests'),
+
 
     #-------------------------------------------------------- Admin related END ------------------------------------------------------------------------------
 

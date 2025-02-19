@@ -32,8 +32,8 @@
                     <td>{{ user.get_full_name }}</td>
                     <td class="d-none d-md-table-cell">{{ user.email }}</td>
                     <td>
-                        <!-- 这里可以添加操作按钮,如编辑、删除等 -->
-                        <a href="#" class="btn btn-outline-primary btn-sm">Edit</a>
+                        
+                        <a href="{% url 'admin_panel_user_information' username=user.username %}" class="btn btn-outline-primary btn-sm">Edit</a>
                     </td>
                 </tr>
                 {% endfor %}
