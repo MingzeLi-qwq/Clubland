@@ -25,12 +25,15 @@
                     <a href="{% url 'dashboard_personal_information' %}" class="list-group-item list-group-item-action">
                         Personal Information
                     </a>
-                    <a href="{% url 'dashboard_my_club' %}" class="list-group-item list-group-item-action">
-                        My Club
-                    </a>
-                    <a href="{% url 'dashboard_my_requests' %}" class="list-group-item list-group-item-action">
-                        My Requests
-                    </a>
+                    <!-- 只有当user不是admin时才会有以下内容 -->
+                    {% if user.account_type == 'User' %}
+                        <a href="{% url 'dashboard_my_club' %}" class="list-group-item list-group-item-action">
+                            My Club
+                        </a>
+                        <a href="{% url 'dashboard_my_requests' %}" class="list-group-item list-group-item-action">
+                            My Requests
+                        </a>
+                    {% endif %}
                 </div>
             </div>
     

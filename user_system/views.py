@@ -96,7 +96,9 @@ class DashboardPersonalInformation(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'user_system/dashboard/personal_information.html')
 
-class DashboardMyClub(LoginRequiredMixin, View):
+class DashboardMyClub(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['User']
+
     def get(self, request, *args, **kwargs):
         user = request.user
         # 获取用户作为管理员的社团
@@ -109,13 +111,17 @@ class DashboardMyClub(LoginRequiredMixin, View):
             'member_clubs': member_clubs
     })
 
-class DashboardMyRequests(LoginRequiredMixin, View):
+class DashboardMyRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['User']
+
     def get(self, request, *args, **kwargs):
         return render(request, 'user_system/dashboard/requests/my_requests.html')
 
 
 """以下内容用来处理Personal Dashboard查看New Club Requests的请求"""
-class NewClubRequestsView(LoginRequiredMixin, View):
+class NewClubRequestsView(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['User']
+
     def get(self, request):
         pending_requests = NewClubRequest.objects.filter(creator=request.user, status=NewClubRequest.STATUS_PENDING)
         approved_requests = NewClubRequest.objects.filter(creator=request.user, status=NewClubRequest.STATUS_APPROVED)
@@ -129,7 +135,9 @@ class NewClubRequestsView(LoginRequiredMixin, View):
         return render(request, 'user_system/dashboard/requests/new_club_requests.html', context)
     
 """以下内容用来渲染personal dashboard查看club memebership detail的请求"""
-class ClubMembershipDetail(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMemberRequiredMixin, View):
+class ClubMembershipDetail(LoginRequiredMixin, ClubExistsRequiredMixin, UserTypeRequiredMixin, ClubMemberRequiredMixin, View):
+    allowed_types = ['User']
+    
     def get(self, request, club_id):
         try:
             # 尝试获取当前用户在指定俱乐部的会员资格
