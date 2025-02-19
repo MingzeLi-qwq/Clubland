@@ -178,16 +178,16 @@ SUMMERNOTE_CONFIG = {
         # 默认语言，如果留空则自动匹配浏览器语言
         'lang': None,  
         # 自定义工具栏
-        'toolbar': [
-            ['style', ['style']],
-            ['font', ['bold', 'underline', 'clear']],
-            ['fontname', ['fontname']],
-            ['color', ['color']],
-            ['para', ['ul', 'ol', 'paragraph']],
-            ['table', ['table']],
-            ['insert', ['link', 'picture', 'video']],
-            ['view', ['fullscreen', 'codeview', 'help']],
-        ],
+        # 'toolbar': [
+        #     ['style', ['style']],
+        #     ['font', ['bold', 'underline', 'clear']],
+        #     ['fontname', ['fontname']],
+        #     ['color', ['color']],
+        #     ['para', ['ul', 'ol', 'paragraph']],
+        #     ['table', ['table']],
+        #     ['insert', ['link', 'picture', 'video']],
+        #     ['view', ['fullscreen', 'codeview', 'help']],
+        # ],
     },
 
     # 附件相关配置，若不需要附件上传可保持默认，不作修改
