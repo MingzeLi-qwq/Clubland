@@ -10,11 +10,10 @@
   <div class="mb-4">
     <div class="card p-3 mb-3">
       <h5>Club managers ({{manager_count}})</h5>
-      <table class="table table-striped">
-        <thead>
+      <table class="table table-hover">
+        <thead class="table-light">
           <tr>
             <th scope="col">Name</th>
-            <!-- 在小屏幕隐藏，md及以上显示 -->
             <th scope="col" class="d-none d-md-table-cell">Email</th>
             <th scope="col">Actions</th>
           </tr>
@@ -23,31 +22,29 @@
           {% for manager in managers %}
             <tr>
               <td>{{ manager.user.get_full_name }}</td>
-              <!-- 在小屏幕隐藏，md及以上显示 -->
               <td class="d-none d-md-table-cell">{{ manager.user.email }}</td>
               <td>
                 {% if manager.user != user %}
                   <form method="post" action="{% url 'remove_manager' club_id=club_id username=manager.user.username %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger btn-sm">Remove Manager</button>
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Remove Manager</button>
                   </form>
                 {% endif %}
               </td>
             </tr>
           {% endfor %}
         </tbody>
-      </table>
+      </table>      
   </div>
 
   <!-- Club members表格 -->
   <div class="mb-4">
     <div class="card p-3 mb-3">
       <h5>Club members ({{muggle_count}})</h5>
-      <table class="table table-striped">
-        <thead>
+      <table class="table table-hover">
+        <thead class="table-light">
           <tr>
             <th scope="col">Name</th>
-            <!-- 在小屏幕隐藏，md及以上显示 -->
             <th scope="col" class="d-none d-md-table-cell">Email</th>
             <th scope="col">Actions</th>
           </tr>
@@ -56,17 +53,16 @@
           {% for muggle in muggles %}
             <tr>
               <td>{{ muggle.user.get_full_name }}</td>
-              <!-- 在小屏幕隐藏，md及以上显示 -->
               <td class="d-none d-md-table-cell">{{ muggle.user.email }}</td>
               <td>
                 {% if muggle.user != user %}
                   <form method="post" action="{% url 'set_manager' club_id=club_id username=muggle.user.username %}" class="d-inline me-2">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-success btn-sm">Set Manager</button>
+                    <button type="submit" class="btn btn-outline-success btn-sm">Set Manager</button>
                   </form>
                   <form method="post" action="{% url 'remove_member' club_id=club_id username=muggle.user.username %}" class="d-inline">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger btn-sm">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
                       <i class="bi bi-trash-fill"></i>
                     </button>
                   </form>

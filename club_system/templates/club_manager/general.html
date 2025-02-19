@@ -6,7 +6,7 @@
 <p>Manage Club name and description.</p>
 
 <div class="mb-4">
-  <div class="card p-3 mb-3">
+  <div class="card p-3 mb-3 shadow-sm">
     <h5>Club name</h5>
     <form method="post" action="{% url 'update_club_name' club_id=club_id %}">
       {% csrf_token %}
@@ -17,7 +17,7 @@
 </div>
 
 <div class="mb-4">
-  <div class="card p-3 mb-3">
+  <div class="card p-3 mb-3 shadow-sm">
     <h5>Club description</h5>
     <form method="post" action="{% url 'update_club_description' club_id=club_id %}">
       {% csrf_token %}
