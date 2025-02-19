@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+from forum_system import summernote_setup
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -197,7 +198,7 @@ SUMMERNOTE_CONFIG = {
     # 延迟加载（若想在页面底部初始化 summernote 可启用）
     'lazy': True,
     # 使用 forum_system 中的上传路径生成函数
-    'attachment_upload_to': "forum_system.summernote_setup.upload_img_func",
+    'attachment_upload_to': summernote_setup.upload_img_func,
 }
 
 LOGIN_URL = '/login/'
