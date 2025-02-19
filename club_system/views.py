@@ -14,6 +14,7 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
+from club_system.helpers.mixins import ClubExistsRequiredMixin, ClubManagerRequiredMixin
 
 import urllib.parse
 import json
@@ -47,7 +48,8 @@ def isSameClubNameExist(name):
 """This method is used to render the Club details page"""
 class ClubDetailView(ClubExistsRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
-        club = Club.objects.get(pk=club_id)
+        club = get_object_or_404(Club, pk=club_id)
+        events = Event.objects.filter(club=club)
         member_count = club.members.count()
         managers = club.membership_set.filter(is_manager=True)
         is_manager = False
@@ -57,7 +59,8 @@ class ClubDetailView(ClubExistsRequiredMixin, View):
             'club': club,
             'member_count': member_count,
             'managers': managers,
-            'is_manager': is_manager
+            'is_manager': is_manager,
+            'events': events,
         })
     
 """此方法用来处理注册会员请求"""
@@ -368,3 +371,37 @@ class AddMemberView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         except Exception as e:
             messages.error(request, f"添加失败: {str(e)}")
             return redirect('club_manager_members', club_id=club_id)
+
+"""此部分用来实现club manager - 添加event的功能"""
+
+
+class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, *args, **kwargs):
+        # 渲染活动创建表单页面
+        return render(request, 'club_manager/event/create_event.html', {'club_id': club_id})
+
+    def post(self, request, club_id, *args, **kwargs):
+        club = get_object_or_404(Club, pk=club_id)
+        name = request.POST.get('name', '').strip()
+        description = request.POST.get('description', '').strip()
+        start_time = request.POST.get('start_time', '').strip()  # 注意时间格式校验
+        end_time = request.POST.get('end_time', '').strip()  # 注意时间格式校验
+        location = request.POST.get('location', '').strip()
+
+        # 简单校验（可根据需求扩展）
+        if not name or not start_time or not end_time or not location:
+            messages.error(request, "标题、时间和地点为必填项。")
+            return redirect('create_event', club_id=club_id)
+
+        # 创建新的活动
+        event = Event.objects.create(
+            club=club,
+            name=name,
+            description=description,
+            start_time=start_time,
+            end_time=end_time,
+            location=location,
+        )
+        messages.success(request, "活动创建成功！")
+        # 创建后跳转到编辑页面，便于 manager 进一步完善活动内容
+        return redirect('club_manager_events', club_id=club_id)

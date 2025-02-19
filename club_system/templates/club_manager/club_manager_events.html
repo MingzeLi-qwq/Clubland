@@ -4,6 +4,12 @@
 <div class="container">
     <h3 class="mb-4">Club Events</h3>
 
+   
+    <!-- 在这里添加创建活动按钮 -->
+    <div class="mb-3">
+        <a href="{% url 'create_event' club_id=club_id %}" class="btn btn-primary">创建活动</a>
+    </div>
+
     <!-- 显示活动列表 -->
     <div class="list-group">
         {% for event in events %}
