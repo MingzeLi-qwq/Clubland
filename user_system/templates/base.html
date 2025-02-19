@@ -38,7 +38,7 @@
             {% if user.is_authenticated %}
             {% if user.account_type == 'Admin' %}
             <li class="nav-item">
-                <a class="nav-link" href="#">Admin Panel</a>
+                <a class="nav-link" href="{% url 'admin_panel_clubs' %}">Admin Panel</a>
             </li>
             {% else %}
             <li class="nav-item dropdown">

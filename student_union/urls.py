@@ -26,6 +26,7 @@ from notification_system.views import notification_list
 
 import event_system.views
 import forum_system.views
+import admin_system.views
 from forum_system.views import ckeditor_image_upload
 
 from rest_framework.routers import DefaultRouter
@@ -112,5 +113,16 @@ urlpatterns = [
 
     path('api/', include('club_hub.urls')),
     path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
+
+    #---------------------------------------------------- Admin related / Admin相关页面 -----------------------------------------------------------------------
+    #Admin Panel
+    path('admin_panel/clubs/', admin_system.views.AdminPanelClubs.as_view(), name='admin_panel_clubs'),
+    path('admin_panel/users/', admin_system.views.AdminPanelUsers.as_view(), name='admin_panel_users'),
+    path('admin_panel/events/', admin_system.views.AdminPanelEvents.as_view(), name='admin_panel_events'),
+    path('admin_panel/requests/', admin_system.views.AdminPanelRequests.as_view(), name='admin_panel_requests'),
+
+
+    #-------------------------------------------------------- Admin related END ------------------------------------------------------------------------------
+
 ]   
 
