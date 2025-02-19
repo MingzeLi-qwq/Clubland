@@ -17,7 +17,7 @@ class AdminPanelClubs(LoginRequiredMixin, UserTypeRequiredMixin, View):
         else:
             clubs = Club.objects.all()
         
-        club_count = clubs.count()
+        club_count = Club.objects.all().count()
         return render(request, 'admin_panel/clubs.html', {
             'clubs': clubs,
             'club_count': club_count,
@@ -28,7 +28,23 @@ class AdminPanelUsers(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
 
     def get(self, request, *args, **kwargs):
-        return render(request, 'admin_panel/users.html')
+        search_query = request.GET.get('search', '')
+        if search_query:
+            users = User.objects.filter(
+                Q(first_name__icontains=search_query) | 
+                Q(last_name__icontains=search_query) | 
+                Q(email__icontains=search_query),
+                account_type=User.ACCOUNT_TYPE_USER
+            )
+        else:
+            users = User.objects.filter(account_type=User.ACCOUNT_TYPE_USER)
+        
+        user_count = User.objects.all().count()
+        return render(request, 'admin_panel/users.html', {
+            'users': users,
+            'user_count': user_count,
+            'search_query': search_query,
+        })
     
 class AdminPanelEvents(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']

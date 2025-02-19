@@ -5,7 +5,45 @@
 {% block panel_content %}
 
 <h4>Users</h4>
-<p>Manage users.</p>
+<p>This page is used to manage non-Admin regular users.</p>
+
+<div class="card p-3 mb-3 shadow-sm">
+    <h5>All Users ({{user_count}})</h5>
+    
+    <!-- 添加搜索框 -->
+    <form method="get" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search users" value="{{ search_query }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+    <!-- 显示users列表 -->
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col" class="d-none d-md-table-cell">Email</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.get_full_name }}</td>
+                    <td class="d-none d-md-table-cell">{{ user.email }}</td>
+                    <td>
+                        <!-- 这里可以添加操作按钮,如编辑、删除等 -->
+                        <a href="#" class="btn btn-outline-primary btn-sm">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
 {% endblock %}
+
 
