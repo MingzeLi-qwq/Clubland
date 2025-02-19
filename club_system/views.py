@@ -4,7 +4,7 @@ from django.views import View
 from .models import Club, Membership, NewClubRequest
 from user_system.models import User
 from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin, ClubManagerRequiredMixin
-from user_system.helpers.mixins import LoginRequiredMixin
+from user_system.helpers.mixins import LoginRequiredMixin, UserTypeRequiredMixin
 from event_system.models import Event, RSVP
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -72,7 +72,9 @@ class ClubDetailView(ClubExistsRequiredMixin, View):
     
 """此方法用来处理注册会员请求"""
 """This method is used to handle member registration requests"""
-class RegisterMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, NonClubMemberRequiredMixin, View):
+class RegisterMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, UserTypeRequiredMixin, NonClubMemberRequiredMixin, View):
+    allowed_types = ['User']
+
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
         if request.user.is_authenticated:
@@ -83,7 +85,9 @@ class RegisterMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, NonClu
         
 """此方法用来处理取消会员请求"""
 """"This method is used to handle membership cancelation requests"""
-class CancelMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin, View):
+class CancelMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, UserTypeRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin, View):
+    allowed_types = ['User']
+
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
         if request.user.is_authenticated:
@@ -268,7 +272,7 @@ class EventRSVPListView(LoginRequiredMixin, View):
             print(f" {str(e)}")
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
-class RemoveRSVPView(LoginRequiredMixin, View):
+class RemoveRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     """ 管理员通过 username 移除 RSVP """
 
     def post(self, request, event_id, username, *args, **kwargs):
@@ -284,7 +288,7 @@ class RemoveRSVPView(LoginRequiredMixin, View):
 
         rsvp.delete()
         return JsonResponse({"status": "success", "message": "RSVP removed successfully"})
-class AddRSVPView(LoginRequiredMixin, View):
+class AddRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     """ 管理员添加 RSVP """
 
     def post(self, request, event_id, username, *args, **kwargs):
@@ -358,7 +362,7 @@ class RemoveMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerR
         return redirect('club_manager_members', club_id=club_id)
 
 """此部分用来实现club manager - 添加member的功能"""
-class AddMemberView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
+class AddMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, username):
         try:
             club = Club.objects.get(club_id=club_id)
@@ -384,7 +388,8 @@ class AddMemberView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
 
 
 """此方法用来渲染用户申请新Club的form"""
-class ApplyNewClubView(LoginRequiredMixin, View):
+class ApplyNewClubView(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['User']
     template_name = 'apply_new_club.html'
 
     def get(self, request):

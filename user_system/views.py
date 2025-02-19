@@ -12,7 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from club_system.models import Membership, NewClubRequest
-from club_system.helpers.mixins import ClubMemberRequiredMixin
+from club_system.helpers.mixins import ClubMemberRequiredMixin, ClubExistsRequiredMixin
 
 
 def home(request):
@@ -129,7 +129,7 @@ class NewClubRequestsView(LoginRequiredMixin, View):
         return render(request, 'user_system/dashboard/requests/new_club_requests.html', context)
     
 """以下内容用来渲染personal dashboard查看club memebership detail的请求"""
-class ClubMembershipDetail(LoginRequiredMixin, View):
+class ClubMembershipDetail(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMemberRequiredMixin, View):
     def get(self, request, club_id):
         try:
             # 尝试获取当前用户在指定俱乐部的会员资格
