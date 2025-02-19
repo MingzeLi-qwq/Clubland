@@ -1,7 +1,5 @@
 {% extends "admin_panel/admin_panel_base.html" %}
 
-{% block panel_title %}Admin Panel{% endblock %}
-
 {% block panel_content %}
 
 <h4>Clubs</h4>
@@ -33,7 +31,7 @@
                 <td>{{ club.name }}</td>
                 <td>
                     <!-- 这里可以添加操作按钮,如编辑、删除等 -->
-                    <a href="#" class="btn btn-outline-primary btn-sm">Edit</a>
+                    <a href="{% url 'admin_panel_club_general' club_id=club.club_id %}" class="btn btn-outline-primary btn-sm">Edit</a>
                 </td>
             </tr>
             {% endfor %}

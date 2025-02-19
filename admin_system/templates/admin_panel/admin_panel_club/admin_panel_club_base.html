@@ -3,26 +3,33 @@
 
 {% block body %}
 <div class="container mt-5 mb-4">
+
     <!-- 标题 -->
     <div class="d-flex justify-content-between align-items-center">
-        <h2>Admin Panel</h2>
+        <h2>
+            <span class="text-secondary">Admin Panel - </span>
+            Club: {{ club.name }}
+        </h2>
     </div>
 
     <div class="row mt-4 gy-3">
         <!-- 侧边菜单栏 -->
         <div class="col-md-3">
             <div class="list-group">
-                <a href="{% url 'admin_panel_clubs' %}" class="list-group-item list-group-item-action">
-                    Clubs
+                <a href="{% url 'admin_panel_clubs' %}" class="list-group-item list-group-item-action bg-primary text-white">
+                    <i class="bi bi-arrow-left-short"></i> To Admin Panel
                 </a>
-                <a href="{% url 'admin_panel_users' %}" class="list-group-item list-group-item-action">
-                    Users
+                <a href="{% url 'admin_panel_club_general' club_id=club.club_id %}" class="list-group-item list-group-item-action">
+                    General
                 </a>
-                <a href="{% url 'admin_panel_events' %}" class="list-group-item list-group-item-action">
+                <a href="{% url 'admin_panel_club_members' club_id=club.club_id %}" class="list-group-item list-group-item-action">
+                    Members
+                </a>
+                <a href="{% url 'admin_panel_club_news' club_id=club.club_id %}" class="list-group-item list-group-item-action">
+                    News
+                </a>
+                <a href="{% url 'admin_panel_club_events' club_id=club.club_id %}" class="list-group-item list-group-item-action">
                     Events
-                </a>
-                <a href="{% url 'admin_panel_requests' %}" class="list-group-item list-group-item-action">
-                    Requests
                 </a>
             </div>
         </div>
