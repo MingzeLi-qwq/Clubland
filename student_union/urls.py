@@ -44,11 +44,11 @@ urlpatterns = [
 
     path('login/', user_system.views.LogInView.as_view(), name='login'),
     path('logout/', user_system.views.LogOutView, name='logout'),
-    path('change-password/', user_system.views.change_password, name='change_password'), 
+    path('change_password/', user_system.views.change_password, name='change_password'), 
 
     # Personal Dashboard / 个人资料页
-    path('dashboard/personal_information', user_system.views.DashboardPersonalInformation.as_view(), name='dashboard_personal_information'),
-    path('dashboard/my_club', user_system.views.DashboardMyClub.as_view(), name='dashboard_my_club'),
+    path('dashboard/personal_information/', user_system.views.DashboardPersonalInformation.as_view(), name='dashboard_personal_information'),
+    path('dashboard/my_club/', user_system.views.DashboardMyClub.as_view(), name='dashboard_my_club'),
     path('dashboard/my_requests', user_system.views.DashboardMyRequests.as_view(), name='dashboard_my_requests'),
     path('dashboard/requests/new_club/', user_system.views.NewClubRequestsView.as_view(), name='dashboard_new_club_requests'),
     # 个人资料页下的membership details

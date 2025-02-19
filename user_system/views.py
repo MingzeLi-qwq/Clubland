@@ -80,21 +80,21 @@ def change_password(request):
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
-            update_session_auth_hash(request, user)  
+            update_session_auth_hash(request, user)  # 防止用户被登出
             messages.success(request, 'Your password was successfully updated!')
-            return redirect('dashboard')  
+            return redirect('dashboard_personal_information')  # 这里要确保你的 URL 名称正确
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = PasswordChangeForm(request.user)
-    
-    return render(request, 'user_system/change_password.html', {'form': form})
+
+    return render(request, 'user_system/dashboard/personal_information.html', {'form': form})
 
 
 """以下内容负责渲染Personal Dashboard"""
 class DashboardPersonalInformation(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'user_system/dashboard/personal_informations.html')
+        return render(request, 'user_system/dashboard/personal_information.html')
 
 class DashboardMyClub(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
