@@ -5,6 +5,27 @@ from django.db.models import Q
 from user_system.helpers.mixins import LoginRequiredMixin, UserTypeRequiredMixin
 from club_system.models import Club, Membership, NewClubRequest
 from user_system.models import User
+from django.contrib.auth import authenticate
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.urls import reverse
+
+
+def verifyAdminPassword(request):
+    if request.method == 'POST':
+        password = request.POST.get('password')
+        user = authenticate(username=request.user.username, password=password)
+        if user is not None:
+            # 密码验证成功
+            request.session['password_verified'] = True
+            if request.session.get('pending_action') == 'delete_club':
+                club_id = request.session.get('club_id')
+                return redirect('admin_delete_club', club_id=club_id)
+            return redirect(request.session.get('return_url', 'admin_panel_clubs'))
+        else:
+            messages.error(request, 'Wrong password, please try again.')
+    
+    return render(request, 'verify_password.html')
 
 
 """-----------------------------------------以下内容负责渲染Admin Panel---------------------------------------------------"""
@@ -107,6 +128,31 @@ class AdminPanelClubsEvents(LoginRequiredMixin, UserTypeRequiredMixin, View):
             'club':club,
             'club_id':club_id,
         })
+    
+
+# 以下内容负责处理删除club的请求
+class AdminDeleteClub(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+
+    def get(self, request, club_id):
+        if request.session.get('password_verified'):
+            del request.session['password_verified']
+            club = get_object_or_404(Club, pk=club_id)
+            club_name = club.name
+            club.delete()
+            messages.success(request, f"Club '{club_name}' has been deleted")
+            return redirect('admin_panel_clubs')
+        else:
+            return redirect('verify_admin_password')
+
+    def post(self, request, club_id):
+        if not request.session.get('password_verified'):
+            request.session['return_url'] = reverse('admin_panel_club_general', kwargs={'club_id': club_id})
+            request.session['pending_action'] = 'delete_club'
+            request.session['club_id'] = club_id
+            return redirect('verify_admin_password')
+        else:
+            return self.get(request, club_id)
 """-----------------------------------------以上内容负责渲染Admin Panel Club---------------------------------------------------"""
 
 

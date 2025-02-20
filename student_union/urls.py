@@ -126,13 +126,17 @@ urlpatterns = [
     path('admin_panel/clubs/members/int:<club_id>', admin_system.views.AdminPanelClubsMembers.as_view(), name='admin_panel_club_members'),
     path('admin_panel/clubs/news/int:<club_id>', admin_system.views.AdminPanelClubsNews.as_view(), name='admin_panel_club_news'),
     path('admin_panel/clubs/event/int:<club_id>', admin_system.views.AdminPanelClubsEvents.as_view(), name='admin_panel_club_events'),
+    #删除club
+    path('admin_panel/clubs/general/delete/int:<club_id>', admin_system.views.AdminDeleteClub.as_view(), name='admin_delete_club'),
+
 
     #Admin Panel User
     path('admin_panel/user/information/<str:username>/', admin_system.views.AdminPanelUserInformation.as_view(), name='admin_panel_user_information'),
     path('admin_panel/user/memberships/<str:username>/', admin_system.views.AdminPanelUserMemberships.as_view(), name='admin_panel_user_memberships'),
     path('admin_panel/user/requests/<str:username>/', admin_system.views.AdminPanelUserRequests.as_view(), name='admin_panel_user_requests'),
 
-
+    #密码验证
+    path('verify-admin-password/', admin_system.views.verifyAdminPassword, name='verify_admin_password'),
     #-------------------------------------------------------- Admin related END ------------------------------------------------------------------------------
 
 ]   
