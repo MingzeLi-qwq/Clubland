@@ -73,8 +73,26 @@ class AdminPanelEvents(LoginRequiredMixin, UserTypeRequiredMixin, View):
     
 class AdminPanelRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
+
     def get(self, request, *args, **kwargs):
-        return render(request, 'admin_panel/requests.html')
+        search_query = request.GET.get('search', '')
+        
+        pending_requests = NewClubRequest.objects.filter(status='pending')
+        finished_requests = NewClubRequest.objects.filter(Q(status='approved') | Q(status='rejected'))
+        
+        if search_query:
+            pending_requests = pending_requests.filter(name__icontains=search_query)
+            finished_requests = finished_requests.filter(name__icontains=search_query)
+        
+        context = {
+            'search_query': search_query,
+            'pending_requests': pending_requests,
+            'finished_requests': finished_requests,
+            'pending_count': pending_requests.count(),
+            'finished_count': finished_requests.count(),
+        }
+        
+        return render(request, 'admin_panel/requests.html', context)
 """-----------------------------------------以上内容负责渲染Admin Panel---------------------------------------------------"""
 
 
