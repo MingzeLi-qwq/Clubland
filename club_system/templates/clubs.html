@@ -46,15 +46,17 @@
     </div>
     {% endif %}
 
-    <!-- 添加分割线 -->
-    <hr class="my-5">
-
+    
     <!-- 申请新社团的部分 -->
-    <div class="text-center mb-5">
-      <h4 class="mb-3">Didn't find your Club?</h4>
-      <p class="mb-4">You can apply to us for a new Club through the following entrance, and you will be the Manager!</p>
-      <a href="{% url 'apply_new_club' %}" class="btn btn-primary btn-lg">Apply a New Club</a>
-    </div>
+    {% if user.account_type == 'User' %} 
+      <!-- 添加分割线 -->
+      <hr class="my-5">
+        <div class="text-center mb-5">
+          <h4 class="mb-3">Didn't find your Club?</h4>
+          <p class="mb-4">You can apply to us for a new Club through the following entrance, and you will be the Manager!</p>
+          <a href="{% url 'apply_new_club' %}" class="btn btn-primary btn-lg">Apply a New Club</a>
+        </div>
+    {% endif %} 
 
 </div>
 {% endblock %}

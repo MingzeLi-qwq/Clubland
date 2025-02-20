@@ -46,7 +46,11 @@
                     <div class="d-flex justify-content-center mt-5">
                         {% if user.is_authenticated %}
                             <!-- 当前用户登录时 -->
-                            {% if user in club.members.all %}
+                            {% if user.account_type == 'Admin' %}
+                                <p>
+                                    You are the administrator, you can manage this club in <a href="{% url 'admin_panel_club_general' club_id=club.club_id %}" class="btn btn-link p-0">admin panel page</a>.
+                                </p>
+                            {% elif user in club.members.all %}
                                 <!-- 如果此用户是club成员 -->
                                  {% if is_manager %}
                                     <p>

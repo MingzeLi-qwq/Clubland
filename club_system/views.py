@@ -294,7 +294,8 @@ class SearchUsersView(LoginRequiredMixin, View):
             Q(username__icontains=query) |
             Q(email__icontains=query) |
             Q(first_name__icontains=query) |
-            Q(last_name__icontains=query)
+            Q(last_name__icontains=query),
+            account_type=User.ACCOUNT_TYPE_USER
         ).exclude(membership__club_id=club_id)  # 添加排除现有成员的过滤
 
         results = [{
@@ -425,6 +426,7 @@ class RemoveRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
 
         rsvp.delete()
         return JsonResponse({"status": "success", "message": "RSVP removed successfully"})
+    
 class AddRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     """ 管理员添加 RSVP """
 
