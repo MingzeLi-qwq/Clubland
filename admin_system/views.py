@@ -74,25 +74,8 @@ class AdminPanelEvents(LoginRequiredMixin, UserTypeRequiredMixin, View):
 class AdminPanelRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
 
-    def get(self, request, *args, **kwargs):
-        search_query = request.GET.get('search', '')
-        
-        pending_requests = NewClubRequest.objects.filter(status='pending')
-        finished_requests = NewClubRequest.objects.filter(Q(status='approved') | Q(status='rejected'))
-        
-        if search_query:
-            pending_requests = pending_requests.filter(name__icontains=search_query)
-            finished_requests = finished_requests.filter(name__icontains=search_query)
-        
-        context = {
-            'search_query': search_query,
-            'pending_requests': pending_requests,
-            'finished_requests': finished_requests,
-            'pending_count': pending_requests.count(),
-            'finished_count': finished_requests.count(),
-        }
-        
-        return render(request, 'admin_panel/requests.html', context)
+    def get(self, request, *args, **kwargs):        
+        return render(request, 'admin_panel/requests.html')
 """-----------------------------------------以上内容负责渲染Admin Panel---------------------------------------------------"""
 
 
@@ -208,3 +191,44 @@ class AdminPanelUserRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
         })
 
 """-----------------------------------------以上内容负责渲染Admin Panel User---------------------------------------------------"""
+
+
+"""-----------------------------------------以下内容负责渲染Admin Panel Request---------------------------------------------------"""
+class AdminPanelNewClubRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+
+    def get(self, request, *args, **kwargs):
+        search_query = request.GET.get('search', '')
+        
+        pending_ncRequests = NewClubRequest.objects.filter(status='pending')
+        finished_ncRequests = NewClubRequest.objects.filter(Q(status='approved') | Q(status='rejected'))
+        
+        if search_query:
+            pending_ncRequests = pending_ncRequests.filter(name__icontains=search_query)
+            finished_ncRequests = finished_ncRequests.filter(name__icontains=search_query)
+        
+        context = {
+            'search_query': search_query,
+            'pending_ncRequests': pending_ncRequests,
+            'finished_ncRequests': finished_ncRequests,
+            'pending_count': pending_ncRequests.count(),
+            'finished_count': finished_ncRequests.count(),
+        }
+        
+        return render(request, 'admin_panel/admin_panel_requests/new_club_requests.html', context)
+
+
+class AdminPanelNewClubRequestDetail(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+
+    def get(self, request, ncRequest_id, *args, **kwargs):
+        ncRequest = get_object_or_404(NewClubRequest, request_id=ncRequest_id)
+        creator = ncRequest.creator
+        context = {
+            'ncRequest': ncRequest,
+            'creator':creator
+        }
+        return render(request, 'admin_panel/admin_panel_requests/new_club_request_detail.html', context)
+
+    
+"""-----------------------------------------以上内容负责渲染Admin Panel Request---------------------------------------------------"""

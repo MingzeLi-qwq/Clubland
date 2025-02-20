@@ -70,30 +70,9 @@ urlpatterns = [
   
 
     #---------------------------------------------------- Club related / Club相关页面 -----------------------------------------------------------------------
-    path('clubs/', club_system.views.clubs, name='clubs'),
-    path('clubs/detail/<int:club_id>/', club_system.views.ClubDetailView.as_view(), name='club_detail'),
-    path('clubs/detail/register_membership/<int:club_id>/', club_system.views.RegisterMembershipView.as_view(), name='register_membership'),
-    path('clubs/detail/cancel_membership/<int:club_id>/', club_system.views.CancelMembershipView.as_view(), name='cancel_membership'),
-
-    # Club Manager
-    path('clubs/manager/general/<int:club_id>/', club_system.views.ClubManagerGeneral.as_view(), name='club_manager_general'),
-    path('clubs/manager/members/<int:club_id>/', club_system.views.ClubManagerMembers.as_view(), name='club_manager_members'),
-    path('clubs/manager/news/<int:club_id>/', club_system.views.ClubManagerNews.as_view(), name='club_manager_news'),
-
-    # Club manager change name and description
-    path('clubs/manager/update_name/<int:club_id>/', club_system.views.UpdateClubName.as_view(), name='update_club_name'),
-    path('clubs/manager/update_description/<int:club_id>/', club_system.views.UpdateClubDescription.as_view(), name='update_club_description'),
-
-    # Club manager remove manager
-    path('clubs/manager/remove_manager/<int:club_id>/<str:username>/', club_system.views.RemoveManagerView.as_view(), name='remove_manager'),
-    path('clubs/manager/set_manager/<int:club_id>/<str:username>/', club_system.views.SetManagerView.as_view(), name='set_manager'),
-
-    # js搜索用户
-    path('clubs/manager/search_users/', club_system.views.SearchUsersView.as_view(), name='search_users'),
-
-    # 添加与删除member
-    path('clubs/manager/add_member/<int:club_id>/<str:username>/', club_system.views.AddMemberView.as_view(), name='add_member'),
-    path('clubs/manager/remove_member/<int:club_id>/<str:username>/', club_system.views.RemoveMemberView.as_view(), name='remove_member'),
+    # 注意!!! 注意!!! 注意!!!!
+    # club相关的所有url被我集中管理在club_system.urls中了!!!! 这样子更加简洁!!!! 如果你要加东西!!!! 去club_system加 -- 李明泽
+    path('clubs/', include('club_system.urls')),
 
     # Events
     path('clubs/manager/events/<int:club_id>/', club_system.views.ClubManagerEvents.as_view(), name='club_manager_events'),
@@ -101,40 +80,21 @@ urlpatterns = [
     re_path(r"^clubs/manager/events/(?P<event_id>\d+)/remove_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.RemoveRSVPView.as_view(), name="remove_rsvp"),
     re_path(r"^clubs/manager/events/(?P<event_id>\d+)/add_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.AddRSVPView.as_view(), name="add_rsvp"),
 
-    # 创建新的Club
-    path('clubs/apply-new-club/', club_system.views.ApplyNewClubView.as_view(), name='apply_new_club'),
     #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
 
     # Forum related / 论坛相关页面
-        path('ckeditor/', include('ckeditor_uploader.urls')),  # 富文本编辑器图片上传
-        path('ckeditor/upload/', ckeditor_image_upload, name='ckeditor_upload'),
-        path('forum/', include('forum_system.urls', namespace='forum_system')),
+    path('ckeditor/', include('ckeditor_uploader.urls')),  # 富文本编辑器图片上传
+    path('ckeditor/upload/', ckeditor_image_upload, name='ckeditor_upload'),
+    path('forum/', include('forum_system.urls', namespace='forum_system')),
 
 
     path('api/', include('club_hub.urls')),
     path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
 
     #---------------------------------------------------- Admin related / Admin相关页面 -----------------------------------------------------------------------
-    #Admin Panel
-    path('admin_panel/clubs/', admin_system.views.AdminPanelClubs.as_view(), name='admin_panel_clubs'),
-    path('admin_panel/users/', admin_system.views.AdminPanelUsers.as_view(), name='admin_panel_users'),
-    path('admin_panel/events/', admin_system.views.AdminPanelEvents.as_view(), name='admin_panel_events'),
-    path('admin_panel/requests/', admin_system.views.AdminPanelRequests.as_view(), name='admin_panel_requests'),
-
-    #Admin Panel Club
-    path('admin_panel/clubs/general/int:<club_id>', admin_system.views.AdminPanelClubsGeneral.as_view(), name='admin_panel_club_general'),
-    path('admin_panel/clubs/members/int:<club_id>', admin_system.views.AdminPanelClubsMembers.as_view(), name='admin_panel_club_members'),
-    path('admin_panel/clubs/news/int:<club_id>', admin_system.views.AdminPanelClubsNews.as_view(), name='admin_panel_club_news'),
-    path('admin_panel/clubs/event/int:<club_id>', admin_system.views.AdminPanelClubsEvents.as_view(), name='admin_panel_club_events'),
-    #删除club
-    path('admin_panel/clubs/general/delete/int:<club_id>', admin_system.views.AdminDeleteClub.as_view(), name='admin_delete_club'),
-
-
-    #Admin Panel User
-    path('admin_panel/user/information/<str:username>/', admin_system.views.AdminPanelUserInformation.as_view(), name='admin_panel_user_information'),
-    path('admin_panel/user/memberships/<str:username>/', admin_system.views.AdminPanelUserMemberships.as_view(), name='admin_panel_user_memberships'),
-    path('admin_panel/user/requests/<str:username>/', admin_system.views.AdminPanelUserRequests.as_view(), name='admin_panel_user_requests'),
-
+    # 注意!!! 注意!!! 注意!!!!
+    # admin相关的所有url被我集中管理在admin_system.urls中了!!!! 这样子更加简洁!!!! 如果你要加东西!!!! 去admin_system加 -- 李明泽
+    path('admin_panel/', include('admin_system.urls')),
     #密码验证
     path('verify-admin-password/', admin_system.views.verifyAdminPassword, name='verify_admin_password'),
     #-------------------------------------------------------- Admin related END ------------------------------------------------------------------------------

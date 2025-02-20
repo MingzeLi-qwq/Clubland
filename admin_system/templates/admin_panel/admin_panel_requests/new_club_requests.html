@@ -1,0 +1,75 @@
+{% extends "admin_panel/admin_panel_base.html" %}
+
+{% block panel_content %}
+
+<div class="mb-3" margin-left: 5px>
+    <a href="{% url 'admin_panel_requests' %}" class="text-decoration-none text-primary">
+        <i class="bi bi-arrow-left-short"></i> Requests
+    </a>
+</div>
+
+<h4>New Club Requests</h4>
+
+<!-- 搜索框 -->
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="search" class="form-control" placeholder="Search requests" value="{{ search_query }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
+<!-- Pending ncRequests Table -->
+<div class="card p-3 mb-3 shadow-sm">
+    <h5>Pending Requests ({{ pending_count }})</h5>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col" class="d-none d-md-table-cell">Created At</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ncRequest in pending_ncRequests %}
+                <tr>
+                    <td>{{ ncRequest.name }}</td>
+                    <td class="d-none d-md-table-cell">{{ ncRequest.created_at }}</td>
+                    <td>
+                        <a href={% url 'admin_panel_new_club_requests_detail' ncRequest_id=ncRequest.request_id %} class="btn btn-outline-primary btn-sm">Detail</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Finished ncRequests Table -->
+<div class="card p-3 mb-3 shadow-sm">
+    <h5>Finished Requests ({{ finished_count }})</h5>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col" class="d-none d-md-table-cell">Status</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ncRequest in finished_ncRequests %}
+                <tr>
+                    <td>{{ ncRequest.name }}</td>
+                    <td class="d-none d-md-table-cell">{{ ncRequest.status }}</td>
+                    <td>
+                        <a href={% url 'admin_panel_new_club_requests_detail' ncRequest_id=ncRequest.request_id %} class="btn btn-outline-primary btn-sm">Detail</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
