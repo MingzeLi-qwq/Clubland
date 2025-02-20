@@ -74,9 +74,18 @@ class AdminPanelClubsMembers(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
+        managers = club.membership_set.filter(is_manager=True)
+        manager_count = managers.count()
+        muggles = club.membership_set.filter(is_manager=False)
+        muggle_count = muggles.count()
+
         return render(request, "admin_panel/admin_panel_club/members.html", {
-            'club':club,
-            'club_id':club_id,
+            'club_id': club_id,
+            'club': club,
+            'managers': managers,
+            'muggles' : muggles,
+            'manager_count': manager_count,
+            'muggle_count': muggle_count
         })
     
 class AdminPanelClubsNews(LoginRequiredMixin, UserTypeRequiredMixin, View):

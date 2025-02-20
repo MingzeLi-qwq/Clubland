@@ -3,5 +3,127 @@
 {% block panel_content %}
 
 <h4>Members</h4>
+<p>Manage Club managers and members.</p>
+
+<!-- Club managers表格 -->
+<div class="mb-4">
+  <div class="card p-3 mb-3 shadow-sm">
+    <h5>Club managers ({{manager_count}})</h5>
+    <table class="table table-hover">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col" class="d-none d-md-table-cell">Email</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for manager in managers %}
+          <tr>
+            <td>{{ manager.user.get_full_name }}</td>
+            <td class="d-none d-md-table-cell">{{ manager.user.email }}</td>
+            <td>
+
+                <form method="post" action="{% url 'remove_manager' club_id=club_id username=manager.user.username %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-danger btn-sm">Remove Manager</button>
+                </form>
+
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>      
+</div>
+
+<!-- Club members表格 -->
+<div class="mb-4">
+  <div class="card p-3 mb-3 shadow-sm">
+    <h5>Club members ({{muggle_count}})</h5>
+    <table class="table table-hover">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col" class="d-none d-md-table-cell">Email</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for muggle in muggles %}
+          <tr>
+            <td>{{ muggle.user.get_full_name }}</td>
+            <td class="d-none d-md-table-cell">{{ muggle.user.email }}</td>
+            <td>
+
+                <form method="post" action="{% url 'set_manager' club_id=club_id username=muggle.user.username %}" class="d-inline me-2">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-success btn-sm">Set Manager</button>
+                </form>
+                <form method="post" action="{% url 'remove_member' club_id=club_id username=muggle.user.username %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                </form>
+
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+
+<!-- 添加members部分 -->
+<div class="mb-4">
+  <div class="card p-3 mb-3">
+    <h5>Add members</h5>
+    <p>Search for users and invite them to join.</p>
+    <input type="text" id="user-search" class="form-control" placeholder="Search by username, email, or name">
+    <div id="search-results" class="list-group mt-2"></div>
+  </div>
+</div>
+
+
+<script>
+  document.getElementById('user-search').addEventListener('input', function() {
+    const query = this.value;
+    const club_id = "{{ club_id }}";
+    
+    if (query.length > 0) {
+      fetch(`/clubs/manager/search_users/?q=${query}&club_id=${club_id}`)
+        .then(response => response.json())
+        .then(data => {
+          const results = document.getElementById('search-results');
+          results.innerHTML = '';
+          data.forEach(user => {
+            const item = document.createElement('a');
+            item.className = 'list-group-item list-group-item-action';
+            item.textContent = `${user.full_name} (${user.username} - ${user.email})`;
+            item.href = '#';
+            item.addEventListener('click', async function() {
+                const response = await fetch(`/clubs/manager/add_member/${club_id}/${encodeURIComponent(user.username)}/`, {
+                  method: 'POST',
+                  headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                  }
+                });
+                window.location.reload();
+            });
+            results.appendChild(item);
+          });
+        });
+    }
+  });
+  
+  function showMessage(text, type) {
+    const messageBox = document.getElementById('message-box');
+    messageBox.innerHTML = `
+      <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+        ${text}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    `;
+  }
+  </script>
 
 {% endblock %}
