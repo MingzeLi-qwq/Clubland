@@ -3,5 +3,28 @@
 {% block panel_content %}
 
 <h4>General</h4>
+<p>Manage Club name and description.</p>
+
+<div class="mb-4">
+  <div class="card p-3 mb-3 shadow-sm">
+    <h5>Club name</h5>
+    <form method="post" action="{% url 'update_club_name' club_id=club_id %}">
+      {% csrf_token %}
+      <input type="text" class="form-control" name="club_name" value="{{ club.name }}">
+      <button class="btn btn-primary mt-2" type="submit">Update name</button>
+    </form>
+  </div>
+</div>
+
+<div class="mb-4">
+  <div class="card p-3 mb-3 shadow-sm">
+    <h5>Club description</h5>
+    <form method="post" action="{% url 'update_club_description' club_id=club_id %}">
+      {% csrf_token %}
+      <textarea class="form-control" name="club_description" rows="4">{{ club.description }}</textarea>
+      <button class="btn btn-primary mt-2" type="submit">Update description</button>
+    </form>
+  </div>
+</div>
 
 {% endblock %}

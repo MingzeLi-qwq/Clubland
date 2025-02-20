@@ -162,17 +162,28 @@ class UpdateClubName(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerReq
         club = get_object_or_404(Club, pk=club_id)
         new_name = request.POST.get('club_name', '').strip()
 
+        # If the request to access this view came from the admin panel, the redirection url is the admin panel.
+        # 如果访问此view的请求是来自admin panel的, 重新定向url就是admin panel
+        if request.user.account_type == 'Admin':
+            redirect_url = 'admin_panel_club_general'
+        else:
+            redirect_url = 'club_manager_general'
+
         if new_name == club.name:
             messages.error(request, "The new name cannot duplicate the old name.")
-            return redirect('club_manager_general', club_id=club_id)
+            return redirect(redirect_url, club_id=club_id)
 
         if not new_name:
             messages.error(request, "Club name cannot be empty.")
-            return redirect('club_manager_general', club_id=club_id)
+            return redirect(redirect_url, club_id=club_id)
         
         if isSameClubNameExist(new_name):
             messages.error(request, "There's already a Club with the same name.")
-            return redirect('club_manager_general', club_id=club_id)
+            return redirect(redirect_url, club_id=club_id)
+        
+        if isSameClubNameExistInRequest(new_name):
+            messages.error(request, "There's already a New Club Request with the same name.")
+            return redirect(redirect_url, club_id=club_id)
             
         try:
             club.name = new_name
@@ -181,7 +192,7 @@ class UpdateClubName(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerReq
         except IntegrityError:
             messages.error(request, "This club name does not match the specification.")
         
-        return redirect('club_manager_general', club_id=club_id)
+        return redirect(redirect_url, club_id=club_id)
 
 """This method is used to handle description update requests from the manager general."""
 """此方法用于处理来自manager general更新club description请求"""
@@ -189,10 +200,18 @@ class UpdateClubDescription(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMan
     def post(self, request, club_id):
         club = get_object_or_404(Club, pk=club_id)
         new_description = request.POST.get('club_description', '').strip()
+
+        # If the request to access this view came from the admin panel, the redirection url is the admin panel.
+        # 如果访问此view的请求是来自admin panel的, 重新定向url就是admin panel
+        if request.user.account_type == 'Admin':
+            redirect_url = 'admin_panel_club_general'
+        else:
+            redirect_url = 'club_manager_general'
+
         
         if new_description == club.description:
             messages.error(request, "The new description cannot duplicate the old description.")
-            return redirect('club_manager_general', club_id=club_id)
+            return redirect(redirect_url, club_id=club_id)
 
         if not new_description:
             new_description = "This Club hasn't added a Description yet"
@@ -202,7 +221,7 @@ class UpdateClubDescription(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMan
         club.save()
         messages.success(request, "Description updated successfully.")
         
-        return redirect('club_manager_general', club_id=club_id)
+        return redirect(redirect_url, club_id=club_id)
     
 """此部分用于处理来自club manager 移除 manager的请求"""
 class RemoveManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
