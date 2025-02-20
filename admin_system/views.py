@@ -109,27 +109,27 @@ class AdminPanelClubsEvents(LoginRequiredMixin, UserTypeRequiredMixin, View):
 class AdminPanelUserInformation(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
     def get(self, request, username, *args, **kwargs):
-        user = get_object_or_404(User, username=username)
+        panel_user = get_object_or_404(User, username=username)
         return render(request, "admin_panel/admin_panel_user/information.html", {
-            'user':user,
-            'username':username,
+            'panel_user':panel_user,
+            'panel_username':username,
         })
 
 class AdminPanelUserMemberships(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
     def get(self, request, username, *args, **kwargs):
-        user = get_object_or_404(User, username=username)
+        panel_user = get_object_or_404(User, username=username)
         return render(request, "admin_panel/admin_panel_user/memberships.html", {
-            'user':user,
-            'username':username,
+            'panel_user':panel_user,
+            'panel_username':username,
         })
     
 class AdminPanelUserRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
     def get(self, request, username, *args, **kwargs):
-        user = get_object_or_404(User, username=username)
+        panel_user = get_object_or_404(User, username=username)
         return render(request, "admin_panel/admin_panel_user/requests.html", {
-            'user':user,
+            'panel_user':panel_user,
             'username':username,
         })
 

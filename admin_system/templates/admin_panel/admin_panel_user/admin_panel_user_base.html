@@ -2,21 +2,14 @@
 {% load static %}
 
 {% block body %}
-<div class="container mt-5 mb-4">
+<div class="container mt-5 mb-3">
 
     <!-- 标题 -->
     <div class="d-flex justify-content-between align-items-center">
         <h2>
             <span class="text-secondary">Admin Panel - </span>
-            User: {{ user.first_name }} {{ user.last_name }}
+            User: {{ panel_user.first_name }} {{ panel_user.last_name }}
         </h2>
-
-        <div class="d-flex align-items-center">
-            <div class="rounded-circle bg-light d-flex justify-content-center align-items-center" 
-                 style="width: 80px; height: 80px;">
-                <i class="fas fa-user fa-2x text-secondary"></i>
-            </div>
-        </div>
     </div>
 
     <div class="row mt-4 gy-3">
@@ -26,13 +19,13 @@
                 <a href="{% url 'admin_panel_users' %}" class="list-group-item list-group-item-action bg-primary text-white">
                     <i class="bi bi-arrow-left-short"></i> To Admin Panel
                 </a>
-                <a href="{% url 'admin_panel_user_information' username=user.username %}" class="list-group-item list-group-item-action">
+                <a href="{% url 'admin_panel_user_information' username=panel_user.username %}" class="list-group-item list-group-item-action">
                     User Information
                 </a>
-                <a href="{% url 'admin_panel_user_memberships' username=user.username %}" class="list-group-item list-group-item-action">
+                <a href="{% url 'admin_panel_user_memberships' username=panel_user.username %}" class="list-group-item list-group-item-action">
                     Memberships
                 </a>
-                <a href="{% url 'admin_panel_user_requests' username=user.username %}" class="list-group-item list-group-item-action">
+                <a href="{% url 'admin_panel_user_requests' username=panel_user.username %}" class="list-group-item list-group-item-action">
                     Requests
                 </a>
             </div>
