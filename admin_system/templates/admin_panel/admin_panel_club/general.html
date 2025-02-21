@@ -1,0 +1,59 @@
+{% extends "admin_panel/admin_panel_club/admin_panel_club_base.html" %}
+
+{% block panel_content %}
+<style>
+.btn-danger {
+    border-radius: 12px;
+    background-color: #e30000;  /* 红色背景 */
+    border: none;
+    padding: 12px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #b50000;  /* 深红色悬停效果 */
+}
+
+.danger-card {
+    border: 1px solid #da4c4c;  /* 红色边框 */
+}​
+</style>
+
+<h4>General</h4>
+<p>Manage Club name and description.</p>
+
+<div class="mb-4">
+  <div class="card p-3 mb-3 shadow-sm">
+    <h5>Club name</h5>
+    <form method="post" action="{% url 'update_club_name' club_id=club_id %}">
+      {% csrf_token %}
+      <input type="text" class="form-control" name="club_name" value="{{ club.name }}">
+      <button class="btn btn-primary mt-2" type="submit">Update name</button>
+    </form>
+  </div>
+</div>
+
+<div class="mb-4">
+  <div class="card p-3 mb-3 shadow-sm">
+    <h5>Club description</h5>
+    <form method="post" action="{% url 'update_club_description' club_id=club_id %}">
+      {% csrf_token %}
+      <textarea class="form-control" name="club_description" rows="4">{{ club.description }}</textarea>
+      <button class="btn btn-primary mt-2" type="submit">Update description</button>
+    </form>
+  </div>
+</div>
+
+<div class="mb-4">
+  <div class="card p-3 mb-3 shadow-sm danger-card">
+    <h5>Danger - Delete this club</h5>
+    <p class="text-danger">Warning: This operation is irreversible, deleting a Club will remove all Memberships and Events associated with it.</p>
+    <form method="post" action="{% url 'admin_delete_club' club_id=club_id %}">
+      {% csrf_token %}
+      <button class="btn btn-danger" type="submit" name="delete_club">Delete Club</button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

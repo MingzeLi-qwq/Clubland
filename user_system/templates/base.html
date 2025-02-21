@@ -24,34 +24,42 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'clubs' %}">Clubs</a>
+                <a class="nav-link" href="{% url 'clubs' %}">Clubs</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'news' %}">News</a>
+                <a class="nav-link" href="{% url 'news' %}">News</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'events' %}">Events</a>
+                <a class="nav-link" href="{% url 'events' %}">Events</a>
             </li>
             {% if user.is_authenticated %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="clubDropdown" role="button" 
-                data-bs-toggle="dropdown" aria-expanded="false">
-                My Club
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="clubDropdown" id="clubMenu">
-                {% for membership in request.user.membership_set.all %}
-                  <li>
-                    <a class="dropdown-item" href="{% url 'club_dashboard' club_id=membership.club.club_id %}">
-                      {{ membership.club.name }}
-                    </a>
-                  </li>
-                {% empty %}
-                  <li><span class="dropdown-item text-muted">You haven't joined any clubs.</span></li>
-                {% endfor %}
-              </ul>
+            {% if user.account_type == 'Admin' %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'admin_panel_clubs' %}">Admin Panel</a>
             </li>
+            {% else %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="clubDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    My Club
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="clubDropdown" id="clubMenu">
+                    {% for membership in request.user.membership_set.all %}
+                    <li>
+                        <a class="dropdown-item" href="{% url 'club_dashboard' club_id=membership.club.club_id %}">
+                            {{ membership.club.name }}
+                        </a>
+                    </li>
+                    {% empty %}
+                    <li><span class="dropdown-item text-muted">You haven't joined any clubs.</span></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endif %}
+
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fas fa-bell" style="color: white; font-size: 20px;"></i>

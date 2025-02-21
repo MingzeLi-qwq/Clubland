@@ -1,0 +1,13 @@
+{% extends "user_system/dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+    <h4>My Requests</h4>
+    <p>Manage Your Requests.</p>
+
+    <div class="list-group">
+        <a href="{% url 'dashboard_new_club_requests' %}" class="list-group-item list-group-item-action">
+            Create new Club Requests
+        </a>
+    </div>
+
+{% endblock %}
