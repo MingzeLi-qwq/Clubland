@@ -7,15 +7,16 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from user_system.forms import LoginForm, SignUpForm
-from user_system.helpers.mixins import UserTypeRequiredMixin
+from user_system.helpers.mixins import UserTypeRequiredMixin, ClubMemberRequiredMixin, ClubExistsRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-from club_system.models import Membership
+from club_system.models import Membership, NewClubRequest
 from event_system.models import Event
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.template.loader import render_to_string
+
 
 
 def home(request):
@@ -115,23 +116,25 @@ def change_password(request):
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
-            update_session_auth_hash(request, user)  
+            update_session_auth_hash(request, user)  # 防止用户被登出
             messages.success(request, 'Your password was successfully updated!')
-            return redirect('dashboard')  
+            return redirect('dashboard_personal_information')  # 这里要确保你的 URL 名称正确
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = PasswordChangeForm(request.user)
-    
-    return render(request, 'user_system/change_password.html', {'form': form})
+
+    return render(request, 'user_system/dashboard/personal_information.html', {'form': form})
 
 
 """以下内容负责渲染Personal Dashboard"""
 class DashboardPersonalInformation(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'user_system/dashboard/personal_informations.html')
+        return render(request, 'user_system/dashboard/personal_information.html')
 
-class DashboardMyClub(LoginRequiredMixin, View):
+class DashboardMyClub(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['User']
+
     def get(self, request, *args, **kwargs):
         user = request.user
         # 获取用户作为管理员的社团
@@ -143,3 +146,49 @@ class DashboardMyClub(LoginRequiredMixin, View):
             'managed_clubs': managed_clubs,
             'member_clubs': member_clubs
     })
+
+class DashboardMyRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['User']
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'user_system/dashboard/requests/my_requests.html')
+
+
+"""以下内容用来处理Personal Dashboard查看New Club Requests的请求"""
+class NewClubRequestsView(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['User']
+
+    def get(self, request):
+        pending_requests = NewClubRequest.objects.filter(creator=request.user, status=NewClubRequest.STATUS_PENDING)
+        approved_requests = NewClubRequest.objects.filter(creator=request.user, status=NewClubRequest.STATUS_APPROVED)
+        rejected_requests = NewClubRequest.objects.filter(creator=request.user, status=NewClubRequest.STATUS_REJECTED)
+
+        context = {
+            'pending_requests': pending_requests,
+            'approved_requests': approved_requests,
+            'rejected_requests': rejected_requests,
+        }
+        return render(request, 'user_system/dashboard/requests/new_club_requests.html', context)
+    
+"""以下内容用来渲染personal dashboard查看club memebership detail的请求"""
+class ClubMembershipDetail(LoginRequiredMixin, ClubExistsRequiredMixin, UserTypeRequiredMixin, ClubMemberRequiredMixin, View):
+    allowed_types = ['User']
+    
+    def get(self, request, club_id):
+        try:
+            # 尝试获取当前用户在指定俱乐部的会员资格
+            membership = Membership.objects.get(user=request.user, club_id=club_id)
+        except Membership.DoesNotExist:
+            # 如果会员资格不存在，添加错误消息并重定向
+            messages.error(request, "The specified membership does not exist.")
+            return redirect('dashboard_my_club')
+
+        # 如果会员资格存在，渲染详情页面
+        context = {
+            'membership': membership
+        }
+        return render(request, 'user_system/dashboard/my_club_detail.html', context)
+
+
+
+

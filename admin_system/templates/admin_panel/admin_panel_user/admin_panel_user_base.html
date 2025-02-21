@@ -2,27 +2,31 @@
 {% load static %}
 
 {% block body %}
-<div class="container mt-5 mb-4">
+<div class="container mt-5 mb-3">
+
     <!-- 标题 -->
     <div class="d-flex justify-content-between align-items-center">
-        <h2>Club Management - {{ club.name }}</h2>
+        <h2>
+            <span class="text-secondary">Admin Panel - </span>
+            User: {{ panel_user.first_name }} {{ panel_user.last_name }}
+        </h2>
     </div>
 
     <div class="row mt-4 gy-3">
         <!-- 侧边菜单栏 -->
         <div class="col-md-3">
             <div class="list-group">
-                <a href="{% url 'club_manager_general' club_id=club_id %}" class="list-group-item list-group-item-action">
-                    General
+                <a href="{% url 'admin_panel_users' %}" class="list-group-item list-group-item-action bg-primary text-white">
+                    <i class="bi bi-arrow-left-short"></i> To Admin Panel
                 </a>
-                <a href="{% url 'club_manager_members' club_id=club_id %}" class="list-group-item list-group-item-action">
-                    Members
+                <a href="{% url 'admin_panel_user_information' username=panel_user.username %}" class="list-group-item list-group-item-action">
+                    User Information
                 </a>
-                <a href="{% url 'club_manager_news' club_id=club_id %}" class="list-group-item list-group-item-action">
-                    News
+                <a href="{% url 'admin_panel_user_memberships' username=panel_user.username %}" class="list-group-item list-group-item-action">
+                    Memberships
                 </a>
-                <a href="{% url 'club_manager_events' club_id=club_id %}" class="list-group-item list-group-item-action">
-                    Events
+                <a href="{% url 'admin_panel_user_requests' username=panel_user.username %}" class="list-group-item list-group-item-action">
+                    Requests
                 </a>
             </div>
         </div>
@@ -46,7 +50,7 @@
                 {% endfor %}
             {% endif %}
 
-            {% block manager_content %}
+            {% block panel_content %}
             <!-- 动态内容区域 -->
             {% endblock %}
         </div>

@@ -1,0 +1,73 @@
+{% extends "admin_panel/admin_panel_base.html" %}
+
+{% block panel_content %}
+
+<div class="mb-3" margin-left: 5px>
+    <a href="{% url 'admin_panel_new_club_requests' %}" class="text-decoration-none text-primary">
+        <i class="bi bi-arrow-left-short"></i> New Club Request List
+    </a>
+</div>
+
+
+
+<!-- 添加分割线 -->
+<hr class="my-3">
+<h4 class="mb-3">New Club Request Details</h4>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h4 class="card-title mb-4">{{ ncRequest.name }}</h4>
+        
+        <div class="row g-3">
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Status:</strong> 
+                    <span class="badge {% if ncRequest.status == 'pending' %}bg-warning{% elif ncRequest.status == 'approved' %}bg-success{% else %}bg-danger{% endif %}">
+                        {{ ncRequest.get_status_display }}
+                    </span>
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Created at:</strong> {{ ncRequest.created_at|date:"F d, Y H:i" }}</p>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Created by:</strong> {{ creator.first_name }} {{ creator.last_name }}</p>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Creator Email:</strong> {{ creator.email }}</p>
+            </div>
+            {% if ncRequest.reviewed_at %}
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Reviewed at:</strong> {{ ncRequest.reviewed_at|date:"F d, Y H:i" }}</p>
+            </div>
+            {% endif %}
+            {% if ncRequest.reviewed_by %}
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Reviewed by:</strong> {{ ncRequest.reviewed_by.username }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <hr class="my-4">
+
+        <h6 class="mb-3">Description:</h6>
+        <p class="card-text">{{ ncRequest.description|linebreaks }}</p>
+    </div>
+</div>
+
+<!-- 添加分割线 -->
+<hr class="my-4">
+
+
+
+<div class="mb-4">
+    <div class="card p-3 mb-3 shadow-sm">
+      <h5>Review</h5>
+
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}

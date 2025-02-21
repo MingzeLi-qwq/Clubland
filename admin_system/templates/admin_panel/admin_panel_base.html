@@ -5,24 +5,24 @@
 <div class="container mt-5 mb-4">
     <!-- 标题 -->
     <div class="d-flex justify-content-between align-items-center">
-        <h2>Club Management - {{ club.name }}</h2>
+        <h2>Admin Panel</h2>
     </div>
 
     <div class="row mt-4 gy-3">
         <!-- 侧边菜单栏 -->
         <div class="col-md-3">
             <div class="list-group">
-                <a href="{% url 'club_manager_general' club_id=club_id %}" class="list-group-item list-group-item-action">
-                    General
+                <a href="{% url 'admin_panel_clubs' %}" class="list-group-item list-group-item-action">
+                    Clubs
                 </a>
-                <a href="{% url 'club_manager_members' club_id=club_id %}" class="list-group-item list-group-item-action">
-                    Members
+                <a href="{% url 'admin_panel_users' %}" class="list-group-item list-group-item-action">
+                    Users
                 </a>
-                <a href="{% url 'club_manager_news' club_id=club_id %}" class="list-group-item list-group-item-action">
-                    News
-                </a>
-                <a href="{% url 'club_manager_events' club_id=club_id %}" class="list-group-item list-group-item-action">
+                <a href="{% url 'admin_panel_events' %}" class="list-group-item list-group-item-action">
                     Events
+                </a>
+                <a href="{% url 'admin_panel_requests' %}" class="list-group-item list-group-item-action">
+                    Requests
                 </a>
             </div>
         </div>
@@ -46,7 +46,7 @@
                 {% endfor %}
             {% endif %}
 
-            {% block manager_content %}
+            {% block panel_content %}
             <!-- 动态内容区域 -->
             {% endblock %}
         </div>

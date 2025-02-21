@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'forum_system.apps.ForumSystemConfig',  # 推荐写法
     'club_hub',
     "rest_framework",
+    "admin_system",
 ]
 
 AUTH_USER_MODEL = 'user_system.User'
