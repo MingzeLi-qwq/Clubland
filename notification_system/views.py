@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
 from .models import Notification
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 def notification_list(request):
     '''获取当前用户的所有通知'''
@@ -22,3 +24,17 @@ def base_notifications(request):
         'notifications': notifications,
         'unread_notifications_count': unread_notifications_count,
     }
+
+def mark_all_as_read(request):
+    """批量標記所有未讀通知為已讀"""
+    if request.method == 'POST' and request.user.is_authenticated:
+        # 找到當前用戶的所有未讀通知
+        unread_notifications = Notification.objects.filter(user=request.user, is_read=False)
+        updated_count = unread_notifications.count()
+
+        # 將這些通知標記為已讀
+        unread_notifications.update(is_read=True)
+
+        return JsonResponse({'status': 'success', 'updated_count': updated_count})
+    
+    return JsonResponse({'status': 'failure'}, status=400)

@@ -1,0 +1,110 @@
+{% extends "user_system/dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+
+<style>
+    .membership-date {
+        color: #007bff;  /* 蓝色，可以根据需要调整 */
+        font-weight: 500;  /* 稍微加粗 */
+    }
+
+    .membership-date i {
+        margin-right: 8px;  /* 图标右侧的间距 */
+    }
+    .membership-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        overflow: hidden;
+        max-width: 800px;  /* 调整卡片的最大宽度 */
+        margin: 2rem auto;  /* 居中显示卡片 */
+    }
+    .membership-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    .role-bar {
+        height: 12px;  /* 增加顶部条的高度 */
+        width: 100%;
+    }
+    .manager-bar {
+        background: linear-gradient(45deg, #ffd700, #ffa500);  /* 金色到橙色的渐变 */
+    }
+    .member-bar {
+        background: linear-gradient(45deg, #4e54c8, #8f94fb);  /* 蓝紫色的渐变 */
+    }
+    .membership-date {
+        color: #6c757d;  /* 使用Bootstrap的次要文本颜色 */
+        font-weight: 500;
+    }
+    .membership-date i {
+        margin-right: 8px;
+    }
+</style>
+
+<div class="mb-3" margin-left: 5px>
+    <a href="{% url 'dashboard_my_club' %}" class="text-decoration-none text-primary">
+        <i class="bi bi-arrow-left-short"></i> My Club
+    </a>
+</div>
+
+
+
+<!-- 添加分割线 -->
+<hr class="my-3 mb-4">
+<div class="membership-card card">
+    <div class="role-bar 
+        {% if membership.is_manager %}
+            manager-bar
+        {% else %}
+            member-bar
+        {% endif %}">
+    </div>
+    <div class="card-body p-4">  <!-- 增加内边距 -->
+        <h3 class="card-title mb-3">
+            <i class="bi bi-binoculars me-2"></i>
+            Membership - {{ membership.club.name }}
+        </h3>
+        
+        <h5 class="card-subtitle mb-4 text-muted">
+            {% if membership.is_manager %}
+                Club Manager
+            {% else %}
+                Regular Club Member
+            {% endif %}
+        </h5>
+        
+        <p class="membership-date mb-0">
+            <i class="bi bi-calendar-event"></i>
+            Since: {{ membership.date_joined|date:"M d, Y" }}
+        </p>
+    </div>
+</div>
+<hr class="my-4 mb-4">
+
+
+
+
+<h5 class="mt-5 mb-4">Operations</h5>
+
+<div class="mt-4 mb-3">
+    <a href="{% url 'club_dashboard' club_id=membership.club.club_id %}" class="btn btn-outline-primary">
+        Access club page
+    </a>
+</div>
+
+{% if membership.is_manager %}
+    <div class="mt-4 mb-3">
+        <a href="{% url 'club_manager_general' club_id=membership.club.club_id %}" class="btn btn-outline-primary">
+            Access Club manager page
+        </a>
+    </div>
+{% else %}
+    <div class="mt-4 mb-3">
+        <a href="{% url 'cancel_membership' club_id=membership.club.club_id %}" class="btn btn-outline-danger">
+            Cancel membership
+        </a>
+    </div>
+{% endif %}
+
+    
+{% endblock %}
+    

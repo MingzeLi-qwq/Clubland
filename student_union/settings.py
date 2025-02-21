@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'forum_system.apps.ForumSystemConfig',  # 推荐写法
     'club_hub',
     "rest_framework",
+    "admin_system",
 ]
 
 INSTALLED_APPS += ('django_summernote', ) # RTE 新的富文本编辑器
