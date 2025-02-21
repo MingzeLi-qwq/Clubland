@@ -7,7 +7,8 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from user_system.forms import LoginForm, SignUpForm
-from user_system.helpers.mixins import UserTypeRequiredMixin, ClubMemberRequiredMixin, ClubExistsRequiredMixin
+from user_system.helpers.mixins import UserTypeRequiredMixin
+from club_system.helpers.mixins import ClubMemberRequiredMixin, ClubExistsRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
