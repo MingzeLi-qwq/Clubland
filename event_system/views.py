@@ -1,4 +1,3 @@
-
 from unicodedata import category
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -8,24 +7,8 @@ from django.views.generic import ListView
 from django.db.models import Q 
 from django.utils import timezone 
 from datetime import timedelta
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-def home(request):
-    # 获取未来30天的精选活动并按开始时间排序
-    featured_events = Event.objects.filter(
-        is_featured=True,
-        start_time__gte=timezone.now() - timedelta(days=1),  
-        end_time__gte=timezone.now()
-    ).order_by('start_time')[:6]  
-    
-    upcoming_events = Event.objects.filter(
-        start_time__gte=timezone.now()
-    ).exclude(id__in=[e.id for e in featured_events])[:5]  # 排除已展示的精选活动
-    
-    return render(request, 'home.html', {
-        'featured_events': featured_events,
-        'upcoming_events': upcoming_events,
-        'categories': Category.objects.all(),
-    })
 
 def events_home(request):
     return render(request, 'events.html')
@@ -34,7 +17,7 @@ class EventListView(ListView):
     model = Event
     template_name = 'events.html'
     context_object_name = "events" 
-    paginate_by = 10
+    paginate_by = 9
     ordering = ["-start_time"] 
     
     def get_queryset(self):
@@ -52,8 +35,7 @@ class EventListView(ListView):
                 Q(description__icontains=search)
             )
         
-
-       # 时间过滤
+        # 时间过滤
         now = timezone.now()
         if date_filter := params.get('date'):
             if date_filter == 'upcoming':
@@ -66,29 +48,22 @@ class EventListView(ListView):
         if end_date := params.get('end_date'):
             filters &= Q(start_time__lte=end_date)  
 
-
         # 分类过滤
         if (category := params.get('category')) and category != 'all':
             filters &= Q(categories__name=category)    
-
-        
-        # 精选活动过滤
-        if params.get('is_featured'):
-            filters &= Q(is_featured=True)
 
         return queryset.filter(filters).distinct().order_by('start_time')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         params = self.request.GET
-     # 保留搜索参数
+
         context.update({
             'current_search': params.get('search', ''),
             'current_date_filter': params.get('date', ''),
             'current_category': params.get('category', 'all'),
             'start_date': params.get('start_date', ''),
             'end_date': params.get('end_date', ''),
-            'is_featured': params.get('is_featured', False),
             'categories': Category.objects.all(),
         })
         return context
