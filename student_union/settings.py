@@ -163,7 +163,7 @@ else:
     CSRF_TRUSTED_ORIGINS = ['https://example.com']
 
 
-SUMMERNOTE_THEME = 'bs5'  # Show summernote with Bootstrap 5 theme
+# SUMMERNOTE_THEME = 'bs5'  # Show summernote with Bootstrap 5 theme
 
 SUMMERNOTE_CONFIG = {
     # 开启 iframe 模式。若改为 False 则使用 SummernoteInplaceWidget，
