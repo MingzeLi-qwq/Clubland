@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include, re_path
+from django.urls import path, include, re_path
 import user_system.views
 import club_system.views
 import event_system.views
@@ -28,8 +28,11 @@ from notification_system.views import mark_all_as_read
 
 import event_system.views
 import forum_system.views
+
+from django.conf import settings
+from django.conf.urls.static import static
+
 import admin_system.views
-from forum_system.views import ckeditor_image_upload
 
 from rest_framework.routers import DefaultRouter
 from club_hub.views import WidgetViewSet
@@ -87,10 +90,9 @@ urlpatterns = [
     #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
 
     # Forum related / 论坛相关页面
-    path('ckeditor/', include('ckeditor_uploader.urls')),  # 富文本编辑器图片上传
-    path('ckeditor/upload/', ckeditor_image_upload, name='ckeditor_upload'),
     path('forum/', include('forum_system.urls', namespace='forum_system')),
 
+    path('summernote/', include('django_summernote.urls')),
 
     path('api/', include('club_hub.urls')),
     path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
@@ -105,3 +107,6 @@ urlpatterns = [
 
 ]   
 
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
