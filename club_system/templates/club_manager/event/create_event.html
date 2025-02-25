@@ -1,0 +1,31 @@
+{% extends 'club_manager/club_manager_base.html' %}
+
+{% block manager_content %}
+<h4>Create Event</h4>
+<p>Create New Event.</p>
+
+<form method="post" class="mt-4">
+    {% csrf_token %}
+    <div>
+        <label for="name">Event name:</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <div>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description"></textarea>
+    </div>
+    <div>
+        <label for="start_time">Start:</label>
+        <input type="datetime-local" id="start_time" name="start_time" required>
+    </div>
+    <div>
+        <label for="end_time">End:</label>
+        <input type="datetime-local" id="end_time" name="end_time" required>
+    </div>
+    <div>
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required>
+    </div>
+    <button type="submit">Create</button>
+</form>
+{% endblock %}

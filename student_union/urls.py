@@ -74,7 +74,6 @@ urlpatterns = [
     path('events/', event_system.views.EventListView.as_view(), name='events'),
     path('events/<int:pk>/', event_system.views.event_detail, name='event_detail'),
     path('events/<int:pk>/rsvp/', event_system.views.rsvp_toggle, name='rsvp_toggle'),
-  
 
     #---------------------------------------------------- Club related / Club相关页面 -----------------------------------------------------------------------
     # 注意!!! 注意!!! 注意!!!!
@@ -87,6 +86,9 @@ urlpatterns = [
     re_path(r"^clubs/manager/events/(?P<event_id>\d+)/remove_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.RemoveRSVPView.as_view(), name="remove_rsvp"),
     re_path(r"^clubs/manager/events/(?P<event_id>\d+)/add_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.AddRSVPView.as_view(), name="add_rsvp"),
 
+    # 在 club_manager_event 中处理创建event
+    path('clubs/<int:club_id>/events/create/', club_system.views.CreateEventView.as_view(), name='create_event'),
+    # path('clubs/<int:club_id>/events/<int:event_id>/edit/', club_system.views.EditEventView.as_view(), name='edit_event'),
     #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
 
     # Forum related / 论坛相关页面
