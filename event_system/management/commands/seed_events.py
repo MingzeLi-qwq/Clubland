@@ -48,36 +48,39 @@ class Command(BaseCommand):
         if not clubs.exists():
             self.stdout.write(self.style.ERROR("❌ 错误：没有可用社团，请先创建社团"))
             return
+        
+        start_time = timezone.now() + timedelta(days=random.randint(5, 30)),
 
         for club in clubs:
-            for i in range(10):  # 每个社团创建 10 个活动
-                event_name = f"{club.name} - {self.generate_event_name()}"
-
-                # 生成时间范围（从过去7天到未来30天）
+            if club.name == "AI Club":
                 start_time = timezone.now() + timedelta(days=random.randint(5, 30))
                 end_time = start_time + timedelta(hours=random.randint(2, 6))
-
-                event = Event.objects.create(
-                    name=event_name,
+                event1 = Event.objects.create(
+                    name="AI Hackathon",
                     club=club,
                     start_time=start_time,
                     end_time=end_time,
                     location=f"{random.choice(locations)} - {fake.street_address()}",
-                    description=fake.paragraph(nb_sentences=8),
+                    description="All club members interested in Artificial Intelligence are welcome to participate in the AI Club Hackathon! In this 24-hour programming challenge, teams will collaborate to solve real-world AI problems, using techniques such as machine learning, computer vision, or natural language processing to develop innovative solutions. Whether you're a novice or an experienced developer, this is a great opportunity to learn and practice. The winning team will receive prizes and have the opportunity to present their project to industry experts!",
                 )
+                tech_category, created = Category.objects.get_or_create(name="Tech")
+                event1.categories.add(tech_category)
+                tech_category, created = Category.objects.get_or_create(name="Workshop")
+                event1.categories.add(tech_category)
+                self.stdout.write(f"Create Event:{event1.name}  For Club: {club.name}")
 
-                # 添加随机分类（1-3个）
-                event.categories.set(random.sample(list(categories), k=random.randint(1, 3)))
+                
+                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                end_time = start_time + timedelta(hours=random.randint(2, 6))
+                event2 = Event.objects.create(
+                    name="AI Ethics & Future Panel Discussion",
+                    club=club,
+                    start_time=start_time,
+                    end_time=end_time,
+                    location=f"{random.choice(locations)} - {fake.street_address()}",
+                    description="What will the future of Artificial Intelligence look like?Will AI replace human jobs? How should we deal with the ethical issues brought by AI development? This symposium invites researchers in the field of AI, representatives of enterprises and experts in ethics to discuss the trend of AI development, social impact and potential risks. All community members are welcome to actively participate, put forward their questions and opinions, and have in-depth exchanges with the guests!"
+                )
+                tech_category, created = Category.objects.get_or_create(name="Tech")
+                event2.categories.add(tech_category)
+                self.stdout.write(f"Create Event:{event2.name}  For Club: {club.name}")
 
-                self.stdout.write(f"🎉 创建活动：{event.name}  属于社团 {club.name}")
-
-        self.stdout.write(self.style.SUCCESS(f"✅ 成功为 {clubs.count()} 个社团创建活动，每个社团 10 个活动"))
-
-    def generate_event_name(self):
-        """生成符合真实场景的活动标题"""
-        prefixes = ["崩坏学园3", "崩坏：星穹铁道", "未定事件铺", "元神", "大别野"]
-        types = [
-            "学妹认识", "学姐鉴赏", "宅男电竞", "猛男健身", "多人交流",
-            "单人运动", "多人交配", "多人玩耍", "多人运动"
-        ]
-        return f"{random.choice(prefixes)} {fake.word().capitalize()} {random.choice(types)}"
