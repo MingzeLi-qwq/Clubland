@@ -2,4 +2,95 @@
 
 {% block content %}
 
+<h4>General</h4>
+<p>Manage Event name, description, start date, and end date.</p>
+
+<div class="mb-4">
+  <div class="card p-3 mb-3 shadow-sm">
+    <h5>Event name</h5>
+    <form method="post" action="{% url 'update_event_name' club_id=club.club_id event_id=event.id %}">
+      {% csrf_token %}
+      <input type="text" class="form-control" name="event_name" value="{{ event.name }}">
+      <button class="btn btn-primary mt-2" type="submit">Update name</button>
+    </form>
+  </div>
+</div>
+
+<div class="mb-4">
+  <div class="card p-3 mb-3 shadow-sm">
+    <h5>Event description</h5>
+    <form method="post" action="{% url 'update_event_description' club_id=club.club_id event_id=event.id %}">
+      {% csrf_token %}
+      <textarea class="form-control" name="event_description" rows="4">{{ event.description }}</textarea>
+      <button class="btn btn-primary mt-2" type="submit">Update description</button>
+    </form>
+  </div>
+</div>
+
+<div class="mb-4">
+    <div class="card p-3 mb-3 shadow-sm">
+      <h5>Event Time</h5>
+      <form method="post" action="{% url 'update_event_time' club_id=club.club_id event_id=event.id %}" id="eventTimeForm">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-6">
+            <label for="event_start_time" class="form-label">Start Time</label>
+            <input type="datetime-local" class="form-control" id="event_start_time" name="event_start_time" value="{{ event.start_time|date:'Y-m-d\TH:i' }}" required>
+          </div>
+          <div class="col-md-6">
+            <label for="event_end_time" class="form-label">End Time</label>
+            <input type="datetime-local" class="form-control" id="event_end_time" name="event_end_time" value="{{ event.end_time|date:'Y-m-d\TH:i' }}" required>
+          </div>
+        </div>
+        <button class="btn btn-primary mt-3" type="submit">Update Event Time</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var startTimeInput = document.getElementById('event_start_time');
+        var endTimeInput = document.getElementById('event_end_time');
+        var form = document.getElementById('eventTimeForm');
+    
+        // 设置最小日期为今天
+        var today = new Date();
+        var todayString = today.toISOString().split('T')[0] + "T00:00";
+        startTimeInput.min = todayString;
+        endTimeInput.min = todayString;
+    
+        // 更新开始时间时的限制
+        startTimeInput.addEventListener('change', function() {
+            var startDate = new Date(this.value);
+            if (startDate < today) {
+                this.value = todayString;
+            }
+            endTimeInput.min = this.value;
+        });
+    
+        // 更新结束时间时的限制
+        endTimeInput.addEventListener('change', function() {
+            var endDate = new Date(this.value);
+            var startDate = new Date(startTimeInput.value);
+            if (endDate <= startDate) {
+                this.value = '';
+            }
+        });
+    
+        // 表单验证
+        form.addEventListener('submit', function(event) {
+            var startTime = new Date(startTimeInput.value);
+            var endTime = new Date(endTimeInput.value);
+    
+            if (startTime < today) {
+                event.preventDefault();
+                alert('Start time cannot be in the past.');
+            } else if (endTime <= startTime) {
+                event.preventDefault();
+                alert('End time must be after start time.');
+            }
+        });
+    });
+    </script>
+
 {% endblock %}

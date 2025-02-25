@@ -44,5 +44,9 @@ urlpatterns = [
 
     # 在 club_manager_event 中处理创建event
     path('events/create/<int:club_id>', views.CreateEventView.as_view(), name='create_event'),
+    # Event update URLs
+    path("manager/event/update_name/<int:club_id>/<int:event_id>/", views.UpdateEventName.as_view(), name="update_event_name"),
+    path("manager/event/update_description/<int:club_id>/<int:event_id>/", views.UpdateEventDescription.as_view(), name="update_event_description"),
+    path("manager/event/update_time/<int:club_id>/<int:event_id>/", views.UpdateEventTime.as_view(), name='update_event_time'),
 
 ]

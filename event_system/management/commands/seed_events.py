@@ -84,3 +84,32 @@ class Command(BaseCommand):
                 event2.categories.add(tech_category)
                 self.stdout.write(f"Create Event:{event2.name}  For Club: {club.name}")
 
+
+            elif club.name == "Photography Club":
+                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                end_time = start_time + timedelta(hours=random.randint(2, 6))
+                event = Event.objects.create(
+                    name="Urban Exploration Photography Tour",
+                    club=club,
+                    start_time=start_time,
+                    end_time=end_time,
+                    location=f"{random.choice(locations)} - {fake.street_address()}",
+                    description="Want to capture some of the city's most unique landscapes and human moments? Photography Club invites you to join us on an urban exploration photography tour! Together, we'll head to local hidden corners, street markets, historic buildings and nighttime best spots to learn how to use light, composition and color to tell the city's story. Whether you're a cell phone photographer or a DSLR enthusiast, this event is sure to be a rewarding experience!"
+                )
+                tech_category, created = Category.objects.get_or_create(name="Arts")
+                event.categories.add(tech_category)
+                self.stdout.write(f"Create Event:{event.name}  For Club: {club.name}")
+
+                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                end_time = start_time + timedelta(hours=random.randint(2, 6))
+                event= Event.objects.create(
+                    name="Light & Composition Workshop",
+                    club=club,
+                    start_time=start_time,
+                    end_time=end_time,
+                    location=f"{random.choice(locations)} - {fake.street_address()}",
+                    description="The charm of photography lies in the use of light and shadow and composition. This workshop will be guided by an experienced photographer who will take you deep into the basic techniques of photography, including golden section, leading line, diagonal composition, color matching and so on. We will also help you improve your photography skills through hands-on exercises and critiques of your work, making every shutter click more artistic! Come join us and discover the infinite possibilities of photography!"
+                )
+                tech_category, created = Category.objects.get_or_create(name="Arts")
+                event.categories.add(tech_category)
+                self.stdout.write(f"Create Event:{event.name}  For Club: {club.name}")
