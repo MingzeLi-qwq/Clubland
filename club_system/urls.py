@@ -1,5 +1,5 @@
 # club_system/urls.py
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
@@ -12,6 +12,7 @@ urlpatterns = [
     path('manager/general/<int:club_id>/', views.ClubManagerGeneral.as_view(), name='club_manager_general'),
     path('manager/members/<int:club_id>/', views.ClubManagerMembers.as_view(), name='club_manager_members'),
     path('manager/news/<int:club_id>/', views.ClubManagerNews.as_view(), name='club_manager_news'),
+    path('manager/events/<int:club_id>/', views.ClubManagerEvents.as_view(), name='club_manager_events'),
 
     # Club manager change name and description
     path('manager/update_name/<int:club_id>/', views.UpdateClubName.as_view(), name='update_club_name'),
@@ -30,4 +31,16 @@ urlpatterns = [
 
     # 创建新的Club
     path('apply-new-club/', views.ApplyNewClubView.as_view(), name='apply_new_club'),
+
+    # club-manager中event相关
+    # event detail
+    path("manager/event/general/<int:club_id>/<int:event_id>", views.ClubManagerEventGeneral.as_view(), name="club_manager_event_general"),
+    # Events
+    path("clubs/manager/events/<int:event_id>/rsvps/", views.EventRSVPListView.as_view(), name="event_rsvps"),
+    re_path(r"^clubs/manager/events/(?P<event_id>\d+)/remove_rsvp/(?P<username>[\w.@+-]+)/$", views.RemoveRSVPView.as_view(), name="remove_rsvp"),
+    re_path(r"^clubs/manager/events/(?P<event_id>\d+)/add_rsvp/(?P<username>[\w.@+-]+)/$", views.AddRSVPView.as_view(), name="add_rsvp"),
+
+    # 在 club_manager_event 中处理创建event
+    path('clubs/<int:club_id>/events/create/', views.CreateEventView.as_view(), name='create_event'),
+    # path('clubs/<int:club_id>/events/<int:event_id>/edit/', views.EditEventView.as_view(), name='edit_event'),
 ]

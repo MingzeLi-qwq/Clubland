@@ -372,60 +372,46 @@ class AddMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequ
             messages.error(request, f"添加失败: {str(e)}")
             return redirect(redirect_url, club_id=club_id)
           
-          
-"""此部分用来实现club manager - 添加event的功能"""
-class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
-    def get(self, request, club_id, *args, **kwargs):
-        # 渲染活动创建表单页面
-        return render(request, 'club_manager/event/create_event.html', {'club_id': club_id})
-
-    def post(self, request, club_id, *args, **kwargs):
-        club = get_object_or_404(Club, pk=club_id)
-        name = request.POST.get('name', '').strip()
-        description = request.POST.get('description', '').strip()
-        start_time = request.POST.get('start_time', '').strip()  # 注意时间格式校验
-        end_time = request.POST.get('end_time', '').strip()  # 注意时间格式校验
-        location = request.POST.get('location', '').strip()
-
-        # 简单校验（可根据需求扩展）
-        if not name or not start_time or not end_time or not location:
-            messages.error(request, "标题、时间和地点为必填项。")
-            return redirect('create_event', club_id=club_id)
-
-        # 创建新的活动
-        event = Event.objects.create(
-            club=club,
-            name=name,
-            description=description,
-            start_time=start_time,
-            end_time=end_time,
-            location=location,
-        )
-        messages.success(request, "活动创建成功！")
-        # 创建后跳转到编辑页面，便于 manager 进一步完善活动内容
-        return redirect('club_manager_events', club_id=club_id)
 """-----------------------------------------------------上面的方法与Club Manager Members相关--------------------------------------------------------------"""
 
 
 
     
 """-------------------------------------------------------Club Manager Event 相关-------------------------------------------------------"""
+
 class ClubManagerEvents(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
-        club = Club.objects.get(pk=club_id)
-        # 获取当前用户管理的社团
-        clubs_managed = Club.objects.filter(membership__user=request.user, membership__is_manager=True)
+        club = get_object_or_404(Club, club_id=club_id)
+        search_query = request.GET.get('search', '')
+        events = Event.objects.filter(club=club)
 
-        # 获取这些社团的活动
-        events = Event.objects.filter(club__in=clubs_managed)
+        if search_query:
+            events = events.filter(
+                Q(name__icontains=search_query) |
+                Q(start_time__icontains=search_query)
+            )
 
-        # 终端调试
+        events = events.order_by('start_time')
 
-        return render(request, 'club_manager/club_manager_events.html', {
-            'club_id': club_id,
+        context = {
             'club': club,
-            'events': events
-        })
+            'events': events,
+            'club_id': club_id,
+            'search_query': search_query,
+        }
+        return render(request, 'club_manager/events.html', context)
+    
+class ClubManagerEventGeneral(LoginRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, event_id, *args, **kwargs ):
+        club = get_object_or_404(Club, club_id=club_id)
+        event = get_object_or_404(Event, pk=event_id)
+        context = {
+            'club': club,
+            'event': event,
+            'club_id': club_id,
+        }
+
+        return render(request, 'club_manager/event/general.html', context)
 
 class EventRSVPListView(LoginRequiredMixin, View):
     """ 获取某活动的 RSVP 成员 """
@@ -476,6 +462,38 @@ class AddRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         RSVP.objects.create(event=event, user=user, status=True)
 
         return JsonResponse({"status": "success", "message": "User RSVP'd"})
+    
+"""此部分用来实现club manager - 添加event的功能"""
+class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, *args, **kwargs):
+        # 渲染活动创建表单页面
+        return render(request, 'club_manager/event/create_event.html', {'club_id': club_id})
+
+    def post(self, request, club_id, *args, **kwargs):
+        club = get_object_or_404(Club, pk=club_id)
+        name = request.POST.get('name', '').strip()
+        description = request.POST.get('description', '').strip()
+        start_time = request.POST.get('start_time', '').strip()  # 注意时间格式校验
+        end_time = request.POST.get('end_time', '').strip()  # 注意时间格式校验
+        location = request.POST.get('location', '').strip()
+
+        # 简单校验（可根据需求扩展）
+        if not name or not start_time or not end_time or not location:
+            messages.error(request, "标题、时间和地点为必填项。")
+            return redirect('create_event', club_id=club_id)
+
+        # 创建新的活动
+        event = Event.objects.create(
+            club=club,
+            name=name,
+            description=description,
+            start_time=start_time,
+            end_time=end_time,
+            location=location,
+        )
+        messages.success(request, "活动创建成功！")
+        # 创建后跳转到编辑页面，便于 manager 进一步完善活动内容
+        return redirect('club_manager_events', club_id=club_id)
 
 """-------------------------------------------------------Club Manager Event 相关结束-------------------------------------------------------"""
 
