@@ -42,6 +42,13 @@
           <h5 class="mb-1">{{ post.title }}</h5>
           <small>{{ post.created_at|date:"Y-m-d H:i" }}</small>
         </div>
+        <p class="mb-1">
+          {% if post.category %}
+            所属社团：{{ post.category.name }}
+          {% else %}
+            所属社团：未指定
+          {% endif %}
+        </p>
       </a>
     {% empty %}
       <div class="list-group-item">暂无文章</div>

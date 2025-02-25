@@ -2,28 +2,11 @@
 
 {% block manager_content %}
 
-<!-- 错误信息框样式  -->
-<style>
-.alert-error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border-color: #f5c6cb;
-}
-</style>
-
-{% if messages %}
-{% for message in messages %}
-<div class="alert alert-{{ message.tags }} mt-2">
-  {{ message }}
-</div>
-{% endfor %}
-{% endif %}
-
 <h4>General</h4>
 <p>Manage Club name and description.</p>
 
 <div class="mb-4">
-  <div class="card p-3 mb-3">
+  <div class="card p-3 mb-3 shadow-sm">
     <h5>Club name</h5>
     <form method="post" action="{% url 'update_club_name' club_id=club_id %}">
       {% csrf_token %}
@@ -34,7 +17,7 @@
 </div>
 
 <div class="mb-4">
-  <div class="card p-3 mb-3">
+  <div class="card p-3 mb-3 shadow-sm">
     <h5>Club description</h5>
     <form method="post" action="{% url 'update_club_description' club_id=club_id %}">
       {% csrf_token %}

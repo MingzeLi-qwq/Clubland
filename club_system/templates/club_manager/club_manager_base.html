@@ -29,9 +29,26 @@
 
         <!-- 主内容 -->
         <div class="col-md-9">
-          {% block manager_content %}
-          <!-- 动态内容区域 -->
-          {% endblock %}
+            <!-- 错误信息框样式  -->
+            <style>
+                .alert-error {
+                    background-color: #f8d7da;
+                    color: #721c24;
+                    border-color: #f5c6cb;
+                }
+            </style>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} mt-2">
+                    {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block manager_content %}
+            <!-- 动态内容区域 -->
+            {% endblock %}
         </div>
     </div>
 </div>

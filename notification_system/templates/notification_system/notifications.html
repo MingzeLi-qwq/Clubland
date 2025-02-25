@@ -4,15 +4,50 @@
 {% block body %}
 <div class="container mt-4">
     <h2>Notifications</h2>
+
+    <!-- 批量標記為已讀按鈕 -->
+    <form id="mark-all-read-form" method="post" action="{% url 'mark_all_as_read' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-secondary mb-3">Mark All as Read</button>
+    </form>
+
+    <!-- 通知列表 -->
     <ul class="list-group">
         {% for notification in notifications %}
             <li class="list-group-item {% if not notification.is_read %}list-group-item-warning{% endif %}">
-                <a href="{% url 'notification_detail' notification.id %}">{{ notification.message }}</a>
-                <small class="text-muted d-block">{{ notification.created_at }}</small>
+                <a href="{% url 'notification_detail' notification.id %}">
+                    {{ notification.message }}
+                </a>
+                <small class="text-muted d-block">
+                    Received on {{ notification.created_at|date:"Y-m-d H:i" }}
+                </small>
             </li>
         {% empty %}
             <li class="list-group-item text-muted">No notifications</li>
         {% endfor %}
     </ul>
 </div>
+
+<!-- JavaScript 來發送 AJAX 請求 -->
+<script>
+    document.getElementById('mark-all-read-form').onsubmit = function(e) {
+        e.preventDefault();  // 阻止默認的表單提交
+
+        fetch(this.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': this.querySelector('[name="csrfmiddlewaretoken"]').value
+            }
+        })
+        .then(response => response.json())  // 解析 JSON 回應
+        .then(data => {
+            if (data.status === 'success') {
+                alert(`Successfully marked ${data.updated_count} notifications as read.`);
+                window.location.reload();  // 刷新頁面以更新通知狀態
+            } else {
+                alert('Failed to mark notifications as read.');
+            }
+        });
+    };
+</script>
 {% endblock %}

@@ -8,6 +8,7 @@ from faker import Faker
 from user_system.models import User
 from event_system.models import Event, Category
 
+
 fake = Faker()
 
 # 预定义活动分类
@@ -52,8 +53,8 @@ class Command(BaseCommand):
             for i in range(10):  # 每个社团创建 10 个活动
                 event_name = f"{club.name} - {self.generate_event_name()}"
 
-                # 生成时间范围（未来30天内）
-                start_time = timezone.now() + timedelta(days=random.randint(1, 30))
+                # 生成时间范围（从过去7天到未来30天）
+                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
                 end_time = start_time + timedelta(hours=random.randint(2, 6))
 
                 event = Event.objects.create(
@@ -63,7 +64,6 @@ class Command(BaseCommand):
                     end_time=end_time,
                     location=f"{random.choice(locations)} - {fake.street_address()}",
                     description=fake.paragraph(nb_sentences=8),
-                    is_featured=random.choice([True, False, False])  # 1/3 概率精选
                 )
 
                 # 添加随机分类（1-3个）

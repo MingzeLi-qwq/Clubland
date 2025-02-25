@@ -1,0 +1,119 @@
+{% extends "user_system/dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+
+<style>
+    .bubble-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+        overflow: hidden;
+    }
+    .bubble-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.15);
+    }
+    .role-bar {
+        height: 8px;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    .pending-bar {
+        background: linear-gradient(45deg, #ffea00, #c5a900);
+    }
+    .approved-bar {
+        background: linear-gradient(45deg, #4dff00, #0cb300);
+    }
+    .rejected-bar {
+        background: linear-gradient(45deg, #ff0000, #b30000);
+    }
+</style>
+
+<!-- 返回按钮 -->
+<div class="mb-3">
+    <a href="{% url 'dashboard_my_requests' %}" class="text-decoration-none text-primary">
+        <i class="bi bi-arrow-left-short"></i> My Requests
+    </a>
+</div>
+
+<h4>My New Club Requests</h4>
+<p></p>
+
+<!-- Pending -->
+<div class="mb-5">
+    <div class="card p-3 mb-4 shadow-sm">
+        <h5 class="text-muted">Pending</h5>
+        <div class="row">
+            {% for request in pending_requests %}
+            <div class="col-md-4 mb-4">
+                <div class="bubble-card card h-100">
+                    <div class="role-bar pending-bar"></div>
+                    <div class="card-body bg-white text-dark">
+                        <h3 class="card-title">{{ request.name }}</h3>
+                        <p class="card-text text-muted">
+                            <small>Created: {{ request.created_at|date:"M d, Y" }}</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-warning">There are no pending Requests</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Approved -->
+<div class="mb-5">
+    <div class="card p-3 mb-4 shadow-sm">
+        <h5 class="text-muted">Approved</h5>
+        <div class="row">
+            {% for request in approved_requests %}
+            <div class="col-md-4 mb-4">
+                <div class="bubble-card card h-100">
+                    <div class="role-bar approved-bar"></div>
+                    <div class="card-body bg-white text-dark">
+                        <h3 class="card-title">{{ request.name }}</h3>
+                        <p class="card-text text-muted">
+                            <small>Created: {{ request.created_at|date:"M d, Y" }}</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-warning">There are no approved Requests</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Rejected -->
+<div class="mb-5">
+    <div class="card p-3 mb-4 shadow-sm">
+        <h5 class="text-muted">Rejected</h5>
+        <div class="row">
+            {% for request in rejected_requests %}
+            <div class="col-md-4 mb-4">
+                <div class="bubble-card card h-100">
+                    <div class="role-bar rejected-bar"></div>
+                    <div class="card-body bg-white text-dark">
+                        <h3 class="card-title">{{ request.name }}</h3>
+                        <p class="card-text text-muted">
+                            <small>Created: {{ request.created_at|date:"M d, Y" }}</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-warning">There are no rejected Requests</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

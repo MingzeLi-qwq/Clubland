@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+from forum_system import summernote_setup
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,12 +43,13 @@ INSTALLED_APPS = [
     'club_system',
     'notification_system',
     'event_system',
-    'ckeditor',
-    'ckeditor_uploader',
     'forum_system.apps.ForumSystemConfig',  # 推荐写法
     'club_hub',
     "rest_framework",
+    "admin_system",
 ]
+
+INSTALLED_APPS += ('django_summernote', ) # RTE 新的富文本编辑器
 
 AUTH_USER_MODEL = 'user_system.User'
 
@@ -145,34 +147,59 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 if DEBUG:
     # 开发环境下使用本地存储
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+    # DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+    CSRF_TRUSTED_ORIGINS = ['https://localhost:8000']
 else:
-    # 生产环境下使用 Amazon S3 存储
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-    AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
-    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+#     # 生产环境下使用 Amazon S3 存储
+#     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+#     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+#     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+#     AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+#     AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
+#     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+#     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+    CSRF_TRUSTED_ORIGINS = ['https://example.com']
 
 
-# CKEditor Settings
-# 如果你使用上传功能，需要配置上传路径（例如结合对象存储，默认会调用 DEFAULT_FILE_STORAGE）
-CKEDITOR_UPLOAD_PATH = "uploads/ckeditor/"
-CKEDITOR_IMAGE_BACKEND = "pillow"
-CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js' 
+# SUMMERNOTE_THEME = 'bs5'  # Show summernote with Bootstrap 5 theme
 
-CKEDITOR_CONFIGS = {
-    'default':
-        {
-            'toolbar': 'full',
-            'filebrowserImageUploadUrl': '/uploadimg/',  # 替换成你的上传接口地址
-            'width': 'auto',
-            'extraPlugins': ','.join([
-                'codesnippet',
-            ]),
-        },
+SUMMERNOTE_CONFIG = {
+    # 开启 iframe 模式。若改为 False 则使用 SummernoteInplaceWidget，
+    # 此时需要自行加载 Bootstrap/jQuery 的依赖。
+    'iframe': False,
+
+    # summernote 的基础设置
+    'summernote': {
+        'airMode': False,  # 是否使用 Air-mode
+        'width': '100%',   # 编辑器宽度
+        'height': '480',   # 编辑器高度
+        # 默认语言，如果留空则自动匹配浏览器语言
+        'lang': None,  
+        # 自定义工具栏
+        # 'toolbar': [
+        #     ['style', ['style']],
+        #     ['font', ['bold', 'underline', 'clear']],
+        #     ['fontname', ['fontname']],
+        #     ['color', ['color']],
+        #     ['para', ['ul', 'ol', 'paragraph']],
+        #     ['table', ['table']],
+        #     ['insert', ['link', 'picture', 'video']],
+        #     ['view', ['fullscreen', 'codeview', 'help']],
+        # ],
+    },
+
+    # 附件相关配置，若不需要附件上传可保持默认，不作修改
+    'attachment_require_authentication': True,
+    'disable_attachment': False,
+    'attachment_absolute_uri': False,
+
+    # 延迟加载（若想在页面底部初始化 summernote 可启用）
+    'lazy': True,
+    # 使用 forum_system 中的上传路径生成函数
+    'attachment_upload_to': summernote_setup.upload_img_func,
 }
+
+LOGIN_URL = '/login/'

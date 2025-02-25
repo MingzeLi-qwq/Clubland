@@ -3,12 +3,12 @@
 {% block dashboard_content %}
 
 <style>
-    .club-card {
+    .bubble-card {
         transition: transform 0.2s, box-shadow 0.2s;
         cursor: pointer;
         overflow: hidden;
     }
-    .club-card:hover {
+    .bubble-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.15);
     }
@@ -25,17 +25,17 @@
     }
 </style>
 
-<h4>Personal Information</h4>
-<p>Check all your membership card.</p>
+<h4>My Club</h4>
+<p>Check all your club membership.</p>
 
 <!-- My clubs as manager -->
 <div class="mb-5">
-    <div class="card p-3 mb-4">
+    <div class="card p-3 mb-4 shadow-sm">
         <h5 class="text-muted">My clubs as manager</h5>
         <div class="row">
             {% for membership in managed_clubs %}
-            <div class="col-md-4 mb-4" onclick="window.location='{% url 'club_detail' club_id=membership.club.club_id %}'">
-                <div class="club-card card h-100">
+            <div class="col-md-4 mb-4" onclick="window.location='{% url 'dashboard_my_club_detail' club_id=membership.club.club_id %}'">
+                <div class="bubble-card card h-100">
                     <div class="role-bar manager-bar"></div>
                     <div class="card-body bg-white text-dark">
                         <h3 class="card-title">{{ membership.club.name }}</h3>
@@ -56,12 +56,12 @@
 
 <!-- My clubs as member -->
 <div class="mb-5">
-    <div class="card p-3 mb-4">
+    <div class="card p-3 mb-4 shadow-sm">
         <h5 class="text-muted">My clubs as member</h5>
         <div class="row">
             {% for membership in member_clubs %}
-            <div class="col-md-4 mb-4" onclick="window.location='{% url 'club_detail' club_id=membership.club.club_id %}'">
-                <div class="club-card card h-100">
+            <div class="col-md-4 mb-4" onclick="window.location='{% url 'dashboard_my_club_detail' club_id=membership.club.club_id %}'">
+                <div class="bubble-card card h-100">
                     <div class="role-bar member-bar"></div>
                     <div class="card-body bg-white text-dark">
                         <h3 class="card-title">{{ membership.club.name }}</h3>
