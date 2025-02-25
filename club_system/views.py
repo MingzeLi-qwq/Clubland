@@ -6,7 +6,7 @@ from .models import Club, Membership, NewClubRequest
 from user_system.models import User
 from .helpers.mixins import ClubExistsRequiredMixin, NonClubMemberRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin, ClubManagerRequiredMixin
 from user_system.helpers.mixins import LoginRequiredMixin, UserTypeRequiredMixin
-from event_system.models import Event, RSVP
+from event_system.models import Event, RSVP, Category
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -478,8 +478,13 @@ class AddRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
 class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = get_object_or_404(Club, pk=club_id)
+        categories = Category.objects.all()
         # 渲染活动创建表单页面
-        return render(request, 'club_manager/create_event.html', {'club_id': club_id, 'club': club})
+        return render(request, 'club_manager/create_event.html', {
+            'club_id': club_id, 
+            'club': club,
+            'categories': categories,
+            })
 
     def post(self, request, club_id, *args, **kwargs):
         club = get_object_or_404(Club, pk=club_id)
@@ -488,6 +493,9 @@ class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRe
         start_time = request.POST.get('start_time', '').strip()  # 注意时间格式校验
         end_time = request.POST.get('end_time', '').strip()  # 注意时间格式校验
         location = request.POST.get('location', '').strip()
+
+        # 获取选择的 category PKs
+        category_pks = request.POST.getlist('categories')
 
         # 简单校验
         if not name or not start_time or not end_time or not location:
@@ -508,6 +516,12 @@ class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRe
             end_time=end_time,
             location=location,
         )
+
+        # 添加选择的 categories
+        if category_pks:
+            categories = Category.objects.filter(pk__in=category_pks)
+            event.categories.add(*categories)
+
         messages.success(request, "活动创建成功！")
         # 创建后跳转到编辑页面，便于 manager 进一步完善活动内容
         return redirect('club_manager_events', club_id=club_id)

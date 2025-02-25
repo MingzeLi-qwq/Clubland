@@ -1,6 +1,31 @@
 {% extends 'club_manager/club_manager_base.html' %}
 
 {% block manager_content %}
+<style>
+    .category-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .category-checkbox {
+        display: none;
+    }
+
+    .category-label {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #f0f0f0;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .category-checkbox:checked + .category-label {
+        background-color: #007bff;
+        color: white;
+    }
+</style>
 
 <!-- 返回按钮 -->
 <div class="mb-3">
@@ -43,6 +68,16 @@
                         <input type="text" class="form-control" id="location" name="location" required>
                         <div class="invalid-feedback">Please provide a location.</div>
                     </div>
+                        <!-- Category 选择 -->
+                        <div class="mb-3">
+                            <label class="form-label">Categories (Optional)</label>
+                            <div class="category-selector">
+                                {% for category in categories %}
+                                    <input type="checkbox" id="category-{{ category.pk }}" name="categories" value="{{ category.pk }}" class="category-checkbox">
+                                    <label for="category-{{ category.pk }}" class="category-label">{{ category.name }}</label>
+                                {% endfor %}
+                            </div>
+                        </div>
                     <button type="submit" class="btn btn-primary">Create Event</button>
                 </form>
             </div>
@@ -72,6 +107,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         form.classList.add('was-validated');
     }, false);
+});
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryLabels = document.querySelectorAll('.category-label');
+    categoryLabels.forEach(label => {
+        label.addEventListener('click', function() {
+            this.classList.toggle('active');
+        });
+    });
 });
 </script>
 {% endblock %}
