@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
@@ -20,7 +21,7 @@ from .forms import NewClubRequestForm
 import urllib.parse
 import json
 
-"""--------------------------------------------------------------------下面的方法用于检查字符串是否与现存的club name重复-------------------------------------------------------------------------------"""
+"""--------------------------------------------------------------------下面的方法用于检查字符串是否与现存的club name or event name重复-------------------------------------------------------------------------------"""
 """This method is used to render the Club list page"""
 """此方法用来渲染Club列表页"""
 def clubs(request):
@@ -52,6 +53,16 @@ def isSameClubNameExistInRequest(name):
     for request in requests:
         normalized_request_name = ''.join(request.name.split()).lower()
         if normalized_name == normalized_request_name:
+            return True
+    return False
+
+"""此方法用于检查Event name是否重复, 更重要的是忽略了大小写和空格"""
+def isSameEventNameExist(name, club_id):
+    normalized_name = ''.join(name.split()).lower()
+    events = Event.objects.filter(club_id=club_id)
+    for event in events:
+        normalized_event_name = ''.join(event.name.split()).lower()
+        if normalized_name == normalized_event_name:
             return True
     return False
 """--------------------------------------------------------------------上面的方法用于检查字符串是否与现存的club name重复-------------------------------------------------------------------------------"""
@@ -466,8 +477,9 @@ class AddRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
 """此部分用来实现club manager - 添加event的功能"""
 class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
+        club = get_object_or_404(Club, pk=club_id)
         # 渲染活动创建表单页面
-        return render(request, 'club_manager/event/create_event.html', {'club_id': club_id})
+        return render(request, 'club_manager/create_event.html', {'club_id': club_id, 'club': club})
 
     def post(self, request, club_id, *args, **kwargs):
         club = get_object_or_404(Club, pk=club_id)
@@ -477,9 +489,14 @@ class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRe
         end_time = request.POST.get('end_time', '').strip()  # 注意时间格式校验
         location = request.POST.get('location', '').strip()
 
-        # 简单校验（可根据需求扩展）
+        # 简单校验
         if not name or not start_time or not end_time or not location:
             messages.error(request, "标题、时间和地点为必填项。")
+            return redirect('create_event', club_id=club_id)
+
+        # 检查事件名称是否重复
+        if isSameEventNameExist(name, club_id):
+            messages.error(request, "该俱乐部中已存在同名活动。")
             return redirect('create_event', club_id=club_id)
 
         # 创建新的活动

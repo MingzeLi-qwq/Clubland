@@ -33,6 +33,8 @@ urlpatterns = [
     path('apply-new-club/', views.ApplyNewClubView.as_view(), name='apply_new_club'),
 
     # club-manager中event相关
+    # 在 club_manager_event 中处理创建event
+    path("manager/event/create/<int:club_id>", views.CreateEventView.as_view(), name='create_event'),
     # event detail
     path("manager/event/general/<int:club_id>/<int:event_id>", views.ClubManagerEventGeneral.as_view(), name="club_manager_event_general"),
     # Events
@@ -41,6 +43,6 @@ urlpatterns = [
     re_path(r"^clubs/manager/events/(?P<event_id>\d+)/add_rsvp/(?P<username>[\w.@+-]+)/$", views.AddRSVPView.as_view(), name="add_rsvp"),
 
     # 在 club_manager_event 中处理创建event
-    path('clubs/<int:club_id>/events/create/', views.CreateEventView.as_view(), name='create_event'),
-    # path('clubs/<int:club_id>/events/<int:event_id>/edit/', views.EditEventView.as_view(), name='edit_event'),
+    path('events/create/<int:club_id>', views.CreateEventView.as_view(), name='create_event'),
+
 ]
