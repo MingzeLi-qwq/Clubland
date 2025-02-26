@@ -170,6 +170,13 @@ def rsvp_toggle(request, pk):
 #         RSVP.objects.create(event=event, user=user, status=True)
 
 #         return JsonResponse({"status": "success", "message": "User RSVP'd"})
+
+class RemoveRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
+    def post(self, request, club_id, event_id, rsvp_id):
+        rsvp = get_object_or_404(RSVP, pk=rsvp_id)
+        rsvp.delete()
+        messages.success(request, f"RSVP for {rsvp.user.get_full_name} has been removed")
+        return redirect('club_manager_event_RSVPs', club_id=club_id, event_id=event_id)
     
 """Create new even / 创建新的event"""
 class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):

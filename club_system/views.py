@@ -434,13 +434,27 @@ class ClubManagerEventGeneral(LoginRequiredMixin, ClubManagerRequiredMixin, View
         return render(request, 'club_manager/event/general.html', context)
     
 class ClubManagerEventRSVPs(LoginRequiredMixin, ClubManagerRequiredMixin, View):
-    def get(self, request, club_id, event_id, *args, **kwargs ):
-        club = get_object_or_404(Club, club_id=club_id)
+    def get(self, request, club_id, event_id, *args, **kwargs):
+        club = get_object_or_404(Club, pk=club_id)
         event = get_object_or_404(Event, pk=event_id)
+        
+        # 处理搜索
+        search_query = request.GET.get('search', '')
+        rsvps = RSVP.objects.filter(event=event).select_related('user')
+        
+        if search_query:
+            rsvps = rsvps.filter(
+                Q(user__first_name__icontains=search_query) |
+                Q(user__last_name__icontains=search_query) |
+                Q(user__email__icontains=search_query)
+            )
+        
         context = {
             'club': club,
             'event': event,
             'club_id': club_id,
+            'rsvps': rsvps,
+            'search_query': search_query,
         }
         return render(request, 'club_manager/event/RSVPs.html', context)
     
