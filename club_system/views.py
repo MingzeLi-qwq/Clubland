@@ -141,19 +141,39 @@ class ClubManagerGeneral(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManage
 class ClubManagerMembers(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
+        
+        # Get search parameters
+        manager_search = request.GET.get('manager_search', '')
+        member_search = request.GET.get('member_search', '')
+        
+        # Manager Enquiries
         managers = club.membership_set.filter(is_manager=True)
-        manager_count = managers.count()
+        if manager_search:
+            managers = managers.filter(
+                Q(user__first_name__icontains=manager_search) |
+                Q(user__last_name__icontains=manager_search) |
+                Q(user__email__icontains=manager_search)
+            )
+        
+        # Members Enquiries
         muggles = club.membership_set.filter(is_manager=False)
-        muggle_count = muggles.count()
-
+        if member_search:
+            muggles = muggles.filter(
+                Q(user__first_name__icontains=member_search) |
+                Q(user__last_name__icontains=member_search) |
+                Q(user__email__icontains=member_search)
+            )
+        
         return render(request, 'club_manager/members.html', {
             'club_id': club_id,
             'club': club,
             'managers': managers,
-            'muggles' : muggles,
+            'muggles': muggles,
             'user': request.user,
-            'manager_count': manager_count,
-            'muggle_count': muggle_count
+            'manager_count': managers.count(),
+            'muggle_count': muggles.count(),
+            'manager_search_query': manager_search,
+            'member_search_query': member_search,
         })
     
 class ClubManagerNews(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
