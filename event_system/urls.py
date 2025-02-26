@@ -25,4 +25,7 @@ urlpatterns = [
 
     path('remove_rsvp/<int:club_id>/<int:event_id>/<int:rsvp_id>/', views.RemoveRSVPView.as_view(), name='remove_rsvp'),
 
+    path('search_rsvp_candidates/', views.SearchRSVPCandidatesView.as_view(), name='search_rsvp_candidates'),
+    path('add_rsvp/<int:club_id>/<int:event_id>/<str:username>/', views.AddRSVPView.as_view(), name='add_rsvp'),
+
 ]
