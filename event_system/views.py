@@ -74,10 +74,12 @@ def event_detail(request, pk):
         user=request.user, 
         event=event
     ).first() if request.user.is_authenticated else None
+    club = event.club
 
     return render(request, 'event_detail.html', {
         'event': event,
-        'user_rsvp': user_rsvp
+        'user_rsvp': user_rsvp,
+        'club':club,
     })
 
 @login_required
