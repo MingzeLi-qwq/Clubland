@@ -20,7 +20,7 @@ from django.utils import timezone
 import urllib.parse
 import json
 
-"""--------------------------------------------------------------------下面的方法用于检查字符串是否与现存的club name or event name重复-------------------------------------------------------------------------------"""
+"""--------------------------------------------------------------------下面的方法用于检查字符串是否与现存的club name重复-------------------------------------------------------------------------------"""
 """This method is used to render the Club list page"""
 """此方法用来渲染Club列表页"""
 def clubs(request):
@@ -55,15 +55,6 @@ def isSameClubNameExistInRequest(name):
             return True
     return False
 
-"""此方法用于检查Event name是否重复, 更重要的是忽略了大小写和空格"""
-def isSameEventNameExist(name):
-    normalized_name = ''.join(name.split()).lower()
-    events = Event.objects.all()
-    for event in events:
-        normalized_event_name = ''.join(event.name.split()).lower()
-        if normalized_name == normalized_event_name:
-            return True
-    return False
 """--------------------------------------------------------------------上面的方法用于检查字符串是否与现存的club name重复-------------------------------------------------------------------------------"""
 
 
@@ -421,183 +412,7 @@ class ClubManagerEventGeneral(LoginRequiredMixin, ClubManagerRequiredMixin, View
             'club_id': club_id,
         }
         return render(request, 'club_manager/event/general.html', context)
-
-class EventRSVPListView(LoginRequiredMixin, View):
-    """ 获取某活动的 RSVP 成员 """
-    def get(self, request, event_id, *args, **kwargs):
-        try:
-            event = get_object_or_404(Event, pk=event_id)
-            rsvp_members = RSVP.objects.filter(event=event).select_related("user")
-            members_data = [
-            {
-                "email": rsvp.user.email,
-                "username": rsvp.user.username
-            }
-            for rsvp in rsvp_members
-        ]
-            return JsonResponse({"status": "success", "members": members_data, "event_id": event_id})
-        
-        except Exception as e:
-            print(f" {str(e)}")
-            return JsonResponse({"status": "error", "message": str(e)}, status=500)
-
-class RemoveRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
-    """ 管理员通过 username 移除 RSVP """
-
-    def post(self, request, event_id, username, *args, **kwargs):
-        username = urllib.parse.unquote(username)
-
-
-        event = get_object_or_404(Event, pk=event_id)
-        user = get_object_or_404(User, username=username)
-        rsvp = RSVP.objects.filter(event=event, user=user).first()
-
-        if not rsvp:
-            return JsonResponse({"status": "error", "message": "RSVP record not found"}, status=404)
-
-        rsvp.delete()
-        return JsonResponse({"status": "success", "message": "RSVP removed successfully"})
     
-class AddRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
-    """ 管理员添加 RSVP """
-
-    def post(self, request, event_id, username, *args, **kwargs):
-        event = get_object_or_404(Event, id=event_id)
-        user = get_object_or_404(User, username=username)
-
-        if RSVP.objects.filter(event=event, user=user).exists():
-            return JsonResponse({"status": "error", "message": "User already RSVP'd"}, status=400)
-
-        RSVP.objects.create(event=event, user=user, status=True)
-
-        return JsonResponse({"status": "success", "message": "User RSVP'd"})
-    
-"""此部分用来实现club manager - 添加event的功能"""
-class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
-    def get(self, request, club_id, *args, **kwargs):
-        club = get_object_or_404(Club, pk=club_id)
-        categories = Category.objects.all()
-        # 渲染活动创建表单页面
-        return render(request, 'club_manager/create_event.html', {
-            'club_id': club_id, 
-            'club': club,
-            'categories': categories,
-            })
-
-    def post(self, request, club_id, *args, **kwargs):
-        club = get_object_or_404(Club, pk=club_id)
-        name = request.POST.get('name', '').strip()
-        description = request.POST.get('description', '').strip()
-        start_time = request.POST.get('start_time', '').strip()  # 注意时间格式校验
-        end_time = request.POST.get('end_time', '').strip()  # 注意时间格式校验
-        location = request.POST.get('location', '').strip()
-
-        # 获取选择的 category PKs
-        category_pks = request.POST.getlist('categories')
-
-        # 简单校验
-        if not name or not start_time or not end_time or not location:
-            messages.error(request, "Title, time and place are required")
-            return redirect('create_event', club_id=club_id)
-
-        # 检查事件名称是否重复
-        if isSameEventNameExist(name):
-            messages.error(request, "Event with the same name already exists")
-            return redirect('create_event', club_id=club_id)
-
-        # 创建新的活动
-        event = Event.objects.create(
-            club=club,
-            name=name,
-            description=description,
-            start_time=start_time,
-            end_time=end_time,
-            location=location,
-        )
-
-        # 添加选择的 categories
-        if category_pks:
-            categories = Category.objects.filter(pk__in=category_pks)
-            event.categories.add(*categories)
-
-        messages.success(request, "活动创建成功！")
-        # 创建后跳转到编辑页面，便于 manager 进一步完善活动内容
-        return redirect('club_manager_events', club_id=club_id)
-    
-
-class UpdateEventName(LoginRequiredMixin, ClubManagerRequiredMixin, View):
-    def post(self, request, club_id, event_id):
-        club = get_object_or_404(Club, pk=club_id)
-        event = get_object_or_404(Event, id=event_id, club=club)
-        new_name = request.POST.get('event_name', '').strip()
-
-        # 如果访问此view的请求是来自admin panel的, 重定向url就是admin panel
-        if request.user.account_type == 'Admin':
-            redirect_url = 'admin_panel_event_general'
-        else:
-            redirect_url = 'club_manager_event_general'
-
-        if new_name == event.name:
-            messages.error(request, "The new name cannot duplicate the old name.")
-            return redirect(redirect_url, club_id=club_id, event_id=event_id)
-
-        if not new_name:
-            messages.error(request, "Event name cannot be empty.")
-            return redirect(redirect_url, club_id=club_id, event_id=event_id)
-        
-        if isSameEventNameExist(new_name):
-            messages.error(request, "There's already an Event with the same name.")
-            return redirect(redirect_url, club_id=club_id, event_id=event_id)
-            
-        try:
-            event.name = new_name
-            event.save()
-            messages.success(request, "Event name updated successfully.")
-        except IntegrityError:
-            messages.error(request, "This event name does not match the specification.")
-        
-        return redirect(redirect_url, club_id=club_id, event_id=event_id)
-
-class UpdateEventDescription(LoginRequiredMixin, ClubManagerRequiredMixin, View):
-    def post(self, request, club_id, event_id):
-        club = get_object_or_404(Club, pk=club_id)
-        event = get_object_or_404(Event, id=event_id, club=club)
-        new_description = request.POST.get('event_description')
-        event.description = new_description
-        event.save()
-        messages.success(request, 'Event description updated successfully.')
-        return redirect('club_manager_event_general', club_id=club_id, event_id=event_id)
-
-class UpdateEventTime(LoginRequiredMixin, ClubManagerRequiredMixin, View):
-    def post(self, request, club_id, event_id):
-        club = get_object_or_404(Club, pk=club_id)
-        event = get_object_or_404(Event, id=event_id, club=club)
-        
-        start_time = request.POST.get('event_start_time')
-        end_time = request.POST.get('event_end_time')
-
-        if not start_time or not end_time:
-            messages.error(request, "Both start and end times are required.")
-            return redirect('club_manager_event_general', club_id=club_id, event_id=event_id)
-
-        start_time = timezone.make_aware(timezone.datetime.strptime(start_time, "%Y-%m-%dT%H:%M"))
-        end_time = timezone.make_aware(timezone.datetime.strptime(end_time, "%Y-%m-%dT%H:%M"))
-
-        if end_time <= start_time:
-            messages.error(request, "End time must be after start time.")
-            return redirect('club_manager_event_general', club_id=club_id, event_id=event_id)
-
-        if start_time < timezone.now():
-            messages.error(request, "Start time cannot be in the past.")
-            return redirect('club_manager_event_general', club_id=club_id, event_id=event_id)
-
-        event.start_time = start_time
-        event.end_time = end_time
-        event.save()
-
-        messages.success(request, "Event time updated successfully.")
-        return redirect('club_manager_event_general', club_id=club_id, event_id=event_id)
-
 """-------------------------------------------------------Club Manager Event 相关结束-------------------------------------------------------"""
 
 

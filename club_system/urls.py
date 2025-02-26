@@ -32,21 +32,6 @@ urlpatterns = [
     # 创建新的Club
     path('apply-new-club/', views.ApplyNewClubView.as_view(), name='apply_new_club'),
 
-    # club-manager中event相关
-    # 在 club_manager_event 中处理创建event
-    path("manager/event/create/<int:club_id>", views.CreateEventView.as_view(), name='create_event'),
     # event detail
     path("manager/event/general/<int:club_id>/<int:event_id>", views.ClubManagerEventGeneral.as_view(), name="club_manager_event_general"),
-    # Events
-    path("clubs/manager/events/<int:event_id>/rsvps/", views.EventRSVPListView.as_view(), name="event_rsvps"),
-    re_path(r"^clubs/manager/events/(?P<event_id>\d+)/remove_rsvp/(?P<username>[\w.@+-]+)/$", views.RemoveRSVPView.as_view(), name="remove_rsvp"),
-    re_path(r"^clubs/manager/events/(?P<event_id>\d+)/add_rsvp/(?P<username>[\w.@+-]+)/$", views.AddRSVPView.as_view(), name="add_rsvp"),
-
-    # 在 club_manager_event 中处理创建event
-    path('events/create/<int:club_id>', views.CreateEventView.as_view(), name='create_event'),
-    # Event update URLs
-    path("manager/event/update_name/<int:club_id>/<int:event_id>/", views.UpdateEventName.as_view(), name="update_event_name"),
-    path("manager/event/update_description/<int:club_id>/<int:event_id>/", views.UpdateEventDescription.as_view(), name="update_event_description"),
-    path("manager/event/update_time/<int:club_id>/<int:event_id>/", views.UpdateEventTime.as_view(), name='update_event_time'),
-
 ]
