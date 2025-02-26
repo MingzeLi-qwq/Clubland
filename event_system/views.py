@@ -121,56 +121,7 @@ def rsvp_toggle(request, pk):
 
 
 """--------------------------------------------------以下部分负责针对单个event的相关操作-------------------------------------------------"""
-# class EventRSVPListView(LoginRequiredMixin, View):
-#     """ 获取某活动的 RSVP 成员 """
-#     def get(self, request, event_id, *args, **kwargs):
-#         try:
-#             event = get_object_or_404(Event, pk=event_id)
-#             rsvp_members = RSVP.objects.filter(event=event).select_related("user")
-#             members_data = [
-#             {
-#                 "email": rsvp.user.email,
-#                 "username": rsvp.user.username
-#             }
-#             for rsvp in rsvp_members
-#         ]
-#             return JsonResponse({"status": "success", "members": members_data, "event_id": event_id})
-        
-#         except Exception as e:
-#             print(f" {str(e)}")
-#             return JsonResponse({"status": "error", "message": str(e)}, status=500)
-
-# class RemoveRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
-#     """ 管理员通过 username 移除 RSVP """
-
-#     def post(self, request, event_id, username, *args, **kwargs):
-#         username = urllib.parse.unquote(username)
-
-
-#         event = get_object_or_404(Event, pk=event_id)
-#         user = get_object_or_404(User, username=username)
-#         rsvp = RSVP.objects.filter(event=event, user=user).first()
-
-#         if not rsvp:
-#             return JsonResponse({"status": "error", "message": "RSVP record not found"}, status=404)
-
-#         rsvp.delete()
-#         return JsonResponse({"status": "success", "message": "RSVP removed successfully"})
-    
-# class AddRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
-#     """ 管理员添加 RSVP """
-
-#     def post(self, request, event_id, username, *args, **kwargs):
-#         event = get_object_or_404(Event, id=event_id)
-#         user = get_object_or_404(User, username=username)
-
-#         if RSVP.objects.filter(event=event, user=user).exists():
-#             return JsonResponse({"status": "error", "message": "User already RSVP'd"}, status=400)
-
-#         RSVP.objects.create(event=event, user=user, status=True)
-
-#         return JsonResponse({"status": "success", "message": "User RSVP'd"})
-
+"""Remove RSVP / 移除RSVP"""
 class RemoveRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, event_id, rsvp_id):
         rsvp = get_object_or_404(RSVP, pk=rsvp_id)
