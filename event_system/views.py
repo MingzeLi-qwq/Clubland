@@ -12,6 +12,7 @@ from club_system.helpers.mixins import ClubExistsRequiredMixin, NonClubMemberReq
 from django.views import View
 from club_system.models import Club
 from django.contrib import messages
+from django.urls import reverse
 
 def events_home(request):
     return render(request, 'events.html')
@@ -218,9 +219,33 @@ class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRe
             categories = Category.objects.filter(pk__in=category_pks)
             event.categories.add(*categories)
 
-        messages.success(request, "活动创建成功！")
+        messages.success(request, "Event created successfully!")
         # 创建后跳转到编辑页面，便于 manager 进一步完善活动内容
         return redirect('club_manager_events', club_id=club_id)
+    
+
+class DeleteEvent(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, event_id, club_id):
+        if request.session.get('password_verified'):
+            del request.session['password_verified']
+            event = get_object_or_404(Event, id=event_id)
+            event_name = event.name
+            event.delete()
+            messages.success(request, f"Event '{event_name}' has been deleted")
+            return redirect('club_manager_events', club_id=club_id)
+        else:
+            return redirect('verify_admin_password')
+
+    def post(self, request, event_id, club_id):
+        if not request.session.get('password_verified'):
+            request.session['return_url'] = reverse('club_manager_event_general', kwargs={'club_id': club_id, 'event_id':event_id})
+            request.session['pending_action'] = 'delete_event'
+            request.session['club_id'] = club_id
+            request.session['event_id'] = event_id
+            return redirect('verify_admin_password')
+        else:
+            return self.get(request, event_id, club_id)
+
     
 """Changing the name for Event"""
 class UpdateEventName(LoginRequiredMixin, ClubManagerRequiredMixin, View):

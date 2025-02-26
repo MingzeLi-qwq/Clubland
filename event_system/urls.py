@@ -21,4 +21,6 @@ urlpatterns = [
     # create event URL
     path("create/<int:club_id>", views.CreateEventView.as_view(), name='create_event'),
 
+    path('delete/<int:club_id>/<int:event_id>/', views.DeleteEvent.as_view(), name='delete_event'),
+
 ]

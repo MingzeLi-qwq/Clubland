@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
 from django.views import View
 from django.db.models import Q
 from user_system.helpers.mixins import LoginRequiredMixin, UserTypeRequiredMixin
@@ -21,6 +20,10 @@ def verifyAdminPassword(request):
             if request.session.get('pending_action') == 'delete_club':
                 club_id = request.session.get('club_id')
                 return redirect('admin_delete_club', club_id=club_id)
+            elif request.session.get('pending_action') == 'delete_event':
+                club_id = request.session.get('club_id')
+                event_id = request.session.get('event_id')
+                return redirect('delete_event', event_id=event_id, club_id=club_id)
             return redirect(request.session.get('return_url', 'admin_panel_clubs'))
         else:
             messages.error(request, 'Wrong password, please try again.')
