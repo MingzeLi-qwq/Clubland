@@ -20,7 +20,7 @@ from django.utils import timezone
 import urllib.parse
 import json
 
-"""--------------------------------------------------------------------下面的方法用于检查字符串是否与现存的club name重复-------------------------------------------------------------------------------"""
+"""------------------------------------------------------Checks if a string is a duplicate of an existing club name.---------------------------------------------------------"""
 """This method is used to render the Club list page"""
 """此方法用来渲染Club列表页"""
 def clubs(request):
@@ -55,10 +55,10 @@ def isSameClubNameExistInRequest(name):
             return True
     return False
 
-"""--------------------------------------------------------------------上面的方法用于检查字符串是否与现存的club name重复-------------------------------------------------------------------------------"""
+"""--------------------------------------------------------------------------------End-------------------------------------------------------------------------------"""
 
 
-"""--------------------------------------------------------------------下面的方法与Club Details Page相关-------------------------------------------------------------------------------"""
+"""--------------------------------------------------------------------Club Details Page-------------------------------------------------------------------------------"""
 """This method is used to render the Club details page"""
 """此方法用来渲染Club详情页"""
 class ClubDetailView(ClubExistsRequiredMixin, View):
@@ -104,7 +104,7 @@ class CancelMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, UserType
             return redirect('dashboard_my_club')
         else:
             return redirect('login')
-"""--------------------------------------------------------------------上面的方法与Club Details Page相关-------------------------------------------------------------------------------"""
+"""------------------------------------------------------------------------End-------------------------------------------------------------------------------"""
 
 
 class ClubWebView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMemberRequiredMixin, View):
@@ -128,7 +128,7 @@ class ClubWebView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMemberRequire
         
 
 
-"""---------------------------------------------------下面的方法用于渲染Club Manager页面------------------------------------------------------------"""
+"""---------------------------------------------------Club Manager Side Bar------------------------------------------------------------"""
 class ClubManagerGeneral(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
@@ -164,11 +164,11 @@ class ClubManagerNews(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRe
             'club_id': club_id,
             'club': club,
         })
-"""-----------------------------------------------------上面的方法用于渲染Club Manager页面--------------------------------------------------------------"""
+"""------------------------------------------------------------End--------------------------------------------------------------"""
 
 
 
-"""-----------------------------------------------------下面的方法与Club Manager General相关--------------------------------------------------------------"""
+"""----------------------------------------------------------------Club Manager General-------------------------------------------------------------------"""
 """This method is used to handle name update requests from the club manager general and admin panel."""
 """此方法用于处理来自club manager general, admin panel更新club name请求"""
 class UpdateClubName(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
@@ -236,10 +236,10 @@ class UpdateClubDescription(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMan
         messages.success(request, "Description updated successfully.")
         
         return redirect(redirect_url, club_id=club_id)
-"""-----------------------------------------------------上面的方法与Club Manager General相关--------------------------------------------------------------"""
+"""------------------------------------------------------------------------End---------------------------------------------------------------------------"""
 
 
-"""-----------------------------------------------------下面的方法与Club Manager Members相关--------------------------------------------------------------"""
+"""-------------------------------------------------------------Club Manager Members-------------------------------------------------------------------------"""
 """This section is used to process requests from club manager remove manager"""
 """此部分用于处理来自club manager, admin panel 移除 manager的请求"""
 class RemoveManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
@@ -373,7 +373,7 @@ class AddMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequ
             messages.error(request, f"添加失败: {str(e)}")
             return redirect(redirect_url, club_id=club_id)
           
-"""-----------------------------------------------------上面的方法与Club Manager Members相关--------------------------------------------------------------"""
+"""----------------------------------------------------------------------End--------------------------------------------------------------"""
 
 
 

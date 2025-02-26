@@ -170,7 +170,7 @@ def rsvp_toggle(request, pk):
 
 #         return JsonResponse({"status": "success", "message": "User RSVP'd"})
     
-"""此部分用来实现club manager - 添加event的功能"""
+"""Create new even / 创建新的event"""
 class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = get_object_or_404(Club, pk=club_id)
@@ -222,7 +222,7 @@ class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRe
         # 创建后跳转到编辑页面，便于 manager 进一步完善活动内容
         return redirect('club_manager_events', club_id=club_id)
     
-
+"""Changing the name for Event"""
 class UpdateEventName(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, event_id):
         club = get_object_or_404(Club, pk=club_id)
@@ -256,16 +256,30 @@ class UpdateEventName(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         
         return redirect(redirect_url, club_id=club_id, event_id=event_id)
 
+"""Change Event Description"""
 class UpdateEventDescription(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, event_id):
         club = get_object_or_404(Club, pk=club_id)
         event = get_object_or_404(Event, id=event_id, club=club)
-        new_description = request.POST.get('event_description')
+        new_description = request.POST.get('event_description', '').strip()
+
+        # Check if the new description is the same as the old one
+        if new_description == event.description:
+            messages.error(request, "The new description cannot be the same as the old one.")
+            return redirect('club_manager_event_general', club_id=club_id, event_id=event_id)
+
+        # Handling of empty descriptions
+        if not new_description:
+            messages.error(request, "Event Description cannot be empty.")
+            return redirect('club_manager_event_general', club_id=club_id, event_id=event_id)
+
         event.description = new_description
         event.save()
-        messages.success(request, 'Event description updated successfully.')
+        messages.success(request, "Event description updated successfully.")
+        
         return redirect('club_manager_event_general', club_id=club_id, event_id=event_id)
 
+"""Update event time"""
 class UpdateEventTime(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, event_id):
         club = get_object_or_404(Club, pk=club_id)
