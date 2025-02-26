@@ -32,6 +32,7 @@ urlpatterns = [
     # 创建新的Club
     path('apply-new-club/', views.ApplyNewClubView.as_view(), name='apply_new_club'),
 
-    # event detail
+    # event 
     path("manager/event/general/<int:club_id>/<int:event_id>", views.ClubManagerEventGeneral.as_view(), name="club_manager_event_general"),
+    path("manager/event/RSVPs/<int:club_id>/<int:event_id>", views.ClubManagerEventRSVPs.as_view(), name="club_manager_event_RSVPs"),
 ]

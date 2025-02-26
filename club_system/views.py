@@ -164,6 +164,28 @@ class ClubManagerNews(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRe
             'club_id': club_id,
             'club': club,
         })
+    
+class ClubManagerEvents(LoginRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, *args, **kwargs):
+        club = get_object_or_404(Club, club_id=club_id)
+        search_query = request.GET.get('search', '')
+        events = Event.objects.filter(club=club)
+
+        if search_query:
+            events = events.filter(
+                Q(name__icontains=search_query) |
+                Q(start_time__icontains=search_query)
+            )
+
+        events = events.order_by('start_time')
+
+        context = {
+            'club': club,
+            'events': events,
+            'club_id': club_id,
+            'search_query': search_query,
+        }
+        return render(request, 'club_manager/events.html', context)
 """------------------------------------------------------------End--------------------------------------------------------------"""
 
 
@@ -379,28 +401,6 @@ class AddMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequ
 
     
 """-------------------------------------------------------Club Manager Event 相关-------------------------------------------------------"""
-
-class ClubManagerEvents(LoginRequiredMixin, ClubManagerRequiredMixin, View):
-    def get(self, request, club_id, *args, **kwargs):
-        club = get_object_or_404(Club, club_id=club_id)
-        search_query = request.GET.get('search', '')
-        events = Event.objects.filter(club=club)
-
-        if search_query:
-            events = events.filter(
-                Q(name__icontains=search_query) |
-                Q(start_time__icontains=search_query)
-            )
-
-        events = events.order_by('start_time')
-
-        context = {
-            'club': club,
-            'events': events,
-            'club_id': club_id,
-            'search_query': search_query,
-        }
-        return render(request, 'club_manager/events.html', context)
     
 class ClubManagerEventGeneral(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, event_id, *args, **kwargs ):
@@ -412,6 +412,17 @@ class ClubManagerEventGeneral(LoginRequiredMixin, ClubManagerRequiredMixin, View
             'club_id': club_id,
         }
         return render(request, 'club_manager/event/general.html', context)
+    
+class ClubManagerEventRSVPs(LoginRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, event_id, *args, **kwargs ):
+        club = get_object_or_404(Club, club_id=club_id)
+        event = get_object_or_404(Event, pk=event_id)
+        context = {
+            'club': club,
+            'event': event,
+            'club_id': club_id,
+        }
+        return render(request, 'club_manager/event/RSVPs.html', context)
     
 """-------------------------------------------------------Club Manager Event 相关结束-------------------------------------------------------"""
 

@@ -19,10 +19,10 @@
                 <a href="{% url 'club_manager_events' club_id=club.club_id %}" class="list-group-item list-group-item-action bg-primary text-white">
                     <i class="bi bi-arrow-left"></i> To Club Manager 
                 </a>
-                <a href="#" class="list-group-item list-group-item-action">
+                <a href="{% url 'club_manager_event_general' club_id=club.club_id event_id=event.id %}" class="list-group-item list-group-item-action">
                     General
                 </a>
-                <a href="#" class="list-group-item list-group-item-action">
+                <a href="{% url 'club_manager_event_RSVPs' club_id=club.club_id event_id=event.id %}" class="list-group-item list-group-item-action">
                     RSVPs
                 </a>
             </div>
