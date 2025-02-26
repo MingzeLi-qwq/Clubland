@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.urls import reverse
+from django.utils import timezone
 
 
 def verifyAdminPassword(request):
@@ -253,6 +254,43 @@ class AdminPanelNewClubRequestDetail(LoginRequiredMixin, UserTypeRequiredMixin, 
             'creator':creator
         }
         return render(request, 'admin_panel/admin_panel_requests/new_club_request_detail.html', context)
+    
+
+class AdminReviewNewClubRequest(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+
+    def get(self, request, request_id, *args, **kwargs):
+        ncRequest = get_object_or_404(NewClubRequest, request_id=request_id)
+        return render(request, 'admin_panel/admin_panel_requests/new_club_request_detail.html', {'ncRequest': ncRequest})
+
+    def post(self, request, request_id, *args, **kwargs):
+        ncRequest = get_object_or_404(NewClubRequest, request_id=request_id)
+        action = request.POST.get('action')
+        review_text = request.POST.get('review')
+
+        ncRequest.reviewed_at = timezone.now()
+        ncRequest.reviewed_by = request.user
+        ncRequest.review = review_text
+
+        if action == 'accept':
+            new_club = Club.objects.create(
+                name=ncRequest.name,
+                description=ncRequest.description
+            )
+            Membership.objects.create(
+                user=ncRequest.creator,
+                club=new_club,
+                is_manager=True
+            )
+            ncRequest.status = NewClubRequest.STATUS_APPROVED
+            messages.success(request, f"Club request '{ncRequest.name}' has been approved and the club has been created.")
+        elif action == 'reject':
+            ncRequest.status = NewClubRequest.STATUS_REJECTED
+            messages.success(request, f"Club request '{ncRequest.name}' has been rejected.")
+
+        ncRequest.save()
+
+        return redirect('admin_panel_new_club_requests')
 
     
 """-----------------------------------------以上内容负责渲染Admin Panel Request---------------------------------------------------"""
