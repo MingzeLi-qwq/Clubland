@@ -166,7 +166,19 @@ class AdminDeleteClub(LoginRequiredMixin, UserTypeRequiredMixin, View):
             del request.session['password_verified']
             club = get_object_or_404(Club, pk=club_id)
             club_name = club.name
+            managers = Membership.objects.filter(club=club, is_manager=True).select_related('user')
+
+            # 向所有管理员发送通知
+            for membership in managers:
+                Notification.objects.create(
+                    user=membership.user,
+                    title="Club Deleted",
+                    message=f"The club '{club_name}' has been deleted by an administrator.",
+                    notification_type='general',
+                )
+
             club.delete()
+            
             messages.success(request, f"Club '{club_name}' has been deleted")
             return redirect('admin_panel_clubs')
         else:
