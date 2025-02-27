@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
+from notification_system.models import Notification
 
 
 def verifyAdminPassword(request):
@@ -165,7 +166,19 @@ class AdminDeleteClub(LoginRequiredMixin, UserTypeRequiredMixin, View):
             del request.session['password_verified']
             club = get_object_or_404(Club, pk=club_id)
             club_name = club.name
+            managers = Membership.objects.filter(club=club, is_manager=True).select_related('user')
+
+            # 向所有管理员发送通知
+            for membership in managers:
+                Notification.objects.create(
+                    user=membership.user,
+                    title="Club Deleted",
+                    message=f"The club '{club_name}' has been deleted by an administrator.",
+                    notification_type='general',
+                )
+
             club.delete()
+            
             messages.success(request, f"Club '{club_name}' has been deleted")
             return redirect('admin_panel_clubs')
         else:
@@ -283,8 +296,22 @@ class AdminReviewNewClubRequest(LoginRequiredMixin, UserTypeRequiredMixin, View)
                 is_manager=True
             )
             ncRequest.status = NewClubRequest.STATUS_APPROVED
+            # send notification
+            Notification.objects.create(
+                user=ncRequest.creator,
+                title="New Club Request Accepted",
+                message=f"Your club request '{ncRequest.name}' has been approved. Click 'continue' to check your club detail",
+                notification_type='general',
+                url=reverse('club_detail', args=[new_club.club_id])
+            )
             messages.success(request, f"Club request '{ncRequest.name}' has been approved and the club has been created.")
         elif action == 'reject':
+            Notification.objects.create(
+                user=ncRequest.creator,
+                title="New Club Request Rejected",
+                message=f"Your club request '{ncRequest.name}' has been rejected.",
+                notification_type='general'
+            )
             ncRequest.status = NewClubRequest.STATUS_REJECTED
             messages.success(request, f"Club request '{ncRequest.name}' has been rejected.")
 
