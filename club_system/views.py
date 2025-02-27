@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.views import View
 from .models import Club, Membership, NewClubRequest
 from user_system.models import User
@@ -16,6 +17,7 @@ from django.db.models import Q
 from club_system.helpers.mixins import ClubExistsRequiredMixin, ClubManagerRequiredMixin
 from .forms import NewClubRequestForm
 from django.utils import timezone
+from notification_system.models import Notification
 
 import urllib.parse
 import json
@@ -493,8 +495,18 @@ class ApplyNewClubView(LoginRequiredMixin, UserTypeRequiredMixin, View):
             new_request.creator = request.user
             new_request.save()
             
+            admins = User.objects.filter(account_type='Admin')
+            for admin in admins:
+                Notification.objects.create(
+                    user=admin,
+                    title="New Club Request",
+                    message=f"A new club request '{new_request.name}' has been submitted. Click 'continue' to check the request.",
+                    notification_type='general',
+                    url=reverse('admin_panel_new_club_requests_detail' , args=[new_request.request_id])
+                )
+            
             messages.success(request, "Your club creation request has been submitted and is pending approval.")
-            return redirect('dashboard_new_club_requests')  # 假设你有一个名为'club_list'的URL模式
+            return redirect('dashboard_new_club_requests')
         
         # 如果表单无效
         messages.error(request, "Please correct the errors below.")
