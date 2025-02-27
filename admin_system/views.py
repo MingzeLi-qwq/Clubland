@@ -283,17 +283,20 @@ class AdminReviewNewClubRequest(LoginRequiredMixin, UserTypeRequiredMixin, View)
                 club=new_club,
                 is_manager=True
             )
+            ncRequest.status = NewClubRequest.STATUS_APPROVED
             # send notification
             Notification.objects.create(
                 user=ncRequest.creator,
-                message=f"Your club request '{ncRequest.name}' has been approved.",
-                notification_type='general'
+                title="New Club Request Accepted",
+                message=f"Your club request '{ncRequest.name}' has been approved. Click 'continue' to check your club detail",
+                notification_type='general',
+                url=reverse('club_detail', args=[new_club.club_id])
             )
-            ncRequest.status = NewClubRequest.STATUS_APPROVED
             messages.success(request, f"Club request '{ncRequest.name}' has been approved and the club has been created.")
         elif action == 'reject':
             Notification.objects.create(
                 user=ncRequest.creator,
+                title="New Club Request Rejected",
                 message=f"Your club request '{ncRequest.name}' has been rejected.",
                 notification_type='general'
             )
