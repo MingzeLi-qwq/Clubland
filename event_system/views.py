@@ -124,3 +124,21 @@ def rsvp_toggle(request, pk):
         'message': 'RSVP status updated'
     })
 
+def club_details(request, club_id):
+    club = get_object_or_404(Club, pk=club_id)
+
+    # 比如拿该俱乐部最近的活动，不加时间过滤：
+    recent_events = Event.objects.filter(club=club).order_by('-start_time')[:3]
+
+    # ... 只想要未来活动，还要加上 start_time__gte=timezone.now() ...
+    # recent_events = Event.objects.filter(
+    #     club=club,
+    #     start_time__gte=timezone.now()
+    # ).order_by('start_time')[:3]
+
+    context = {
+        'club': club,
+        'recent_events': recent_events,
+        # 其它上下文...
+    }
+    return render(request, 'club_details.html', context)

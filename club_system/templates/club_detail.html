@@ -4,18 +4,98 @@
 {% block body %}
 <div class="container">
     <div class="row">
+        <!-- 左侧主要内容 -->
         <div class="col-md-8">
+            <!-- 社团名称 -->
             <h1 class="my-4">{{ club.name }}</h1>
-        </div>
-
-        <div class="col-md-8">
+            
+            <!-- Club 描述 -->
             <p>{{ club.description }}</p>
+
+            <!-- 最近事件卡片 -->
+<div class="card mb-4 shadow-sm border-0">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-calendar-event me-2"></i> Recent Events
+        </h5>
+        <!-- 如果需要，可跳转到活动列表页面 -->
+        <a href="{% url 'events' %}" class="btn btn-light btn-sm">
+            View All Events
+        </a>
+    </div>
+    <div class="card-body">
+        {% if recent_events %}
+            {% for event in recent_events %}
+                <h5 class="card-title">{{ event.name }}</h5>
+                <!-- 这里可以添加更多活动详情，如描述、时间等 -->
+                <p class="card-text text-muted small mb-1">
+                    Starts: {{ event.start_time|date:"Y-m-d H:i" }}<br>
+                    Ends: {{ event.end_time|date:"Y-m-d H:i" }}
+                </p>
+                <p class="card-text">
+                    {{ event.description|truncatewords:20 }}
+                </p>
+                <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-primary btn-sm">
+                    Read more
+                </a>
+                <hr>
+            {% endfor %}
+        {% else %}
+            <p class="mb-0">No recent events.</p>
+        {% endif %}
+    </div>
+</div>
+
+            <!-- 最近新闻卡片 -->
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="bi bi-newspaper me-2"></i> Recent News</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_news %}
+                        <div class="row row-cols-1 g-4">
+                            {% for news_item in recent_news %}
+                                <!-- 单条新闻展示 -->
+                                <div class="card mb-3 border-0 shadow-sm">
+                                    <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <!-- 如果有新闻缩略图，可替换成实际链接 -->
+                                            <img src="{% static 'images/news_placeholder.jpg' %}" 
+                                                 class="img-fluid rounded-start" 
+                                                 alt="News image">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <i class="bi bi-file-text me-1"></i> {{ news_item.title }}
+                                                </h5>
+                                                <p class="card-text text-muted small mb-1">
+                                                    <i class="bi bi-calendar-check me-1"></i>
+                                                    {{ news_item.published_date|date:"Y-m-d" }}
+                                                </p>
+                                                <p class="card-text">
+                                                    {{ news_item.content|truncatewords:25 }}
+                                                </p>
+                                                <a href="{% url 'news_detail' news_item.id %}"
+                                                   class="btn btn-outline-secondary btn-sm">
+                                                   Read more
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="mb-0">No recent news.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
         <!-- 右侧信息栏 -->
         <div class="col-md-4">
-
-            <!-- club基础信息 -->
+            <!-- Club Information 卡片 -->
             <div class="card bg-light mb-3">
                 <div class="card-header">Club Information</div>
                 <div class="card-body">
@@ -35,40 +115,38 @@
                 </div>
             </div>
 
-            <!-- 加入club, 互动部分 -->
+            <!-- Join Us 卡片 -->
             <div class="card bg-light mb-3">
-
                 <div class="card-header">Join us</div>
                 <div class="card-body">
                     <h5>We welcome different people to join us!!!!</h5>
 
-                    <!-- 动态按钮 -->
                     <div class="d-flex justify-content-center mt-5">
                         {% if user.is_authenticated %}
-                            <!-- 当前用户登录时 -->
                             {% if user in club.members.all %}
-                                <!-- 如果此用户是club成员 -->
-                                 {% if is_manager %}
+                                {% if is_manager %}
                                     <p>
-                                        You are the club manager, you can manage this club in <a href="{% url 'club_manager_general' club_id=club.club_id %}" class="btn btn-link p-0">club manager page</a>.
+                                        You are the club manager. You can manage this club in 
+                                        <a href="{% url 'club_manager_general' club_id=club.club_id %}" 
+                                           class="btn btn-link p-0">club manager page</a>.
                                     </p>
-                                 {% else %}
-                                    <a href="{% url 'cancel_membership' club_id=club.club_id %}" class="btn btn-danger btn-lg rounded-pill w-100">
+                                {% else %}
+                                    <a href="{% url 'cancel_membership' club_id=club.club_id %}" 
+                                       class="btn btn-danger btn-lg rounded-pill w-100">
                                         Cancel Membership
                                     </a>
-                                 {% endif %}
+                                {% endif %}
                             {% else %}
-                                <!-- 如果此用户不是club成员 -->
-                                <a href="{% url 'register_membership' club_id=club.club_id %}" class="btn btn-primary btn-lg rounded-pill w-100">
+                                <a href="{% url 'register_membership' club_id=club.club_id %}" 
+                                   class="btn btn-primary btn-lg rounded-pill w-100">
                                     Register Membership
                                 </a>
                             {% endif %}
                         {% else %}
-                            <!-- 当前用户未登录时 -->
-                            <!-- 可点击的文字按钮 -->
                             <p>
                                 <a href="{% url 'login' %}" class="btn btn-link p-0">Login</a> or 
-                                <a href="{% url 'signup' %}" class="btn btn-link p-0">registration</a> is required before registering for membership.
+                                <a href="{% url 'signup' %}" class="btn btn-link p-0">registration</a> 
+                                is required before registering for membership.
                             </p>
                         {% endif %}
                     </div>
