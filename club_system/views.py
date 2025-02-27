@@ -304,6 +304,14 @@ class RemoveManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManager
         if Membership.objects.filter(club=club, is_manager=True).count() <= 1:
             messages.error(request, "At least one manager is required.")
             return redirect(redirect_url, club_id=club_id)
+        
+        Notification.objects.create(
+            user=membership.user,
+            title="Manager Removed",
+            message=f"You are no longer the manager of club {club.name}. Click 'continue' to check your membership",
+            notification_type='general',
+            url=reverse('dashboard_my_club_detail', args=[club_id]),
+        )
 
         # 移除管理员资格
         membership.is_manager = False
@@ -325,6 +333,14 @@ class SetManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerReq
             redirect_url = 'admin_panel_club_members'
         else:
             redirect_url = 'club_manager_members'
+
+        Notification.objects.create(
+            user=membership.user,
+            title="Manager Membership",
+            message=f"You are now the manager of club {club.name}. Click 'continue' to check your membership",
+            notification_type='general',
+            url=reverse('dashboard_my_club_detail', args=[club_id]),
+        )
 
         # 设置为管理员
         membership.is_manager = True
@@ -369,19 +385,26 @@ class RemoveMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerR
         
         # 检查用户是否存在
         if not user_to_remove:
-            messages.error(request, "用户不存在")
+            messages.error(request, "User not exists")
             return redirect(redirect_url, club_id=club_id)
 
         membership = Membership.objects.filter(user=user_to_remove, club=club).first()
         # 检查是否有此会员关系
         if not membership:
-            messages.error(request, "该用户不属于此社团")
+            messages.error(request, "The user does not belong to this club")
             return redirect(redirect_url, club_id=club_id)
         
         # 检查是否为管理员
         if membership.is_manager:
-            messages.error(request, "该用户是管理员，无法直接移除")
+            messages.error(request, "The user is an administrator and cannot be removed directly")
             return redirect(redirect_url, club_id=club_id)
+        
+        Notification.objects.create(
+            user=membership.user,
+            title="Remove Membership",
+            message=f"You have been removed from {club.name}.",
+            notification_type='general',
+        )
 
         membership.delete()
         messages.success(request, f"{user_to_remove.username} has been removed from the club.")
@@ -406,15 +429,23 @@ class AddMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequ
                 return redirect(redirect_url, club_id=club_id)
                 
             Membership.objects.create(user=user, club=club)
-            messages.success(request, f"成功添加成员 {user.get_full_name()}")
+
+            Notification.objects.create(
+                user=user,
+                title="New Membership",
+                message=f"You have been added as a member in {club.name}.",
+                notification_type='general',
+            )
+
+            messages.success(request, f"Successfully added member {user.get_full_name()}")
             return redirect(redirect_url, club_id=club_id)
             
         except User.DoesNotExist:
-            messages.error(request, "用户不存在")
+            messages.error(request, "User does not exist")
             return redirect(redirect_url, club_id=club_id)
             
         except Exception as e:
-            messages.error(request, f"添加失败: {str(e)}")
+            messages.error(request, f"Add failed: {str(e)}")
             return redirect(redirect_url, club_id=club_id)
           
 """----------------------------------------------------------------------End--------------------------------------------------------------"""
