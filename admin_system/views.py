@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
+from notification_system.models import Notification
 
 
 def verifyAdminPassword(request):
@@ -282,9 +283,20 @@ class AdminReviewNewClubRequest(LoginRequiredMixin, UserTypeRequiredMixin, View)
                 club=new_club,
                 is_manager=True
             )
+            # send notification
+            Notification.objects.create(
+                user=ncRequest.creator,
+                message=f"Your club request '{ncRequest.name}' has been approved.",
+                notification_type='general'
+            )
             ncRequest.status = NewClubRequest.STATUS_APPROVED
             messages.success(request, f"Club request '{ncRequest.name}' has been approved and the club has been created.")
         elif action == 'reject':
+            Notification.objects.create(
+                user=ncRequest.creator,
+                message=f"Your club request '{ncRequest.name}' has been rejected.",
+                notification_type='general'
+            )
             ncRequest.status = NewClubRequest.STATUS_REJECTED
             messages.success(request, f"Club request '{ncRequest.name}' has been rejected.")
 
