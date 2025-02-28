@@ -121,33 +121,38 @@
                 <div class="card-body">
                     <h5>We welcome different people to join us!!!!</h5>
 
+                    <!-- 动态按钮 -->
                     <div class="d-flex justify-content-center mt-5">
                         {% if user.is_authenticated %}
-                            {% if user in club.members.all %}
-                                {% if is_manager %}
+                            <!-- 当前用户登录时 -->
+                            {% if user.account_type == 'Admin' %}
+                                <p>
+                                    You are the administrator, you can manage this club in <a href="{% url 'admin_panel_club_general' club_id=club.club_id %}" class="btn btn-link p-0">admin panel page</a>.
+                                </p>
+                            {% elif user in club.members.all %}
+                                <!-- 如果此用户是club成员 -->
+                                    {% if is_manager %}
                                     <p>
-                                        You are the club manager. You can manage this club in 
-                                        <a href="{% url 'club_manager_general' club_id=club.club_id %}" 
-                                           class="btn btn-link p-0">club manager page</a >.
-                                    </p >
-                                {% else %}
-                                    <a href="{% url 'cancel_membership' club_id=club.club_id %}" 
-                                       class="btn btn-danger btn-lg rounded-pill w-100">
-                                        Cancel Membership
-                                    </a >
-                                {% endif %}
+                                        You are the club manager, you can manage this club in <a href="{% url 'club_manager_general' club_id=club.club_id %}" class="btn btn-link p-0">club manager page</a>.
+                                    </p>
+                                    {% else %}
+                                    <p>
+                                        You are already a club member. Check your membership at <a href="{% url 'dashboard_my_club_detail' club_id=club.club_id %}" class="btn btn-link p-0">dashboard</a>.
+                                    </p>
+                                    {% endif %}
                             {% else %}
-                                <a href="{% url 'register_membership' club_id=club.club_id %}" 
-                                   class="btn btn-primary btn-lg rounded-pill w-100">
+                                <!-- 如果此用户不是club成员 -->
+                                <a href="{% url 'register_membership' club_id=club.club_id %}" class="btn btn-primary btn-lg rounded-pill w-100">
                                     Register Membership
-                                </a >
+                                </a>
                             {% endif %}
                         {% else %}
+                            <!-- 当前用户未登录时 -->
+                            <!-- 可点击的文字按钮 -->
                             <p>
-                                <a href="{% url 'login' %}" class="btn btn-link p-0">Login</a > or 
-                                <a href="{% url 'signup' %}" class="btn btn-link p-0">registration</a > 
-                                is required before registering for membership.
-                            </p >
+                                <a href="{% url 'login' %}" class="btn btn-link p-0">Login</a> or 
+                                <a href="{% url 'signup' %}" class="btn btn-link p-0">registration</a> is required before registering for membership.
+                            </p>
                         {% endif %}
                     </div>
                 </div>
