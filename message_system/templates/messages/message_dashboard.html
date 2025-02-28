@@ -6,7 +6,7 @@
     <div class="chat-container">
         <!-- 左侧消息列表 -->
         <div class="sidebar">
-            <h5>消息中心</h5>
+            <h5>Messages</h5>
             <ul class="chat-list">
                 <li v-for="(chat, index) in chatList" :key="index" @click="selectChat(index)" :class="{ active: currentChatIndex === index }">
                     <div class="icon-wrapper">
@@ -24,7 +24,7 @@
         <div class="chat-content">
             <div class="chat-header">
                 <strong>{{ currentChat.name }}</strong>
-                <button class="btn btn-outline-secondary btn-sm">设置</button>
+                <button class="btn btn-outline-secondary btn-sm">Setting</button>
             </div>
 
             <div class="chat-box">
@@ -38,9 +38,9 @@
                 <textarea v-model="newMessage" 
                           @keydown="handleKeyPress"
                           @input="adjustTextareaHeight" 
-                          placeholder="输入消息..." 
+                          placeholder="Input Message..." 
                           class="message-input"></textarea>
-                <button @click="sendMessage" class="send-btn">发送</button>
+                <button @click="sendMessage" class="send-btn">Send</button>
             </div>
         </div>
     </div>
