@@ -20,6 +20,7 @@ import user_system.views
 import club_system.views
 import event_system.views
 import club_hub.views
+import message_system.views
 from user_system.views import home
 from user_system.views import change_password
 from notification_system.views import notification_list
@@ -75,6 +76,9 @@ urlpatterns = [
     path('api/', include('club_hub.urls')),
     path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
 
+    # Message related / 消息相关
+    path('messages/message_dashboard', message_system.views.message_dashboard, name='message_dashboard'),
+
 
 
     #---------------------------------------------------- Event related / Event相关页面 -----------------------------------------------------------------------
@@ -90,7 +94,6 @@ urlpatterns = [
     #---------------------------------------------------- Admin related / Admin相关页面 -----------------------------------------------------------------------
     path('admin_panel/', include('admin_system.urls')),
     #-------------------------------------------------------- Admin related END ------------------------------------------------------------------------------
-
 
     #--------------------------------------- Password verification for dangerous operations / 危险操作的密码验证 --------------------------------------------------
     path('verify-admin-password/', admin_system.views.verifyAdminPassword, name='verify_admin_password'),

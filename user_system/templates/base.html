@@ -128,6 +128,49 @@
           </ul>
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             {% if user.is_authenticated %}
+
+              <!-- 消息通知按钮 -->
+                  <li class="nav-item">
+                    <a class="nav-link position-relative" href="{% url 'message_dashboard' %}">
+                        <i class="fas fa-envelope" style="color: white; font-size: 20px;"></i>
+                        {% if unread_messages_count > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ unread_messages_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+                </li>
+
+                <!-- 用户头像和下拉菜单 -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
+                        <span class="ms-2" style="position: relative; top: -3px;">{{ user.username }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'dashboard_personal_information' %}">Dashboard</a></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Exit</a></li>
+                    </ul>
+                </li>
+            {% else %}
+                <!-- 未登录：邮件图标跳转到登录 -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">
+                        <i class="fas fa-envelope" style="color: white; font-size: 20px;"></i>
+                    </a>
+                </li>
+
+                <!-- 未登录：用户头像跳转到登录 -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'login' %}">Log in</a></li>
+                        <li><a class="dropdown-item" href="{% url 'signup' %}">Sign up</a></li>
+                    </ul>
+                </li>
+
             <!-- 已登录用户：显示灰色人头图标和下拉菜单 -->
             <li class="nav-item dropdown">
               <a 
@@ -180,6 +223,7 @@
                 </li>
               </ul>
             </li>
+
             {% endif %}
           </ul>
         </div>
