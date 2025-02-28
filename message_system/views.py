@@ -1,4 +1,4 @@
 from django.shortcuts import render
 
 def message_dashboard(request):
-    return render(request, 'message_system/dashboard.html')
+    return render(request, 'messages/message_dashboard.html')

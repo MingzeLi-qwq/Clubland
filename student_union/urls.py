@@ -108,6 +108,6 @@ urlpatterns = [
     path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
 
     # Message related / 消息相关
-    path('messages/', message_system.views.message_dashboard, name='message_dashboard'),
+    path('messages/message_dashboard', message_system.views.message_dashboard, name='message_dashboard'),
 ]   
 
