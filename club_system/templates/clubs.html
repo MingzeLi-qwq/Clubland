@@ -2,6 +2,16 @@
 {% load static %}
 
 {% block body %}
+<style>
+  .description-truncate {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;  /* 显示的行数，可以根据需要调整 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
+
   <div class="container">
     <h1 class="text-center my-4">Club List</h1>
     
@@ -29,16 +39,16 @@
 
     <!-- This section is responsible for traversing the data in the Club database and displaying the / 这一部分负责将Club数据库中的数据遍历出来并展示 -->
     <div class="row">
-        {% for club in clubs %}
-        <div class="card shadow-sm mb-4">
+      {% for club in clubs %}
+      <div class="card shadow-sm mb-4">
           <div class="card-body">
-            <h5 class="card-title">{{ club.name }}</h5>
-            <p class="card-text">{{ club.description }}</p>
-            <a href="{% url 'club_detail' club_id=club.club_id %}" class="btn btn-primary">Details</a>
+              <h5 class="card-title">{{ club.name }}</h5>
+              <p class="card-text description-truncate">{{ club.description }}</p>
+              <a href="{% url 'club_detail' club_id=club.club_id %}" class="btn btn-primary">Details</a>
           </div>
-        </div>
-        {% endfor %}
-    </div>
+      </div>
+      {% endfor %}
+  </div>
 
     {% if not clubs %}
     <div class="alert alert-info text-center" role="alert">
@@ -46,6 +56,17 @@
     </div>
     {% endif %}
 
+    
+    <!-- 申请新社团的部分 -->
+    {% if user.account_type == 'User' %} 
+      <!-- 添加分割线 -->
+      <hr class="my-5">
+        <div class="text-center mb-5">
+          <h4 class="mb-3">Didn't find your Club?</h4>
+          <p class="mb-4">You can apply to us for a new Club through the following entrance, and you will be the Manager!</p>
+          <a href="{% url 'apply_new_club' %}" class="btn btn-primary btn-lg">Apply a New Club</a>
+        </div>
+    {% endif %} 
 
 </div>
 {% endblock %}

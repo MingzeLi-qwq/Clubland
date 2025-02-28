@@ -8,11 +8,6 @@
     <div class="card-header text-white position-relative">
       <div class="d-flex justify-content-between align-items-center">
         <h1 class="h3 mb-0">{{ event.name }}</h1>
-        {% if event.is_featured %}
-        <span class="badge bg-warning text-dark">
-          <i class="bi-star-fill me-1"></i> Featured Event
-        </span>
-        {% endif %}
       </div>
     </div>
 
@@ -34,6 +29,20 @@
           </div>
         </div>
 
+        <div class="col-md-6">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-circle text-white">
+              <i class="bi bi-flag"></i>
+            </div>
+            <div>
+              <h5 class="mb-1">Club</h5>
+              <p class="mb-0">
+                {{ club.name }}
+              </p>
+            </div>
+          </div>
+        </div>
+        
         <div class="col-md-6">
           <div class="d-flex align-items-center gap-3">
             <div class="icon-circle text-white">

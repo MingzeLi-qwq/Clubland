@@ -3,97 +3,100 @@
 
 {% block manager_content %}
 
-<!-- 错误信息框样式  -->
-<style>
-  .alert-error {
-      background-color: #f8d7da;
-      color: #721c24;
-      border-color: #f5c6cb;
-  }
-</style>
-  
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} mt-2">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
-
   <h4>Members</h4>
   <p>Manage Club managers and members.</p>
 
   <!-- Club managers表格 -->
-  <div class="mb-4">
-    <div class="card p-3 mb-3">
-      <h5>Club managers ({{manager_count}})</h5>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <!-- 在小屏幕隐藏，md及以上显示 -->
-            <th scope="col" class="d-none d-md-table-cell">Email</th>
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for manager in managers %}
-            <tr>
-              <td>{{ manager.user.get_full_name }}</td>
-              <!-- 在小屏幕隐藏，md及以上显示 -->
-              <td class="d-none d-md-table-cell">{{ manager.user.email }}</td>
-              <td>
-                {% if manager.user != user %}
-                  <form method="post" action="{% url 'remove_manager' club_id=club_id username=manager.user.username %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger btn-sm">Remove Manager</button>
-                  </form>
-                {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-  </div>
+<div class="mb-4">
+  <div class="card p-3 mb-3 shadow-sm">
+    <h5>Club managers ({{manager_count}})</h5>
+    
+    <!-- 经理搜索框 -->
+    <form method="get" class="mb-3">
+      <div class="input-group">
+        <input type="text" name="manager_search" class="form-control" 
+               placeholder="Search managers" value="{{ manager_search_query }}">
+        <input type="hidden" name="member_search" value="{{ member_search_query }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+      </div>
+    </form>
 
-  <!-- Club members表格 -->
-  <div class="mb-4">
-    <div class="card p-3 mb-3">
-      <h5>Club members ({{muggle_count}})</h5>
-      <table class="table table-striped">
-        <thead>
+    <table class="table table-hover">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col" class="d-none d-md-table-cell">Email</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for manager in managers %}
           <tr>
-            <th scope="col">Name</th>
-            <!-- 在小屏幕隐藏，md及以上显示 -->
-            <th scope="col" class="d-none d-md-table-cell">Email</th>
-            <th scope="col">Actions</th>
+            <td>{{ manager.user.get_full_name }}</td>
+            <td class="d-none d-md-table-cell">{{ manager.user.email }}</td>
+            <td>
+              {% if manager.user != user %}
+                <form method="post" action="{% url 'remove_manager' club_id=club_id username=manager.user.username %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-danger btn-sm">Remove Manager</button>
+                </form>
+              {% endif %}
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {% for muggle in muggles %}
-            <tr>
-              <td>{{ muggle.user.get_full_name }}</td>
-              <!-- 在小屏幕隐藏，md及以上显示 -->
-              <td class="d-none d-md-table-cell">{{ muggle.user.email }}</td>
-              <td>
-                {% if muggle.user != user %}
-                  <form method="post" action="{% url 'set_manager' club_id=club_id username=muggle.user.username %}" class="d-inline me-2">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-success btn-sm">Set Manager</button>
-                  </form>
-                  <form method="post" action="{% url 'remove_member' club_id=club_id username=muggle.user.username %}" class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger btn-sm">
-                      <i class="bi bi-trash-fill"></i>
-                    </button>
-                  </form>
-                {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
+</div>
+
+<!-- Club members表格 -->
+<div class="mb-4">
+  <div class="card p-3 mb-3 shadow-sm">
+    <h5>Club members ({{muggle_count}})</h5>
+    
+    <!-- 成员搜索框 -->
+    <form method="get" class="mb-3">
+      <div class="input-group">
+        <input type="text" name="member_search" class="form-control" 
+               placeholder="Search members" value="{{ member_search_query }}">
+        <input type="hidden" name="manager_search" value="{{ manager_search_query }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+      </div>
+    </form>
+
+    <table class="table table-hover">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col" class="d-none d-md-table-cell">Email</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for muggle in muggles %}
+          <tr>
+            <td>{{ muggle.user.get_full_name }}</td>
+            <td class="d-none d-md-table-cell">{{ muggle.user.email }}</td>
+            <td>
+              {% if muggle.user != user %}
+                <form method="post" action="{% url 'set_manager' club_id=club_id username=muggle.user.username %}" class="d-inline me-2">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-success btn-sm">Set Manager</button>
+                </form>
+                <form method="post" action="{% url 'remove_member' club_id=club_id username=muggle.user.username %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 
   <!-- 添加members部分 -->
   <div class="mb-4">

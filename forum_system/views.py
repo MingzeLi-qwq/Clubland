@@ -66,29 +66,17 @@ class BlogPostCreateView(LoginRequiredMixin, CreateView):
     template_name = 'blogpost_form.html'
     success_url = reverse_lazy('forum_system:blog_list')  # 提交成功后重定向到列表页
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # 添加当前用户到表单参数中
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         # 自动将当前登录用户赋值给作者字段
         form.instance.author = self.request.user
         return super().form_valid(form)
     
-    def sceneImgUpload(request):
-        if request.method == 'POST':
-            callback = request.GET.get('CKEditorFuncNum')
-            try:
-                path = "static/upload/" + time.strftime("%Y%m%d%H%M%S", time.localtime())
-                f = request.FILES["upload"]
-                file_name = path + "_" + f.name
-                des_origin_f = open(file_name, "wb+")
-                for chunk in f.chunks():
-                    des_origin_f.write(chunk)
-                des_origin_f.close()
-            except Exception as e:
-                print(e)
-            res = "<script>window.parent.CKEDITOR.tools.callFunction(" + callback + ",'/" + file_name + "', '');</script>"
-            return HttpResponse(res)
-        else:
-            raise Http404()
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
@@ -124,23 +112,5 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         return self.request.user == self.get_object().author
 
-@csrf_exempt  # 如果需要，可暂时关闭 CSRF 检查，确保上传正常
-def ckeditor_image_upload(request):
-    if request.method == 'POST' and request.FILES.get('upload'):
-        image = request.FILES['upload']
-        # 保存文件到默认存储目录下，建议在 production 中配置合适的 MEDIA_ROOT
-        file_path = default_storage.save('uploads/' + image.name, image)
-        file_url = default_storage.url(file_path)
-
-        return JsonResponse({
-            "uploaded": 1,
-            "fileName": image.name,
-            "url": file_url,
-        })
-    else:
-        return JsonResponse({
-            "uploaded": 0,
-            "error": {"message": "没有上传文件"}
-        })
 
 

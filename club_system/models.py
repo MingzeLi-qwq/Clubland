@@ -1,5 +1,6 @@
 from django.db import models
 from user_system.models import User
+from django.utils import timezone
 
 class Club(models.Model):
     club_id = models.PositiveIntegerField(primary_key=True, unique=True, editable=False)  # 从1开始递增的纯数字编号
@@ -39,3 +40,65 @@ class Membership(models.Model):
 
     class Meta:
         unique_together = [('user', 'club')]  # 确保用户不能重复加入同一社团
+
+
+
+"""
+这一部分用来存放用户申请建立新社团的请求
+"""
+class NewClubRequest(models.Model):
+    STATUS_PENDING = 'pending'
+    STATUS_APPROVED = 'approved'
+    STATUS_REJECTED = 'rejected'
+    STATUS_CHOICES = [
+        (STATUS_PENDING, 'pending'),
+        (STATUS_APPROVED, 'approved'),
+        (STATUS_REJECTED, 'rejected'),
+    ]
+
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='club_requests')
+    name = models.CharField(max_length=50, unique=True)
+    description = models.TextField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    reviewed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_club_requests')
+    review = models.TextField(null=True, blank=True)
+    request_id = models.PositiveIntegerField(primary_key=True, unique=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        if not self.request_id:
+            last_request = NewClubRequest.objects.order_by('-request_id').first()
+            if last_request:
+                self.request_id = last_request.request_id + 1
+            else:
+                self.request_id = 1
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Club Request: {self.request_id} - {self.name} (Status: {self.status})"
+    def approve(self, admin_user):
+        if self.status == self.STATUS_PENDING:
+            new_club = Club.objects.create(
+                name=self.name,
+                description=self.description
+            )
+            Membership.objects.create(
+                user=self.creator,
+                club=new_club,
+                is_manager=True
+            )
+            self.status = self.STATUS_APPROVED
+            self.reviewed_at = timezone.now()
+            self.reviewed_by = admin_user
+            self.save()
+            return new_club
+        return None
+
+    def reject(self, admin_user):
+        if self.status == self.STATUS_PENDING:
+            self.status = self.STATUS_REJECTED
+            self.reviewed_at = timezone.now()
+            self.reviewed_by = admin_user
+            self.save()
+
