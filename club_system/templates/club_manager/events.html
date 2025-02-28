@@ -1,0 +1,55 @@
+{% extends "club_manager/club_manager_base.html" %}
+
+{% block manager_content %}
+<h4>Events</h4>
+<p>Manage Club events.</p>
+
+<div class="card p-3 mb-3 shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>Club Events</h4>
+            <a href="{% url 'create_event' club_id=club_id %}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-1"></i>Create New Event
+            </a>
+        </div>
+
+        <!-- 添加搜索框 -->
+        <form method="get" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Search events" value="{{ search_query }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+
+        <!-- 显示events列表 -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Start Time</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                    <tr>
+                        <td>{{ event.name }}</td>
+                        <td>{{ event.start_time|date:"Y-m-d H:i" }}</td>
+                        <td>
+                            <a href="{% url 'club_manager_event_general' club_id=club_id event_id=event.id %}" class="btn btn-outline-primary btn-sm">
+                                Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">No events found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

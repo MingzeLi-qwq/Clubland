@@ -3,6 +3,7 @@ from club_system.models import Club
 from user_system.models import User
 
 class Category(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     
     def __str__(self):
