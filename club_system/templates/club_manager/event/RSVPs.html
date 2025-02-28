@@ -1,0 +1,133 @@
+{% extends 'club_manager/event/club_manager_event_base.html' %}
+
+{% block content %}
+<h4>RSVPs</h4>
+<p>Manage RSVPs for {{ event.name }}.</p>
+
+<div class="card p-3 mb-3 shadow-sm">
+  <h5>Attendees ({{ rsvps.count }})</h5>
+  
+  <!-- 搜索框 -->
+  <form method="get" class="mb-3">
+    <div class="input-group">
+      <input type="text" name="search" class="form-control" 
+             placeholder="Search attendees" value="{{ search_query }}">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+  </form>
+
+  <!-- RSVPs列表 -->
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col" class="d-none d-md-table-cell">Email</th>
+          <th scope="col">Registration Time</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rsvp in rsvps %}
+        <tr>
+          <td>{{ rsvp.user.get_full_name }}</td>
+          <td class="d-none d-md-table-cell">{{ rsvp.user.email }}</td>
+          <td>{{ rsvp.timestamp|date:"Y-m-d H:i" }}</td>
+          <td>
+            <form method="post" 
+                  action="{% url 'remove_rsvp' club_id=club_id event_id=event.id rsvp_id=rsvp.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-center">No RSVPs found</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+<!-- 添加RSVP搜索框 -->
+<div class="card p-3 mt-4 shadow-sm">
+    <h5>Add Attendees</h5>
+    <p>Search for users to add to this event.</p>
+    <input type="text" id="rsvp-search" class="form-control" 
+           placeholder="Search by username, email, or name">
+    <div id="rsvp-search-results" class="list-group mt-2"></div>
+</div>
+  
+  <script>
+  document.getElementById('rsvp-search').addEventListener('input', function() {
+    const query = this.value;
+    const club_id = "{{ club_id }}";
+    const event_id = "{{ event.id }}";
+    
+    if (query.length > 0) { 
+      fetch(`/clubs/manager/search_rsvp_candidates/?q=${query}&club_id=${club_id}&event_id=${event_id}`)
+        .then(response => response.json())
+        .then(data => {
+          const results = document.getElementById('rsvp-search-results');
+          results.innerHTML = '';
+          data.forEach(user => {
+            const item = document.createElement('a');
+            item.className = 'list-group-item list-group-item-action';
+            item.innerHTML = `
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>${user.full_name}</strong><br>
+                  <small class="text-muted">${user.email}</small>
+                </div>
+                <button class="btn btn-success btn-sm">Add</button>
+              </div>
+            `;
+            
+            item.addEventListener('click', async function(e) {
+              e.preventDefault();
+              try {
+                const response = await fetch(`/clubs/manager/add_rsvp/${club_id}/${event_id}/${encodeURIComponent(user.username)}/`, {
+                  method: 'POST',
+                  headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                  }
+                });
+                
+                const result = await response.json();
+                if (response.ok) {
+                  showMessage(result.detail || 'Added successfully', 'success');
+                  setTimeout(() => window.location.reload(), 1500); // 1.5秒后刷新
+                } else {
+                  showMessage(result.detail || 'Operation failed', 'danger');
+                }
+              } catch (error) {
+                showMessage('Network error', 'danger');
+              }
+            });
+            
+            results.appendChild(item);
+          });
+        });
+    } else {
+      document.getElementById('rsvp-search-results').innerHTML = '';
+    }
+  });
+  
+  function showMessage(text, type) {
+    const messageBox = document.createElement('div');
+    messageBox.className = `alert alert-${type} alert-dismissible fade show`;
+    messageBox.innerHTML = `
+      ${text}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.prepend(messageBox);
+  }
+  </script>
+  {% endblock %}

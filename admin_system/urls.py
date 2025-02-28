@@ -26,4 +26,5 @@ urlpatterns = [
     #Admin Panel Request
     path('requests/new_club/', views.AdminPanelNewClubRequests.as_view(), name='admin_panel_new_club_requests'),
     path('requests/new_club/detail/<int:ncRequest_id>', views.AdminPanelNewClubRequestDetail.as_view(), name='admin_panel_new_club_requests_detail'),
+    path('requests/new_club/review/<int:request_id>/', views.AdminReviewNewClubRequest.as_view(), name='admin_review_new_club_request'),
 ]

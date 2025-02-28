@@ -61,8 +61,37 @@
 
 <div class="mb-4">
     <div class="card p-3 mb-3 shadow-sm">
-      <h5>Review</h5>
-
+        <h5>Review</h5>
+        {% if ncRequest.status == 'pending' %}
+            <form method="post" action="{% url 'admin_review_new_club_request' ncRequest.request_id %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="review" class="form-label">Review Comments:</label>
+                    <textarea class="form-control" id="review" name="review" rows="4"></textarea>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" name="action" value="reject" class="btn btn-danger me-2">Reject</button>
+                    <button type="submit" name="action" value="accept" class="btn btn-success">Accept</button>
+                </div>
+            </form>
+        {% else %}
+            {% if ncRequest.review %}
+                <div class="mb-3">
+                    <strong>Review Comments:</strong>
+                    <p class="mt-2">{{ ncRequest.review }}</p>
+                </div>
+            {% endif %}
+            {% if ncRequest.reviewed_by %}
+                <div class="mb-3">
+                    <strong>Reviewed By:</strong> {{ ncRequest.reviewed_by.username }}
+                </div>
+            {% endif %}
+            {% if ncRequest.reviewed_at %}
+                <div class="mb-3">
+                    <strong>Reviewed At:</strong> {{ ncRequest.reviewed_at }}
+                </div>
+            {% endif %}
+        {% endif %}
     </div>
 </div>
 
