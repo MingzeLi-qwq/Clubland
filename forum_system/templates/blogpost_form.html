@@ -21,21 +21,23 @@
             </div>
           {% endif %}
         </div>
-        <div class="form-group">
-          <label for="{{ form.event.id_for_label }}" class="col-form-label">{{ form.event.label }}</label>
-          {{ form.event }}
-          {% if form.event.errors %}
-            <div class="text-danger small">
-              {{ form.event.errors }}
-            </div>
-          {% endif %}
-        </div>
+        <!-- 先选择所属社团 -->
         <div class="form-group">
           <label for="{{ form.category.id_for_label }}" class="col-form-label">{{ form.category.label }}</label>
           {{ form.category }}
           {% if form.category.errors %}
             <div class="text-danger small">
               {{ form.category.errors }}
+            </div>
+          {% endif %}
+        </div>
+        <!-- 选择所属活动（活动列表根据所选社团过滤） -->
+        <div class="form-group">
+          <label for="{{ form.event.id_for_label }}" class="col-form-label">{{ form.event.label }}</label>
+          {{ form.event }}
+          {% if form.event.errors %}
+            <div class="text-danger small">
+              {{ form.event.errors }}
             </div>
           {% endif %}
         </div>
