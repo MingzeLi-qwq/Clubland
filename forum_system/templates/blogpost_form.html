@@ -22,6 +22,15 @@
           {% endif %}
         </div>
         <div class="form-group">
+          <label for="{{ form.event.id_for_label }}" class="col-form-label">{{ form.event.label }}</label>
+          {{ form.event }}
+          {% if form.event.errors %}
+            <div class="text-danger small">
+              {{ form.event.errors }}
+            </div>
+          {% endif %}
+        </div>
+        <div class="form-group">
           <label for="{{ form.category.id_for_label }}" class="col-form-label">{{ form.category.label }}</label>
           {{ form.category }}
           {% if form.category.errors %}
