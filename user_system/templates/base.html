@@ -6,8 +6,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token }}">
+
     
-    <!-- include summernote css/js -->
+    <!-- include Bootstrap css/js -->
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
     rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -31,8 +32,11 @@
       rel="stylesheet" 
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 
-    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
 
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <!--  Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <title>miHoyo - Empowering Student Communities</title>
   </head>
   <body>
@@ -42,14 +46,7 @@
         <a class="navbar-brand" href="{% url 'home' %}">
           <i class="bi-people-fill"></i> miHoyo
         </a>
-        <button 
-          class="navbar-toggler" 
-          type="button" 
-          data-bs-toggle="collapse" 
-          data-bs-target="#navbarSupportedContent" 
-          aria-controls="navbarSupportedContent" 
-          aria-expanded="false" 
-          aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -64,129 +61,98 @@
               <a class="nav-link" href="{% url 'events' %}">Events</a>
             </li>
             {% if user.is_authenticated %}
-            <li class="nav-item dropdown">
-              <a 
-                class="nav-link dropdown-toggle" 
-                href="#" 
-                id="clubDropdown" 
-                role="button" 
-                data-bs-toggle="dropdown" 
-                aria-expanded="false">
-                My Club
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="clubDropdown" id="clubMenu">
-                {% for membership in request.user.membership_set.all %}
-                <li>
-                  <a 
-                    class="dropdown-item" 
-                    href="{% url 'club_dashboard' club_id=membership.club.club_id %}">
-                    {{ membership.club.name }}
-                  </a>
-                </li>
-                {% empty %}
-                <li>
-                  <span class="dropdown-item text-muted">
-                    You haven't joined any clubs.
-                  </span>
-                </li>
-                {% endfor %}
-              </ul>
+
+            {% if user.account_type == 'Admin' %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'admin_panel_clubs' %}">Admin Panel</a>
             </li>
+            {% else %}
             <li class="nav-item dropdown">
-              <a 
-                class="nav-link dropdown-toggle" 
-                href="#" 
-                id="notificationDropdown" 
-                role="button" 
-                data-bs-toggle="dropdown" 
-                aria-expanded="false">
-                <i class="fas fa-bell" style="color: white; font-size: 20px;"></i>
-                {% if unread_notifications_count > 0 %}
-                <span class="badge bg-danger">
-                  {{ unread_notifications_count }}
-                </span>
-                {% endif %}
+                <a class="nav-link dropdown-toggle" href="#" id="clubDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    My Club
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="clubDropdown" id="clubMenu">
+                    {% for membership in request.user.membership_set.all %}
+                    <li>
+                        <a class="dropdown-item" href="{% url 'club_dashboard' club_id=membership.club.club_id %}">
+                            {{ membership.club.name }}
+                        </a>
+                    </li>
+                    {% empty %}
+                    <li><span class="dropdown-item text-muted">You haven't joined any clubs.</span></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endif %}
+
+
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-bell" style="color: white; font-size: 20px;"></i>
+                  {% if unread_notifications_count > 0 %}
+                      <span class="badge bg-danger">{{ unread_notifications_count }}</span>
+                  {% endif %}
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
-                {% for notification in notifications %}
-                <li>
-                  <a 
-                    class="dropdown-item" 
-                    href="{% url 'notification_detail' notification.id %}">
-                    {{ notification.message }}
-                  </a>
-                </li>
-                {% empty %}
-                <li>
-                  <span class="dropdown-item text-muted">
-                    No new notifications
-                  </span>
-                </li>
-                {% endfor %}
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                  <a class="dropdown-item text-center" href="{% url 'notifications' %}">
-                    View all
-                  </a>
-                </li>
+                  {% for notification in notifications %}
+                      <li>
+                          <a class="dropdown-item" href="{% url 'notification_detail' notification.id %}">
+                              {{ notification.message }}
+                          </a>
+                      </li>
+                  {% empty %}
+                      <li><span class="dropdown-item text-muted">No new notifications</span></li>
+                  {% endfor %}
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item text-center" href="{% url 'notifications' %}">View all</a></li>
               </ul>
-            </li>
+          </li>
             {% endif %}
           </ul>
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             {% if user.is_authenticated %}
-            <!-- 已登录用户：显示灰色人头图标和下拉菜单 -->
-            <li class="nav-item dropdown">
-              <a 
-                class="nav-link dropdown-toggle" 
-                href="#" 
-                id="navbarDropdown" 
-                role="button" 
-                data-bs-toggle="dropdown" 
-                aria-expanded="false">
-                <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
-                <span class="ms-2" style="position: relative; top: -3px;">
-                  {{ user.username }}
-                </span>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li>
-                  <a class="dropdown-item" href="{% url 'dashboard_personal_information' %}">
-                    Dashboard
-                  </a>
+              <!-- 消息通知按钮 -->
+                  <li class="nav-item">
+                    <a class="nav-link position-relative" href="{% url 'message_dashboard' %}">
+                        <i class="fas fa-envelope" style="color: white; font-size: 20px;"></i>
+                        {% if unread_messages_count > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ unread_messages_count }}
+                            </span>
+                        {% endif %}
+                    </a>
                 </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'logout' %}">
-                    Exit
-                  </a>
+
+                <!-- 用户头像和下拉菜单 -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
+                        <span class="ms-2" style="position: relative; top: -3px;">{{ user.username }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'dashboard_personal_information' %}">Dashboard</a></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Exit</a></li>
+                    </ul>
                 </li>
-              </ul>
-            </li>
             {% else %}
-            <!-- 未登录用户：显示灰色人头图标和登录/注册选项 -->
-            <li class="nav-item dropdown">
-              <a 
-                class="nav-link dropdown-toggle" 
-                href="#" 
-                id="navbarDropdown" 
-                role="button" 
-                data-bs-toggle="dropdown" 
-                aria-expanded="false">
-                <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li>
-                  <a class="dropdown-item" href="{% url 'login' %}">
-                    Log in
-                  </a>
+                <!-- 未登录：邮件图标跳转到登录 -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">
+                        <i class="fas fa-envelope" style="color: white; font-size: 20px;"></i>
+                    </a>
                 </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'signup' %}">
-                    Sign up
-                  </a>
+
+                <!-- 未登录：用户头像跳转到登录 -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'login' %}">Log in</a></li>
+                        <li><a class="dropdown-item" href="{% url 'signup' %}">Sign up</a></li>
+                    </ul>
                 </li>
-              </ul>
-            </li>
             {% endif %}
           </ul>
         </div>
@@ -195,7 +161,8 @@
 
     <!-- 主内容 -->
     <div class="container">
-      {% block body %}{% endblock %}
+      {% block body %}
+      {% endblock %}
     </div>
 
     <!-- 页脚 -->
@@ -207,15 +174,7 @@
 
     <!-- Bootstrap JS -->
     {% block extra_js %}{% endblock %}
-    <script 
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" 
-      integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" 
-      crossorigin="anonymous">
-    </script>
-    <script 
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.min.js" 
-      integrity="sha384-PsUw7Xwds7x08Ew3exXhqzbhuEYmA2xnwc8BuD6SEr+UmEHlX8/MCltYEodzWA4u" 
-      crossorigin="anonymous">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.min.js" integrity="sha384-PsUw7Xwds7x08Ew3exXhqzbhuEYmA2xnwc8BuD6SEr+UmEHlX8/MCltYEodzWA4u" crossorigin="anonymous"></script>
   </body>
 </html>

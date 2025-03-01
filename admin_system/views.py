@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
 from django.views import View
 from django.db.models import Q
 from user_system.helpers.mixins import LoginRequiredMixin, UserTypeRequiredMixin
@@ -9,6 +8,8 @@ from django.contrib.auth import authenticate
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.urls import reverse
+from django.utils import timezone
+from notification_system.models import Notification
 
 
 def verifyAdminPassword(request):
@@ -21,6 +22,10 @@ def verifyAdminPassword(request):
             if request.session.get('pending_action') == 'delete_club':
                 club_id = request.session.get('club_id')
                 return redirect('admin_delete_club', club_id=club_id)
+            elif request.session.get('pending_action') == 'delete_event':
+                club_id = request.session.get('club_id')
+                event_id = request.session.get('event_id')
+                return redirect('delete_event', event_id=event_id, club_id=club_id)
             return redirect(request.session.get('return_url', 'admin_panel_clubs'))
         else:
             messages.error(request, 'Wrong password, please try again.')
@@ -97,18 +102,39 @@ class AdminPanelClubsMembers(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
+        
+        # Get search parameters
+        manager_search = request.GET.get('manager_search', '')
+        member_search = request.GET.get('member_search', '')
+        
+        # Manager Enquiries
         managers = club.membership_set.filter(is_manager=True)
-        manager_count = managers.count()
+        if manager_search:
+            managers = managers.filter(
+                Q(user__first_name__icontains=manager_search) |
+                Q(user__last_name__icontains=manager_search) |
+                Q(user__email__icontains=manager_search)
+            )
+        
+        # Members Enquiries
         muggles = club.membership_set.filter(is_manager=False)
-        muggle_count = muggles.count()
+        if member_search:
+            muggles = muggles.filter(
+                Q(user__first_name__icontains=member_search) |
+                Q(user__last_name__icontains=member_search) |
+                Q(user__email__icontains=member_search)
+            )
 
         return render(request, "admin_panel/admin_panel_club/members.html", {
             'club_id': club_id,
             'club': club,
             'managers': managers,
-            'muggles' : muggles,
-            'manager_count': manager_count,
-            'muggle_count': muggle_count
+            'muggles': muggles,
+            'user': request.user,
+            'manager_count': managers.count(),
+            'muggle_count': muggles.count(),
+            'manager_search_query': manager_search,
+            'member_search_query': member_search,
         })
     
 class AdminPanelClubsNews(LoginRequiredMixin, UserTypeRequiredMixin, View):
@@ -140,7 +166,19 @@ class AdminDeleteClub(LoginRequiredMixin, UserTypeRequiredMixin, View):
             del request.session['password_verified']
             club = get_object_or_404(Club, pk=club_id)
             club_name = club.name
+            managers = Membership.objects.filter(club=club, is_manager=True).select_related('user')
+
+            # 向所有管理员发送通知
+            for membership in managers:
+                Notification.objects.create(
+                    user=membership.user,
+                    title="Club Deleted",
+                    message=f"The club '{club_name}' has been deleted by an administrator.",
+                    notification_type='general',
+                )
+
             club.delete()
+            
             messages.success(request, f"Club '{club_name}' has been deleted")
             return redirect('admin_panel_clubs')
         else:
@@ -229,6 +267,57 @@ class AdminPanelNewClubRequestDetail(LoginRequiredMixin, UserTypeRequiredMixin, 
             'creator':creator
         }
         return render(request, 'admin_panel/admin_panel_requests/new_club_request_detail.html', context)
+    
+
+class AdminReviewNewClubRequest(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+
+    def get(self, request, request_id, *args, **kwargs):
+        ncRequest = get_object_or_404(NewClubRequest, request_id=request_id)
+        return render(request, 'admin_panel/admin_panel_requests/new_club_request_detail.html', {'ncRequest': ncRequest})
+
+    def post(self, request, request_id, *args, **kwargs):
+        ncRequest = get_object_or_404(NewClubRequest, request_id=request_id)
+        action = request.POST.get('action')
+        review_text = request.POST.get('review')
+
+        ncRequest.reviewed_at = timezone.now()
+        ncRequest.reviewed_by = request.user
+        ncRequest.review = review_text
+
+        if action == 'accept':
+            new_club = Club.objects.create(
+                name=ncRequest.name,
+                description=ncRequest.description
+            )
+            Membership.objects.create(
+                user=ncRequest.creator,
+                club=new_club,
+                is_manager=True
+            )
+            ncRequest.status = NewClubRequest.STATUS_APPROVED
+            # send notification
+            Notification.objects.create(
+                user=ncRequest.creator,
+                title="New Club Request Accepted",
+                message=f"Your club request '{ncRequest.name}' has been approved. Click 'continue' to check your club detail",
+                notification_type='general',
+                url=reverse('club_detail', args=[new_club.club_id])
+            )
+            messages.success(request, f"Club request '{ncRequest.name}' has been approved and the club has been created.")
+        elif action == 'reject':
+            Notification.objects.create(
+                user=ncRequest.creator,
+                title="New Club Request Rejected",
+                message=f"Your club request '{ncRequest.name}' has been rejected.",
+                notification_type='general'
+            )
+            ncRequest.status = NewClubRequest.STATUS_REJECTED
+            messages.success(request, f"Club request '{ncRequest.name}' has been rejected.")
+
+        ncRequest.save()
+
+        return redirect('admin_panel_new_club_requests')
 
     
 """-----------------------------------------以上内容负责渲染Admin Panel Request---------------------------------------------------"""

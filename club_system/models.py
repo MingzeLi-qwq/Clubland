@@ -51,9 +51,9 @@ class NewClubRequest(models.Model):
     STATUS_APPROVED = 'approved'
     STATUS_REJECTED = 'rejected'
     STATUS_CHOICES = [
-        (STATUS_PENDING, 'Pending'),
-        (STATUS_APPROVED, 'Approved'),
-        (STATUS_REJECTED, 'Rejected'),
+        (STATUS_PENDING, 'pending'),
+        (STATUS_APPROVED, 'approved'),
+        (STATUS_REJECTED, 'rejected'),
     ]
 
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='club_requests')
@@ -63,6 +63,7 @@ class NewClubRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     reviewed_at = models.DateTimeField(null=True, blank=True)
     reviewed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_club_requests')
+    review = models.TextField(null=True, blank=True)
     request_id = models.PositiveIntegerField(primary_key=True, unique=True, editable=False)
 
     def save(self, *args, **kwargs):

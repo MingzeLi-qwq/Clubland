@@ -1,5 +1,5 @@
 # club_system/urls.py
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
@@ -12,6 +12,7 @@ urlpatterns = [
     path('manager/general/<int:club_id>/', views.ClubManagerGeneral.as_view(), name='club_manager_general'),
     path('manager/members/<int:club_id>/', views.ClubManagerMembers.as_view(), name='club_manager_members'),
     path('manager/news/<int:club_id>/', views.ClubManagerNews.as_view(), name='club_manager_news'),
+    path('manager/events/<int:club_id>/', views.ClubManagerEvents.as_view(), name='club_manager_events'),
 
     # Club manager change name and description
     path('manager/update_name/<int:club_id>/', views.UpdateClubName.as_view(), name='update_club_name'),
@@ -30,4 +31,8 @@ urlpatterns = [
 
     # 创建新的Club
     path('apply-new-club/', views.ApplyNewClubView.as_view(), name='apply_new_club'),
+
+    # event 
+    path("manager/event/general/<int:club_id>/<int:event_id>", views.ClubManagerEventGeneral.as_view(), name="club_manager_event_general"),
+    path("manager/event/RSVPs/<int:club_id>/<int:event_id>", views.ClubManagerEventRSVPs.as_view(), name="club_manager_event_RSVPs"),
 ]
