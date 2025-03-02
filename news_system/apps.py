@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
-class ForumSystemConfig(AppConfig):
+class NewsSystemConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'forum_system'
+    name = 'news_system'

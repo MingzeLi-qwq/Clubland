@@ -1,7 +1,7 @@
 import random
 from django.core.management.base import BaseCommand
 from faker import Faker
-from forum_system.models import News
+from news_system.models import News
 
 fake = Faker()
 

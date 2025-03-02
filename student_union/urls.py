@@ -28,7 +28,7 @@ from notification_system.views import notification_detail
 from notification_system.views import mark_all_as_read
 
 import event_system.views
-import forum_system.views
+import news_system.views
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -70,8 +70,8 @@ urlpatterns = [
     path('notifications/<int:notification_id>/', notification_detail, name='notification_detail'),
     path('notifications/mark_all_as_read/', mark_all_as_read, name='mark_all_as_read'),
 
-    # Forum related / 论坛相关页面
-    path('news/', include('forum_system.urls', namespace='forum_system')),
+    # mm related / 论坛相关页面
+    path('news/', include('news_system.urls', namespace='news_system')),
     path('summernote/', include('django_summernote.urls')),
     path('api/', include('club_hub.urls')),
     path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),

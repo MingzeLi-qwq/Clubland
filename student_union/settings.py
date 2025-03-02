@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
-from forum_system import summernote_setup
+from news_system import summernote_setup
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'club_system',
     'notification_system',
     'event_system',
-    'forum_system.apps.ForumSystemConfig',  # 推荐写法
+    'news_system.apps.NewsSystemConfig',
     'club_hub',
     "rest_framework",
     'message_system',
@@ -199,7 +199,7 @@ SUMMERNOTE_CONFIG = {
 
     # 延迟加载（若想在页面底部初始化 summernote 可启用）
     'lazy': True,
-    # 使用 forum_system 中的上传路径生成函数
+    # 使用 news_system 中的上传路径生成函数
     'attachment_upload_to': summernote_setup.upload_img_func,
 }
 

@@ -65,7 +65,8 @@ class NewsCreateView(LoginRequiredMixin, CreateView):
     model = News
     form_class = NewsForm
     template_name = 'news_form.html'
-    success_url = reverse_lazy('forum_system:news_list')  # 提交成功后重定向到列表页
+    success_url = reverse_lazy('news_system:news_list')  # 提交成功后重定向到列表页
+
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -92,13 +93,15 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
     
     def get_success_url(self):
-        return reverse('forum_system:news_detail', kwargs={'pk': self.kwargs.get('news_id')})
+        return reverse('news_system:news_detail', kwargs={'pk': self.kwargs.get('news_id')})
+
 
 
 class NewsDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = News
     template_name = 'news_confirm_delete.html'
-    success_url = reverse_lazy('forum_system:news_list')
+    success_url = reverse_lazy('news_system:news_list')
+
 
     def test_func(self):
         return self.request.user == self.get_object().author
@@ -108,7 +111,8 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = 'comment_confirm_delete.html'
 
     def get_success_url(self):
-        return reverse('forum_system:news_detail', kwargs={'pk': self.get_object().news.pk})
+        return reverse('news_system:news_detail', kwargs={'pk': self.get_object().news.pk})
+
 
     def test_func(self):
         return self.request.user == self.get_object().author

@@ -6,7 +6,7 @@
   <form method="post">
     {% csrf_token %}
     <button type="submit" class="btn btn-danger">删除</button>
-    <a href="{% url 'forum_system:blog_detail' object.blog_post.pk %}" class="btn btn-secondary">取消</a>
+    <a href="{% url 'news_system:news_detail' object.blog_post.pk %}" class="btn btn-secondary">取消</a>
   </form>
 </div>
 {% endblock %}

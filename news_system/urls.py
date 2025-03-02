@@ -4,7 +4,7 @@ from .views import (
     NewsListView, NewsDetailView, NewsCreateView,
     NewsDeleteView, CommentDeleteView, load_events
 )
-app_name = 'forum_system'
+app_name = 'news_system'
 
 urlpatterns = [
     path('', NewsListView.as_view(), name='news_list'),

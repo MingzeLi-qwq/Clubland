@@ -5,7 +5,7 @@
 <div class="container mt-5">
   <div class="card">
     <div class="card-header">
-      <h2 class="mb-0">新建博客文章</h2>
+      <h2 class="mb-0">创建 News</h2>
     </div>
     <div class="card-body">
       <!-- 自动加载 django-summernote 所需的媒体文件 -->
@@ -59,7 +59,7 @@
     </div>
   </div>
   <div class="mt-3 text-center">
-    <a href="{% url 'forum_system:news_list' %}" class="btn btn-link">返回列表</a>
+    <a href="{% url 'news_system:news_list' %}" class="btn btn-link">返回列表</a>
   </div>
 </div>
 
@@ -67,8 +67,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
   // 修改: 将选中社团的 id 从 id_category 改为 id_club
+  var url = "{% url 'news_system:ajax_load_events' %}";
   $("#id_club").change(function(){
-    var url = "{% url 'forum_system:ajax_load_events' %}";
     var clubId = $(this).val();
     $.ajax({
       url: url,
