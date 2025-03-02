@@ -5,21 +5,21 @@ from django.views.generic.edit import FormMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.core.files.storage import default_storage
 from django.views.decorators.csrf import csrf_exempt
-from .models import BlogPost, Comment
-from .forms import BlogPostForm, CommentForm
+from .models import News, Comment
+from .forms import NewsForm, CommentForm
 from event_system.models import Event
 
-# 博客列表页：显示所有博客文章
-class BlogPostListView(ListView):
-    model = BlogPost
-    template_name = 'blogpost_list.html'  # 模板文件名称
+# 新闻列表页：显示所有新闻文章
+class NewsListView(ListView):
+    model = News
+    template_name = 'news_list.html'  # 模板文件名称
     context_object_name = 'posts'         # 在模板中通过 'posts' 变量访问查询结果
 
     def get_queryset(self):
         order = self.request.GET.get('order', 'desc')
         if order == 'asc':
-            return BlogPost.objects.all().order_by('created_at')
-        return BlogPost.objects.all().order_by('-created_at')
+            return News.objects.all().order_by('created_at')
+        return News.objects.all().order_by('-created_at')
     
     def get_paginate_by(self, queryset):
         per_page = self.request.GET.get('per_page')
@@ -28,10 +28,10 @@ class BlogPostListView(ListView):
         return 10  # 默认每页 10 个
 
 
-# 博客详情页：显示单篇博客文章的内容
-class BlogPostDetailView(FormMixin, DetailView):
-    model = BlogPost
-    template_name = 'blogpost_detail.html'
+# 新闻详情页：显示单篇新闻文章的内容
+class NewsDetailView(FormMixin, DetailView):
+    model = News
+    template_name = 'news_detail.html'
     context_object_name = 'post'
     form_class = CommentForm
 
@@ -56,16 +56,16 @@ class BlogPostDetailView(FormMixin, DetailView):
     def form_valid(self, form):
         comment = form.save(commit=False)
         comment.author = self.request.user
-        comment.blog_post = self.object
+        comment.news = self.object
         comment.save()
         return HttpResponseRedirect(self.get_success_url())
 
-# 博客创建页：提供一个表单供用户创建新的博客文章
-class BlogPostCreateView(LoginRequiredMixin, CreateView):
-    model = BlogPost
-    form_class = BlogPostForm
-    template_name = 'blogpost_form.html'
-    success_url = reverse_lazy('forum_system:blog_list')  # 提交成功后重定向到列表页
+# 新闻创建页：提供一个表单供用户创建新的新闻文章
+class NewsCreateView(LoginRequiredMixin, CreateView):
+    model = News
+    form_class = NewsForm
+    template_name = 'news_form.html'
+    success_url = reverse_lazy('forum_system:news_list')  # 提交成功后重定向到列表页
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -87,18 +87,18 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        # 假设评论关联的 BlogPost 是通过 URL 参数传递的 blog_post_id
-        form.instance.blog_post_id = self.kwargs.get('blog_post_id')
+        # 假设评论关联的 News 是通过 URL 参数传递的 news_id
+        form.instance.news_id = self.kwargs.get('news_id')
         return super().form_valid(form)
     
     def get_success_url(self):
-        return reverse('forum_system:blog_detail', kwargs={'pk': self.kwargs.get('blog_post_id')})
+        return reverse('forum_system:news_detail', kwargs={'pk': self.kwargs.get('news_id')})
 
 
-class BlogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = BlogPost
-    template_name = 'blogpost_confirm_delete.html'
-    success_url = reverse_lazy('forum_system:blog_list')
+class NewsDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = News
+    template_name = 'news_confirm_delete.html'
+    success_url = reverse_lazy('forum_system:news_list')
 
     def test_func(self):
         return self.request.user == self.get_object().author
@@ -108,7 +108,7 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = 'comment_confirm_delete.html'
 
     def get_success_url(self):
-        return reverse('forum_system:blog_detail', kwargs={'pk': self.get_object().blog_post.pk})
+        return reverse('forum_system:news_detail', kwargs={'pk': self.get_object().news.pk})
 
     def test_func(self):
         return self.request.user == self.get_object().author

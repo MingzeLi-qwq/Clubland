@@ -2,14 +2,14 @@ from django import forms
 from django_summernote.widgets import SummernoteWidget
 from club_system.models import Club
 from event_system.models import Event
-from .models import BlogPost, Comment
+from .models import News, Comment
 
 # 要求：
 # 普通用户只能选择他们管理（is_manager）的社团
 # 管理员可以选择全部的社团，并允许社团为空
 # 根据所选社团过滤所属活动，并在验证时确保若已选择活动，其所属社团与所选社团一致（如果社团为空则不允许选择活动）。
 
-class BlogPostForm(forms.ModelForm):
+class NewsForm(forms.ModelForm):
     title = forms.CharField(
         max_length=200,
         min_length=1,
@@ -37,7 +37,7 @@ class BlogPostForm(forms.ModelForm):
     content = forms.CharField(widget=SummernoteWidget(attrs={'placeholder': '请输入正文...'}))
     
     class Meta:
-        model = BlogPost
+        model = News
         # 修改: 调整字段顺序
         fields = ['title', 'club', 'event', 'content']
         labels = {
@@ -49,7 +49,7 @@ class BlogPostForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
-        super(BlogPostForm, self).__init__(*args, **kwargs)
+        super(NewsForm, self).__init__(*args, **kwargs)
         if user:
             if user.is_admin:
                 # 管理员可以选择全部社团，并允许置空
