@@ -36,10 +36,10 @@ class Comment(TimestampMixin, models.Model):
         related_name='commentsBelongToPost'
     )
     text = models.TextField()
-    # 直接使用 ForeignKey 表示每条评论只有一个作者
+    # 修改 related_name 防止与其他应用冲突
     author = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='commentAuthorship'
+        related_name='forumCommentAuthorship'
     )

@@ -51,5 +51,5 @@ class Comment(TimestampMixin, models.Model):
         User,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='commentAuthorship'
+        related_name='newsCommentAuthorship'
     )

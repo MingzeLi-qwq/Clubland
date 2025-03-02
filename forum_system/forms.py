@@ -4,10 +4,23 @@ from club_system.models import Club
 from .models import BlogPost, Comment
 
 class BlogPostForm(forms.ModelForm):
-    title = forms.CharField(max_length=200, min_length=1)
-    # 直接使用 forms.CharField 和 SummernoteWidget，不使用 bleach 清理
+    title = forms.CharField(
+        max_length=200,
+        min_length=1,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control w-100'  # 修改：使用 w-100 让输入框占满整行
+        })
+    )
+    # 修改: 将字段名称从 category 改为 club，显示名称保持不变
+    category = forms.ModelChoiceField(
+        queryset=Club.objects.none(), 
+        widget=forms.Select(attrs={
+            'class': 'form-select',
+            'style': 'width:600px;'
+        })
+    )
     content = forms.CharField(widget=SummernoteWidget(attrs={'placeholder': '请输入正文...'}))
-    category = forms.ModelChoiceField(queryset=Club.objects.none(), label="所属社团")
+
 
     class Meta:
         model = BlogPost
