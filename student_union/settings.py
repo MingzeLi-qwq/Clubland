@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'notification_system',
     'event_system',
     'news_system.apps.NewsSystemConfig',
+    'forum_system.apps.ForumSystemConfig',
     'club_hub',
     "rest_framework",
     'message_system',
