@@ -63,7 +63,7 @@ urlpatterns = [
 
 
     # path('societies/', user_system.views.societies, name='societies'),
-    path('news/', user_system.views.news, name='news'),
+    # path('news/', user_system.views.news, name='news'),
 
     #Notification related / 通知相关页面
     path('notifications/', notification_list, name='notifications'),
@@ -71,7 +71,7 @@ urlpatterns = [
     path('notifications/mark_all_as_read/', mark_all_as_read, name='mark_all_as_read'),
 
     # Forum related / 论坛相关页面
-    path('forum/', include('forum_system.urls', namespace='forum_system')),
+    path('news/', include('forum_system.urls', namespace='forum_system')),
     path('summernote/', include('django_summernote.urls')),
     path('api/', include('club_hub.urls')),
     path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),

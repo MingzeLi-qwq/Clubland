@@ -102,9 +102,9 @@ def LogOutView(request):
 #     """社团列表视图"""
 #     return render(request, 'shared/societies.html')
 
-def news(request):
-    """新闻视图"""
-    return render(request, 'shared/news.html')
+# def news(request):
+#     """新闻视图"""
+#     return render(request, 'blogpost_list.html')
 
 def events(request):
     """活动视图"""

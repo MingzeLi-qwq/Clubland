@@ -55,7 +55,8 @@
               <a class="nav-link" href="{% url 'clubs' %}">Clubs</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'news' %}">News</a>
+              <!-- 修改 News 链接 -->
+              <a class="nav-link" href="{% url 'forum_system:blog_list' %}">News</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'events' %}">Events</a>
