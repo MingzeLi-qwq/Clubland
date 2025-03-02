@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container mt-4">
+  <h2 class="mb-4">博客文章列表</h2>
+  
+  <!-- 写新文章按钮 -->
+  <div class="mb-3">
+    <a href="{% url 'forum_system:blog_create' %}" class="btn btn-primary">写新文章</a>
+  </div>
+  
+  <!-- 筛选条件表单：排序和每页显示数量 -->
+  <div class="mb-3">
+    <form method="get">
+      <div class="row">
+        <div class="col-md-6 text-start">
+          <label for="orderSelect">排序：</label>
+          <select name="order" id="orderSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
+            <option value="desc" {% if request.GET.order == "desc" or not request.GET.order %}selected{% endif %}>时间倒序</option>
+            <option value="asc" {% if request.GET.order == "asc" %}selected{% endif %}>时间正序</option>
+          </select>
+        </div>
+        <div class="col-md-6 text-end">
+          <label for="perPageSelect">每页显示：</label>
+          <select name="per_page" id="perPageSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
+            <option value="5" {% if request.GET.per_page == "5" %}selected{% endif %}>5</option>
+            <option value="10" {% if request.GET.per_page == "10" or not request.GET.per_page %}selected{% endif %}>10</option>
+            <option value="20" {% if request.GET.per_page == "20" %}selected{% endif %}>20</option>
+            <option value="50" {% if request.GET.per_page == "50" %}selected{% endif %}>50</option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+  
+  <!-- 博客文章列表，使用 Bootstrap 的 list-group 美化 -->
+  <div class="list-group">
+    {% for post in posts %}
+      <a href="{% url 'forum_system:blog_detail' post.pk %}" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">{{ post.title }}</h5>
+          <small>{{ post.created_at|date:"Y-m-d H:i" }}</small>
+        </div>
+        <p class="mb-1">
+          {% if post.category %}
+            所属社团：{{ post.category.name }}
+          {% else %}
+            所属社团：未指定
+          {% endif %}
+        </p>
+      </a>
+    {% empty %}
+      <div class="list-group-item">暂无文章</div>
+    {% endfor %}
+  </div>
+  
+  <!-- 分页，使用 Bootstrap 的 pagination 组件 -->
+  {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-4">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link" aria-hidden="true">&laquo;</span>
+          </li>
+        {% endif %}
+        
+        {% for num in paginator.page_range %}
+          {% if page_obj.number == num %}
+            <li class="page-item active">
+              <span class="page-link">{{ num }}</span>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ num }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}">{{ num }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link" aria-hidden="true">&raquo;</span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+{% endblock %}
