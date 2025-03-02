@@ -18,10 +18,9 @@ class BlogPostForm(forms.ModelForm):
             'style': 'width:600px;'
         })
     )
-    # 先选择所属社团
-    category = forms.ModelChoiceField(
+    # 修改: 将字段名称从 category 改为 club，显示名称保持不变
+    club = forms.ModelChoiceField(
         queryset=Club.objects.none(), 
-        label="所属社团",
         widget=forms.Select(attrs={
             'class': 'form-select',
             'style': 'width:600px;'
@@ -31,7 +30,6 @@ class BlogPostForm(forms.ModelForm):
     event = forms.ModelChoiceField(
         queryset=Event.objects.none(), 
         required=False, 
-        label="所属活动",
         widget=forms.Select(attrs={
             'class': 'form-select',
             'style': 'width:600px;'
@@ -41,11 +39,11 @@ class BlogPostForm(forms.ModelForm):
     
     class Meta:
         model = BlogPost
-        # 调整字段顺序: 先社团再活动
-        fields = ['title', 'category', 'event', 'content']
+        # 修改: 调整字段顺序
+        fields = ['title', 'club', 'event', 'content']
         labels = {
             'title': '标题',
-            'category': '所属社团',
+            'club': '所属社团',
             'event': '所属活动',
             'content': '正文',
         }
@@ -56,34 +54,34 @@ class BlogPostForm(forms.ModelForm):
         if user:
             if user.is_admin:
                 # 管理员可以选择全部社团，并允许置空
-                self.fields['category'].queryset = Club.objects.all()
-                self.fields['category'].required = False
+                self.fields['club'].queryset = Club.objects.all()
+                self.fields['club'].required = False
             else:
                 # 普通用户只能选择其管理的社团
-                self.fields['category'].queryset = Club.objects.filter(
+                self.fields['club'].queryset = Club.objects.filter(
                     membership__user=user, membership__is_manager=True
                 ).distinct()
-        # 根据已提交数据中的社团自动过滤该社团下的活动
-        if self.data.get('category'):
+        # 修改: 根据已提交数据中的社团过滤活动，字段名称改为 club
+        if self.data.get('club'):
             try:
-                club_id = int(self.data.get('category'))
+                club_id = int(self.data.get('club'))
                 self.fields['event'].queryset = Event.objects.filter(club_id=club_id)
             except (ValueError, TypeError):
                 self.fields['event'].queryset = Event.objects.none()
-        elif self.instance.pk and self.instance.category:
-            self.fields['event'].queryset = Event.objects.filter(club=self.instance.category)
+        elif self.instance.pk and self.instance.club:
+            self.fields['event'].queryset = Event.objects.filter(club=self.instance.club)
         else:
             self.fields['event'].queryset = Event.objects.none()
 
     def clean(self):
         cleaned_data = super().clean()
-        category = cleaned_data.get('category')
+        club = cleaned_data.get('club')
         event = cleaned_data.get('event')
-        # 如果未选择社团，则不允许选择活动
-        if not category and event:
+        # 修改: 未选择社团则不允许选择活动
+        if not club and event:
             raise forms.ValidationError("未选择社团时，不允许选择活动")
         # 如果同时选择了社团和活动，校验活动所属社团是否与所选一致
-        if category and event and event.club != category:
+        if club and event and event.club != club:
             raise forms.ValidationError("选择的活动不属于所选的社团")
         return cleaned_data
 

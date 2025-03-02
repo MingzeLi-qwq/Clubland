@@ -12,15 +12,14 @@ class TimestampMixin(models.Model):
 class BlogPost(TimestampMixin, models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
-    # 添加 event 字段，表示该博文属于哪个 event
     event = models.ForeignKey(
         Event,
         on_delete=models.SET_NULL,
         null=True,
         related_name='blogPosts_event'
     )
-    # 添加 category 字段，表示该博文属于哪个社团
-    category = models.ForeignKey(
+    # 修改: 将 category 字段重命名为 club
+    club = models.ForeignKey(
         Club,
         on_delete=models.SET_NULL,
         null=True,
@@ -41,7 +40,8 @@ class BlogPost(TimestampMixin, models.Model):
     def save(self, *args, **kwargs):
         # 如果 event 字段不为空，则自动将 category 设为 event 所属的社团
         if self.event:
-            self.category = self.event.club
+            # 修改: 将 category 替换为 club
+            self.club = self.event.club
         super().save(*args, **kwargs)
 
 class Comment(TimestampMixin, models.Model):
