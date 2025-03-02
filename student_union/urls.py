@@ -63,7 +63,6 @@ urlpatterns = [
 
 
     # path('societies/', user_system.views.societies, name='societies'),
-    # path('news/', user_system.views.news, name='news'),
 
     # Notification related / 通知相关页面
     path('notifications/', notification_list, name='notifications'),
