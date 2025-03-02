@@ -22,7 +22,7 @@
           {% endif %}
         </div>
         <div class="form-group mb-3">
-          <label for="{{ form.club.id_for_label }}" class="col-form-label">所属社团:</label>
+          <label for="{{ form.club.id_for_label }}" class="col-form-label">{{ form.club.label }}</label>
           <div class="d-inline-block" style="width:600px;">
             {{ form.club }}
           </div>
@@ -33,7 +33,7 @@
           {% endif %}
         </div>
         <div class="form-group mb-3">
-          <label for="{{ form.event.id_for_label }}" class="col-form-label">所属活动:</label>
+          <label for="{{ form.event.id_for_label }}" class="col-form-label">{{ form.event.label }}</label>
           <div class="d-inline-block" style="width:600px;">
             {{ form.event }}
           </div>

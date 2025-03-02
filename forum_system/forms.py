@@ -14,8 +14,7 @@ class BlogPostForm(forms.ModelForm):
         max_length=200,
         min_length=1,
         widget=forms.TextInput(attrs={
-            'class': 'form-control',  # 使用 form-control 样式
-            'style': 'width:600px;'
+            'class': 'form-control w-100'  # 修改：使用 w-100 让输入框占满整行
         })
     )
     # 修改: 将字段名称从 category 改为 club，显示名称保持不变
