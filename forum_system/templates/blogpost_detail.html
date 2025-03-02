@@ -28,6 +28,13 @@
         <strong>所属社团：</strong>未指定
       {% endif %}
     </div>
+    <div class="mb-2">
+      {% if post.event %}
+        <strong>所属活动：</strong>{{ post.event.name }}
+      {% else %}
+        <strong>所属活动：</strong>未指定
+      {% endif %}
+    </div>
     <div>
       {{ post.content|safe }}
     </div>

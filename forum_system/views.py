@@ -7,6 +7,7 @@ from django.core.files.storage import default_storage
 from django.views.decorators.csrf import csrf_exempt
 from .models import BlogPost, Comment
 from .forms import BlogPostForm, CommentForm
+from event_system.models import Event
 
 # 博客列表页：显示所有博客文章
 class BlogPostListView(ListView):
@@ -111,6 +112,13 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.request.user == self.get_object().author
+
+def load_events(request):
+    club_id = request.GET.get('club')
+    events = Event.objects.filter(club_id=club_id).order_by('name')
+    # 返回活动的 id 和名称
+    events_data = list(events.values('id', 'name'))
+    return JsonResponse(events_data, safe=False)
 
 
 

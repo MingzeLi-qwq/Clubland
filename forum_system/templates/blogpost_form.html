@@ -12,7 +12,7 @@
       {{ form.media }}
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="form-group">
+        <div class="form-group mb-3">
           <label for="{{ form.title.id_for_label }}" class="col-form-label">{{ form.title.label }}</label>
           {{ form.title }}
           {% if form.title.errors %}
@@ -21,27 +21,29 @@
             </div>
           {% endif %}
         </div>
-        <!-- 先选择所属社团 -->
-        <div class="form-group">
-          <label for="{{ form.category.id_for_label }}" class="col-form-label">{{ form.category.label }}</label>
-          {{ form.category }}
+        <div class="form-group mb-3">
+          <label for="{{ form.category.id_for_label }}" class="col-form-label">所属社团:</label>
+          <div class="d-inline-block" style="width:600px;">
+            {{ form.category }}
+          </div>
           {% if form.category.errors %}
             <div class="text-danger small">
               {{ form.category.errors }}
             </div>
           {% endif %}
         </div>
-        <!-- 选择所属活动（活动列表根据所选社团过滤） -->
-        <div class="form-group">
-          <label for="{{ form.event.id_for_label }}" class="col-form-label">{{ form.event.label }}</label>
-          {{ form.event }}
+        <div class="form-group mb-3">
+          <label for="{{ form.event.id_for_label }}" class="col-form-label">所属活动:</label>
+          <div class="d-inline-block" style="width:600px;">
+            {{ form.event }}
+          </div>
           {% if form.event.errors %}
             <div class="text-danger small">
               {{ form.event.errors }}
             </div>
           {% endif %}
         </div>
-        <div class="form-group">
+        <div class="form-group mb-3">
           <label for="{{ form.content.id_for_label }}" class="col-form-label">{{ form.content.label }}</label>
           {{ form.content }}
           {% if form.content.errors %}
@@ -50,7 +52,7 @@
             </div>
           {% endif %}
         </div>
-        <div class="form-group text-center">
+        <div class="text-center">
           <button type="submit" class="btn btn-outline-secondary">提交</button>
         </div>
       </form>
@@ -60,4 +62,26 @@
     <a href="{% url 'forum_system:blog_list' %}" class="btn btn-link">返回列表</a>
   </div>
 </div>
+
+<!-- 引入 jQuery 并添加动态更新活动的脚本 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+  $("#id_category").change(function(){
+    var url = "{% url 'forum_system:ajax_load_events' %}";
+    var clubId = $(this).val();
+    $.ajax({
+      url: url,
+      data: {
+        'club': clubId
+      },
+      success: function(data) {
+        $("#id_event").html('');
+        $("#id_event").append('<option value="">---------</option>');
+        data.forEach(function(item){
+          $("#id_event").append('<option value="' + item.id + '">' + item.name + '</option>');
+        });
+      }
+    });
+  });
+</script>
 {% endblock %}

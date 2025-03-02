@@ -48,6 +48,12 @@
           {% else %}
             所属社团：未指定
           {% endif %}
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          {% if post.event %}
+            所属活动：{{ post.event.name }}
+          {% else %}
+            所属活动：未指定
+          {% endif %}
         </p>
       </a>
     {% empty %}
