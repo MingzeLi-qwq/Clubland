@@ -11,8 +11,8 @@ class TimestampMixin(models.Model):
 class BlogPost(TimestampMixin, models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
-    # 添加 category 字段，表示该博文属于哪个社团
-    category = models.ForeignKey(
+    # 将 category 字段重命名为 club
+    club = models.ForeignKey(
         Club,
         on_delete=models.SET_NULL,
         null=True,

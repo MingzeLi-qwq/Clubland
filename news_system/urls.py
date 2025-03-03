@@ -8,7 +8,7 @@ app_name = 'news_system'
 
 urlpatterns = [
     path('', NewsListView.as_view(), name='news_list'),
-    path('news/<int:pk>/', NewsDetailView.as_view(), name='news_detail'),
+    path('article/<int:pk>/', NewsDetailView.as_view(), name='news_detail'),
     path('news/new/', NewsCreateView.as_view(), name='news_create'),
     path('news/<int:pk>/delete/', NewsDeleteView.as_view(), name='news_delete'),
     path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment_delete'),

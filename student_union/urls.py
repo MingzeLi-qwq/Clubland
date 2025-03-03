@@ -76,7 +76,7 @@ urlpatterns = [
     
     # Forum related / 论坛相关页面
     path('forum/', include('forum_system.urls', namespace='forum_system')),
-    path('summernote/', include('django_summernote.urls')),
+
 
     path('api/', include('club_hub.urls')),
     path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
