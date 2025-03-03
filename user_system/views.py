@@ -7,7 +7,8 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from user_system.forms import LoginForm, SignUpForm
-from user_system.helpers.mixins import UserTypeRequiredMixin, ClubMemberRequiredMixin, ClubExistsRequiredMixin
+from user_system.helpers.mixins import UserTypeRequiredMixin
+from club_system.helpers.mixins import ClubMemberRequiredMixin, ClubExistsRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -100,10 +101,6 @@ def LogOutView(request):
 # def societies(request):
 #     """社团列表视图"""
 #     return render(request, 'shared/societies.html')
-
-def news(request):
-    """新闻视图"""
-    return render(request, 'shared/news.html')
 
 def events(request):
     """活动视图"""

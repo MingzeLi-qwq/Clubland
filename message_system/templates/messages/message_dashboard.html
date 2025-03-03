@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<div id="app">
+    <div class="chat-container">
+        <!-- 左侧消息列表 -->
+        <div class="sidebar">
+            <h5>Messages</h5>
+            <ul class="chat-list">
+                <li v-for="(chat, index) in chatList" :key="index" @click="selectChat(index)" :class="{ active: currentChatIndex === index }">
+                    <div class="icon-wrapper">
+                        <i :class="chat.icon"></i>
+                    </div>
+                    <div>
+                        <strong>{{ chat.name }}</strong>
+                        <p style="margin:0; font-size: 12px; color: gray;">{{ chat.lastMessage }}</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 右侧聊天框 -->
+        <div class="chat-content">
+            <div class="chat-header">
+                <strong>{{ currentChat.name }}</strong>
+                <button class="btn btn-outline-secondary btn-sm">Setting</button>
+            </div>
+
+            <div class="chat-box">
+                <div v-for="(msg, index) in currentChat.messages" :key="index" :class="['chat-message', msg.sender]">
+                    <p>{{ msg.text }}</p>
+                </div>
+            </div>
+
+            <!-- 优化的输入框 -->
+            <div class="chat-footer">
+                <textarea v-model="newMessage" 
+                          @keydown="handleKeyPress"
+                          @input="adjustTextareaHeight" 
+                          placeholder="Input Message..." 
+                          class="message-input"></textarea>
+                <button @click="sendMessage" class="send-btn">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vue 逻辑 -->
+{% block extra_js %}
+<script src="https://unpkg.com/vue@3.2.36/dist/vue.global.js"></script>
+<script>
+const app = Vue.createApp({
+    data() {
+        return {
+            chatList: [
+                { name: "无畏契约赛事", icon: "fas fa-gamepad", lastMessage: "🔥 快来看比赛", messages: [{ text: "你好！", sender: "other" }] },
+                { name: "崩坏星穹铁道", icon: "fas fa-space-shuttle", lastMessage: "全新世界开启！", messages: [{ text: "你好呀！", sender: "other" }] },
+                { name: "哔哩哔哩晚会", icon: "fas fa-tv", lastMessage: "直播开始提醒", messages: [{ text: "今晚看直播吗？", sender: "other" }] }
+            ],
+            currentChatIndex: 0,
+            newMessage: "",
+        };
+    },
+    computed: {
+        currentChat() {
+            return this.chatList[this.currentChatIndex];
+        }
+    },
+    methods: {
+        selectChat(index) {
+            this.currentChatIndex = index;
+        },
+        sendMessage() {
+            if (this.newMessage.trim()) {
+                this.currentChat.messages.push({ text: this.newMessage, sender: "me" });
+                this.newMessage = "";
+                this.resetTextareaHeight();  // 发送后重置输入框高度
+            }
+        },
+        handleKeyPress(event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                this.sendMessage();
+            }
+        },
+        adjustTextareaHeight(event) {
+            event.target.style.height = "auto";
+            event.target.style.height = (event.target.scrollHeight) + "px";
+        },
+        resetTextareaHeight() {
+            document.querySelector(".message-input").style.height = "40px";
+        }
+    }
+}).mount("#app");
+</script>
+{% endblock %}
+
+<!-- 引入 FontAwesome 图标库 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<!-- CSS 样式优化 -->
+<style>
+.chat-container {
+    display: flex;
+    height: 90vh;
+}
+
+.sidebar {
+    width: 30%;
+    background: #f4f4f4;
+    padding: 10px;
+    border-right: 1px solid #ddd;
+}
+
+.chat-list {
+    list-style: none;
+    padding: 0;
+}
+
+.chat-list li {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.chat-list li:hover, .chat-list li.active {
+    background: #ddd;
+}
+
+.icon-wrapper {
+    width: 40px;
+    height: 40px;
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.chat-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-box {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-message {
+    max-width: 60%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.chat-message.other {
+    background: #eaeaea;
+    align-self: flex-start;
+}
+
+.chat-message.me {
+    background: #007bff;
+    color: white;
+    align-self: flex-end;
+}
+
+.chat-footer {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.message-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    resize: none;
+    height: 40px;
+    overflow-y: auto;
+}
+
+.send-btn {
+    margin-left: 10px;
+    padding: 10px 15px;
+    border: none;
+    background: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.send-btn:hover {
+    background: #0056b3;
+}
+</style>
+
+{% endblock %}

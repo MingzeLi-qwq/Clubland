@@ -32,6 +32,20 @@
         <div class="col-md-6">
           <div class="d-flex align-items-center gap-3">
             <div class="icon-circle text-white">
+              <i class="bi bi-flag"></i>
+            </div>
+            <div>
+              <h5 class="mb-1">Club</h5>
+              <p class="mb-0">
+                {{ club.name }}
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-circle text-white">
               <i class="bi-geo-alt fs-4"></i>
             </div>
             <div>
@@ -49,7 +63,24 @@
           {{ event.description|linebreaks }}
         </div>
       </div>
-
+      
+      <!-- 本活动的新闻 -->
+      <div class="mb-4">
+        <h4 class="mb-3">本活动的新闻</h4>
+        {% if event.news_event.all %}
+          <div class="list-group">
+            {% for news in event.news_event.all %}
+              <a href="{% url 'news_system:news_detail' news.pk %}" class="list-group-item list-group-item-action">
+                <h5 class="mb-1">{{ news.title }}</h5>
+                <small>{{ news.created_at|date:"Y-m-d H:i" }}</small>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>暂无.</p>
+        {% endif %}
+      </div>
+      
       <!-- 操作按钮 -->
       <div class="d-flex gap-3 border-top pt-4">
         {% if user.is_authenticated %}

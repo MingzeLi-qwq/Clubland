@@ -20,6 +20,7 @@ import user_system.views
 import club_system.views
 import event_system.views
 import club_hub.views
+import message_system.views
 from user_system.views import home
 from user_system.views import change_password
 from notification_system.views import notification_list
@@ -27,6 +28,7 @@ from notification_system.views import notification_detail
 from notification_system.views import mark_all_as_read
 
 import event_system.views
+import news_system.views
 import forum_system.views
 
 from django.conf import settings
@@ -62,49 +64,45 @@ urlpatterns = [
 
 
     # path('societies/', user_system.views.societies, name='societies'),
-    path('news/', user_system.views.news, name='news'),
 
-    #Notification related / 通知相关页面
+    # Notification related / 通知相关页面
     path('notifications/', notification_list, name='notifications'),
     path('notifications/<int:notification_id>/', notification_detail, name='notification_detail'),
     path('notifications/mark_all_as_read/', mark_all_as_read, name='mark_all_as_read'),
 
-    # Events related / Events相关页面
-    path('events/home/', event_system.views.events_home, name='events_home'),
-    path('events/', event_system.views.EventListView.as_view(), name='events'),
-    path('events/<int:pk>/', event_system.views.event_detail, name='event_detail'),
-    path('events/<int:pk>/rsvp/', event_system.views.rsvp_toggle, name='rsvp_toggle'),
-  
-
-    #---------------------------------------------------- Club related / Club相关页面 -----------------------------------------------------------------------
-    # 注意!!! 注意!!! 注意!!!!
-    # club相关的所有url被我集中管理在club_system.urls中了!!!! 这样子更加简洁!!!! 如果你要加东西!!!! 去club_system加 -- 李明泽
-    path('clubs/', include('club_system.urls')),
-
-    # Events
-    path('clubs/manager/events/<int:club_id>/', club_system.views.ClubManagerEvents.as_view(), name='club_manager_events'),
-    path("clubs/manager/events/<int:event_id>/rsvps/", club_system.views.EventRSVPListView.as_view(), name="event_rsvps"),
-    re_path(r"^clubs/manager/events/(?P<event_id>\d+)/remove_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.RemoveRSVPView.as_view(), name="remove_rsvp"),
-    re_path(r"^clubs/manager/events/(?P<event_id>\d+)/add_rsvp/(?P<username>[\w.@+-]+)/$", club_system.views.AddRSVPView.as_view(), name="add_rsvp"),
-
-    #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
-
+    # News related / 新闻相关页面
+    path('news/', include('news_system.urls', namespace='news_system')),
+    path('summernote/', include('django_summernote.urls')),
+    
     # Forum related / 论坛相关页面
     path('forum/', include('forum_system.urls', namespace='forum_system')),
 
-    path('summernote/', include('django_summernote.urls')),
 
     path('api/', include('club_hub.urls')),
     path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
 
+    # Message related / 消息相关
+    path('messages/message_dashboard', message_system.views.message_dashboard, name='message_dashboard'),
+
+
+
+    #---------------------------------------------------- Event related / Event相关页面 -----------------------------------------------------------------------
+    path('events/', include('event_system.urls')),
+    #-------------------------------------------------------- Event related END ----------------------------------------------------------------------------
+
+
+    #---------------------------------------------------- Club related / Club相关页面 -----------------------------------------------------------------------
+    path('clubs/', include('club_system.urls')),
+    #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
+
+
     #---------------------------------------------------- Admin related / Admin相关页面 -----------------------------------------------------------------------
-    # 注意!!! 注意!!! 注意!!!!
-    # admin相关的所有url被我集中管理在admin_system.urls中了!!!! 这样子更加简洁!!!! 如果你要加东西!!!! 去admin_system加 -- 李明泽
     path('admin_panel/', include('admin_system.urls')),
-    #密码验证
-    path('verify-admin-password/', admin_system.views.verifyAdminPassword, name='verify_admin_password'),
     #-------------------------------------------------------- Admin related END ------------------------------------------------------------------------------
 
+    #--------------------------------------- Password verification for dangerous operations / 危险操作的密码验证 --------------------------------------------------
+    path('verify-admin-password/', admin_system.views.verifyAdminPassword, name='verify_admin_password'),
+    #--------------------------------------------Password verification for dangerous operations END --------------------------------------------------------
 ]   
 
 

@@ -1,0 +1,120 @@
+{% extends 'club_manager/club_manager_base.html' %}
+
+{% block manager_content %}
+<style>
+    .category-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .category-checkbox {
+        display: none;
+    }
+
+    .category-label {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #f0f0f0;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .category-checkbox:checked + .category-label {
+        background-color: #007bff;
+        color: white;
+    }
+</style>
+
+<!-- 返回按钮 -->
+<div class="mb-3">
+    <a href="{% url 'club_manager_events' club_id=club_id %}" class="text-decoration-none text-primary">
+        <i class="bi bi-arrow-left-short"></i> Events
+    </a>
+</div>
+
+<h4>Create Event</h4>
+<p class="mb-4">Fill out the form to create a new event</p>
+
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Event name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                        <div class="invalid-feedback">Please provide an event name.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="start_time" class="form-label">Start time</label>
+                        <input type="datetime-local" class="form-control" id="start_time" name="start_time" required>
+                        <div class="invalid-feedback">Please select a valid start time.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="end_time" class="form-label">End time</label>
+                        <input type="datetime-local" class="form-control" id="end_time" name="end_time" required>
+                        <div class="invalid-feedback">Please select a valid end time.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" required>
+                        <div class="invalid-feedback">Please provide a location.</div>
+                    </div>
+                        <!-- Category 选择 -->
+                        <div class="mb-3">
+                            <label class="form-label">Categories (Optional)</label>
+                            <div class="category-selector">
+                                {% for category in categories %}
+                                    <input type="checkbox" id="category-{{ category.pk }}" name="categories" value="{{ category.pk }}" class="category-checkbox">
+                                    <label for="category-{{ category.pk }}" class="category-label">{{ category.name }}</label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    <button type="submit" class="btn btn-primary">Create Event</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 设置最小日期为今天
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('start_time').min = today + "T00:00";
+    document.getElementById('end_time').min = today + "T00:00";
+
+    // 监听开始时间的变化
+    document.getElementById('start_time').addEventListener('change', function() {
+        document.getElementById('end_time').min = this.value;
+    });
+
+    // 表单验证
+    var form = document.querySelector('.needs-validation');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    }, false);
+});
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryLabels = document.querySelectorAll('.category-label');
+    categoryLabels.forEach(label => {
+        label.addEventListener('click', function() {
+            this.classList.toggle('active');
+        });
+    });
+});
+</script>
+{% endblock %}

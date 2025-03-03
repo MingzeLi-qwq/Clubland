@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div id="app">
+    <div class="chat-container">
+        <!-- 左侧消息列表 -->
+        <div class="sidebar">
+            <h5>消息中心</h5>
+            <ul class="chat-list">
+                <li v-for="(chat, index) in chatList" :key="index" @click="selectChat(index)" :class="{ active: currentChatIndex === index }">
+                    <img :src="chat.avatar" alt="Avatar">
+                    <div>
+                        <strong>{{ chat.name }}</strong>
+                        <p style="margin:0; font-size: 12px; color: gray;">{{ chat.lastMessage }}</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 右侧聊天框 -->
+        <div class="chat-content">
+            <div class="chat-header">
+                <strong>{{ currentChat.name }}</strong>
+                <button class="btn btn-outline-secondary btn-sm">设置</button>
+            </div>
+
+            <div class="chat-box">
+                <div v-for="(msg, index) in currentChat.messages" :key="index" :class="['chat-message', msg.sender]">
+                    <p>{{ msg.text }}</p>
+                </div>
+            </div>
+
+            <div class="chat-footer">
+                <input type="text" v-model="newMessage" placeholder="输入消息...">
+                <button @click="sendMessage">发送</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/vue@3.2.36/dist/vue.global.js"></script>
+<script>
+const app = Vue.createApp({
+    data() {
+        return {
+            chatList: [
+                { name: "无畏契约赛事", avatar: "https://via.placeholder.com/40", lastMessage: "🔥 快来看比赛", messages: [{ text: "你好！", sender: "other" }] },
+                { name: "崩坏星穹铁道", avatar: "https://via.placeholder.com/40", lastMessage: "全新世界开启！", messages: [{ text: "你好呀！", sender: "other" }] },
+                { name: "哔哩哔哩晚会", avatar: "https://via.placeholder.com/40", lastMessage: "直播开始提醒", messages: [{ text: "今晚看直播吗？", sender: "other" }] }
+            ],
+            currentChatIndex: 0,
+            newMessage: "",
+        };
+    },
+    computed: {
+        currentChat() {
+            return this.chatList[this.currentChatIndex];
+        }
+    },
+    methods: {
+        selectChat(index) {
+            this.currentChatIndex = index;
+        },
+        sendMessage() {
+            if (this.newMessage.trim()) {
+                this.currentChat.messages.push({ text: this.newMessage, sender: "me" });
+                this.newMessage = "";
+            }
+        }
+    }
+}).mount("#app");
+</script>
+{% endblock %}
