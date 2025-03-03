@@ -53,7 +53,7 @@
           </div>
           <div class="card-body">
             <!-- 用 content 替换 text -->
-            <p class="card-text">{{ threadpost.content }}</p>
+            <p class="card-text">{{ threadpost.content|safe }}</p>
           </div>
         </div>
       {% endfor %}

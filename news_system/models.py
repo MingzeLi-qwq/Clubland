@@ -1,5 +1,5 @@
 from django.db import models
-from CMS_mixins.models import TimestampMixin, BasicPost  # 修改为 BasicPost
+from CMS_mixins.models import TimestampMixin, AuthorshipMixin, BasicPost  # 修改为 BasicPost
 from user_system.models import User
 from club_system.models import Club
 from event_system.models import Event
@@ -28,16 +28,15 @@ class News(BasicPost):  # 改为继承 BasicPost
             self.club = self.event.club
         super().save(*args, **kwargs)
 
-class Comment(TimestampMixin, models.Model):
+class Comment(TimestampMixin, AuthorshipMixin, models.Model):
     news = models.ForeignKey(
         News, 
         on_delete=models.CASCADE, 
-        related_name='comments'
+        related_name='newsComments'
     )
     text = models.TextField()
     author = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
-        null=True,
-        related_name='commentAuthorship'
+        null=True
     )

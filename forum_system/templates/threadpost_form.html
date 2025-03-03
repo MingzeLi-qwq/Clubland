@@ -3,8 +3,8 @@
   <form method="post">
     {% csrf_token %}
     <div class="mb-3">
-      {{ form.text.label_tag }}  <!-- 修改后的标签语义，如需调整请自行改变 -->
-      {{ form.text }}
+      {{ form.content.label_tag }}  <!-- 修改后的标签语义 -->
+      {{ form.content }}
     </div>
     <button type="submit" class="btn btn-secondary">提交讨论</button>
   </form>

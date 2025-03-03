@@ -42,8 +42,8 @@
   
   <div class="mb-4">
     <h4>评论</h4>
-    {% if post.commentsBelongToPost.all %}
-      {% for comment in post.commentsBelongToPost.all %}
+    {% if post.newsComments.all %}
+      {% for comment in post.newsComments.all %}
         <div class="card mb-3">
           <div class="card-header bg-light">
             <div class="d-flex justify-content-between align-items-center">
