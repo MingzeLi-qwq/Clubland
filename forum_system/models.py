@@ -1,44 +1,39 @@
 from django.db import models
 from user_system.models import User
-from club_system.models import Club  # 引入 Club 模型
+from club_system.models import Club
 
 class TimestampMixin(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    
     class Meta:
         abstract = True
 
-class BlogPost(TimestampMixin, models.Model):
-    title = models.CharField(max_length=200)
+# 新建抽象基类，用于封装 content 和 author 的共性
+class BasePost(TimestampMixin, models.Model):
     content = models.TextField()
+    author = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="%(class)s_authorship"
+    )
+    class Meta:
+        abstract = True
+
+class BlogPost(BasePost):
+    title = models.CharField(max_length=200)
     club = models.ForeignKey(
         Club,
         on_delete=models.SET_NULL,
         null=True,
         related_name='blogPosts'
     )
-    author = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='blogPostAuthorship'
-    )
-
     class Meta:
         ordering = ['-created_at']
 
-# 将 Comment 模型重命名为 ThreadPost
-class ThreadPost(TimestampMixin, models.Model):
+class ThreadPost(BasePost):
     blog_post = models.ForeignKey(
         BlogPost, 
         on_delete=models.CASCADE, 
         related_name='thread_posts'
     )
-    # 将 text 字段重命名为 content
-    content = models.TextField()
-    author = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='forumThreadPostAuthorship'
-    )
+    # 其他字段使用 BasePost 中定义的 content 与 author
