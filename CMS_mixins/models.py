@@ -16,7 +16,7 @@ class AuthorshipMixin(models.Model):
     class Meta:
         abstract = True
 
-class BasePost(AuthorshipMixin, TimestampMixin, models.Model):
+class BasicPost(AuthorshipMixin, TimestampMixin, models.Model):
     content = models.TextField()
     class Meta:
         abstract = True

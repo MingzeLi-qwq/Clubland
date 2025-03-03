@@ -33,48 +33,15 @@
     </div>
   </div>
   
+  <!-- 讨论区 -->
   <div class="mb-4">
-    <h4>评论</h4>
-    {% if post.commentsBelongToPost.all %}
-      {% for comment in post.commentsBelongToPost.all %}
-        <div class="card mb-3">
-          <div class="card-header bg-light">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                {% if comment.author %}
-                  {{ comment.author.first_name }} {{ comment.author.last_name }}&nbsp;&nbsp;<small class="text-muted">{{ comment.author.username }}</small>
-                {% else %}
-                  用户不存在
-                {% endif %}
-                &nbsp;
-                <small class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</small>
-              </div>
-              <div>
-                {% if user == comment.author %}
-                  <a href="{% url 'forum_system:comment_delete' comment.pk %}" class="btn btn-danger btn-sm">删除评论</a>
-                {% endif %}
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <p class="card-text">{{ comment.text }}</p>
-          </div>
-        </div>
-      {% endfor %}
-    {% else %}
-      <p>暂无评论</p>
-    {% endif %}
+    {% include "threadpost_list.html" %}
   </div>
-
-  <div class="mb-4">
-    <h4>讨论</h4>表和排序、分页的子模板 -->
-    {% if post.thread_posts.all %}" %}
-      {% for threadpost in post.thread_posts.all %}
-        <div class="card mb-3">tml" %}
-          <div class="card-header bg-light">
-            <div class="d-flex justify-content-between align-items-center">
-              <div> 'forum_system:blog_list' %}" class="btn btn-primary">返回列表</a>
-                {% if threadpost.author %}
-                  {{ threadpost.author.first_name }} {{ threadpost.author.last_name }}
-                  &nbsp;&nbsp;<small class="text-muted">{{ threadpost.author.username }}</small>
-                {% else %}                  用户不存在                {% endif %}                &nbsp;                <small class="text-muted">{{ threadpost.created_at|date:"Y-m-d H:i" }}</small>              </div>              <div>                {% if user == threadpost.author %}                  <a href="{% url 'forum_system:threadpost_delete' threadpost.pk %}" class="btn btn-danger btn-sm">删除讨论</a>                {% endif %}              </div>            </div>          </div>          <div class="card-body">            <p class="card-text">{{ threadpost.content }}</p>          </div>        </div>      {% endfor %}    {% else %}      <p>暂无讨论</p>    {% endif %}  </div>  {% include "threadpost_form.html" %}    <div class="mt-3">    <a href="{% url 'forum_system:blog_list' %}" class="btn btn-primary">返回列表</a>  </div></div>{% endblock %}
+  
+  {% include "threadpost_form.html" %}
+  
+  <div class="mt-3">
+    <a href="{% url 'forum_system:blog_list' %}" class="btn btn-primary">返回列表</a>
+  </div>
+</div>
+{% endblock %}
