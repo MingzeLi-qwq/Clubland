@@ -70,9 +70,11 @@ urlpatterns = [
     path('notifications/<int:notification_id>/', notification_detail, name='notification_detail'),
     path('notifications/mark_all_as_read/', mark_all_as_read, name='mark_all_as_read'),
 
+    # Summernote related / 富文本编辑器相关
+    path('summernote/', include('django_summernote.urls')),
+
     # News related / 新闻相关页面
     path('news/', include('news_system.urls', namespace='news_system')),
-    path('summernote/', include('django_summernote.urls')),
     
     # Forum related / 论坛相关页面
     path('forum/', include('forum_system.urls', namespace='forum_system')),

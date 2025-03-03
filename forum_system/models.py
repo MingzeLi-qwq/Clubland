@@ -11,14 +11,12 @@ class TimestampMixin(models.Model):
 class BlogPost(TimestampMixin, models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
-    # 将 category 字段重命名为 club
     club = models.ForeignKey(
         Club,
         on_delete=models.SET_NULL,
         null=True,
         related_name='blogPosts'
     )
-    # 直接使用 ForeignKey 表示每篇文章只有一个作者
     author = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -29,17 +27,18 @@ class BlogPost(TimestampMixin, models.Model):
     class Meta:
         ordering = ['-created_at']
 
-class Comment(TimestampMixin, models.Model):
+# 将 Comment 模型重命名为 ThreadPost
+class ThreadPost(TimestampMixin, models.Model):
     blog_post = models.ForeignKey(
         BlogPost, 
         on_delete=models.CASCADE, 
-        related_name='commentsBelongToPost'
+        related_name='thread_posts'
     )
-    text = models.TextField()
-    # 修改 related_name 防止与其他应用冲突
+    # 将 text 字段重命名为 content
+    content = models.TextField()
     author = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='forumCommentAuthorship'
+        related_name='forumThreadPostAuthorship'
     )
