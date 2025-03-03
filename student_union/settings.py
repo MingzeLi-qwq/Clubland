@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
-from . import summernote_setup
+
+# 改为绝对导入, 从 CMS_mixins 文件夹中导入 CMS_utils
+from CMS_mixins import CMS_utils
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -200,8 +202,8 @@ SUMMERNOTE_CONFIG = {
 
     # 延迟加载（若想在页面底部初始化 summernote 可启用）
     'lazy': True,
-    # 使用 news_system 中的上传路径生成函数
-    'attachment_upload_to': summernote_setup.upload_img_func,
+    # 使用从 CMS_mixins 导入的上传路径生成函数
+    'attachment_upload_to': CMS_utils.upload_img_func,
 }
 
 LOGIN_URL = '/login/'

@@ -1,4 +1,8 @@
-# ...existing imports...
+from django import forms
+from django_summernote.widgets import SummernoteWidget
+from club_system.models import Club
+from .models import BlogPost, ThreadPost
+
 class ThreadPostForm(forms.ModelForm):
     class Meta:
         model = ThreadPost
@@ -9,10 +13,6 @@ class ThreadPostForm(forms.ModelForm):
         widgets = {
             'content': SummernoteWidget(attrs={'placeholder': '请输入讨论内容...'}),
         }
-from django import forms
-from django_summernote.widgets import SummernoteWidget
-from club_system.models import Club
-from .models import BlogPost, ThreadPost
 
 class BlogPostForm(forms.ModelForm):
     title = forms.CharField(
@@ -41,15 +41,3 @@ class BlogPostForm(forms.ModelForm):
                 self.fields['club'].queryset = Club.objects.all()
             else:
                 self.fields['club'].queryset = user.clubs_joined.all()
-
-# 重命名 CommentForm 为 ThreadPostForm
-class ThreadPostForm(forms.ModelForm):
-    class Meta:
-        model = ThreadPost
-        fields = ['content']
-        labels = {
-            'content': '评论内容',
-        }
-        widgets = {
-            'content': SummernoteWidget(attrs={'placeholder': '请输入评论内容...'}),
-        }

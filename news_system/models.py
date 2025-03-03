@@ -1,17 +1,11 @@
 from django.db import models
+from CMS_mixins.models import TimestampMixin, BasicPost  # 修改为 BasicPost
 from user_system.models import User
-from club_system.models import Club  # 引入 Club 模型
-from event_system.models import Event  # 新增导入 Event 模型
+from club_system.models import Club
+from event_system.models import Event
 
-class TimestampMixin(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        abstract = True
-
-class News(TimestampMixin, models.Model):
+class News(BasicPost):  # 改为继承 BasicPost
     title = models.CharField(max_length=200)
-    content = models.TextField()
     event = models.ForeignKey(
         Event,
         on_delete=models.SET_NULL,
@@ -24,13 +18,7 @@ class News(TimestampMixin, models.Model):
         null=True,
         related_name='news'
     )
-
-    author = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='newsAuthorship'
-    )
+    # author 和 content 已由 BasicPost 包含
 
     class Meta:
         ordering = ['-created_at']
@@ -44,12 +32,12 @@ class Comment(TimestampMixin, models.Model):
     news = models.ForeignKey(
         News, 
         on_delete=models.CASCADE, 
-        related_name='commentsBelongToNews'
+        related_name='comments'
     )
     text = models.TextField()
     author = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='newsCommentAuthorship'
+        related_name='commentAuthorship'
     )
