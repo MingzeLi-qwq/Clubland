@@ -1,3 +1,14 @@
+# ...existing imports...
+class ThreadPostForm(forms.ModelForm):
+    class Meta:
+        model = ThreadPost
+        fields = ['content']
+        labels = {
+            'content': '讨论内容',
+        }
+        widgets = {
+            'content': SummernoteWidget(attrs={'placeholder': '请输入讨论内容...'}),
+        }
 from django import forms
 from django_summernote.widgets import SummernoteWidget
 from club_system.models import Club
@@ -35,10 +46,10 @@ class BlogPostForm(forms.ModelForm):
 class ThreadPostForm(forms.ModelForm):
     class Meta:
         model = ThreadPost
-        fields = ['text']
+        fields = ['content']
         labels = {
-            'text': '评论内容',
+            'content': '评论内容',
         }
         widgets = {
-            'text': SummernoteWidget(attrs={'placeholder': '请输入评论内容...'}),
+            'content': SummernoteWidget(attrs={'placeholder': '请输入评论内容...'}),
         }
