@@ -319,6 +319,19 @@ class UpdateEventLocation(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         event.save()
         messages.success(request, "Event location updated successfully.")
         return redirect(redirect_url, club_id=club_id, event_id=event_id)
+
+class UpdateEventCategory(LoginRequiredMixin, ClubManagerRequiredMixin, View):
+    def post(self, request, club_id, event_id):
+        club = get_object_or_404(Club, pk=club_id)
+        event = get_object_or_404(Event, id=event_id, club=club)
+        selected_categories = request.POST.getlist('categories')
+
+        redirect_url = 'admin_panel_event_general' if request.user.account_type == 'Admin' else 'club_manager_event_general'
+
+        # 直接设置分类（允许空列表）
+        event.categories.set(selected_categories)
+        messages.success(request, "Event categories updated successfully")
+        return redirect(redirect_url, club_id=club_id, event_id=event_id)
     
 
 """--------------------------------------------------以上部分负责针对单个event的相关操作-------------------------------------------------"""

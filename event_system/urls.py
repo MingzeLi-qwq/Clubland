@@ -18,6 +18,7 @@ urlpatterns = [
     path("update_description/<int:club_id>/<int:event_id>/", views.UpdateEventDescription.as_view(), name="update_event_description"),
     path("update_time/<int:club_id>/<int:event_id>/", views.UpdateEventTime.as_view(), name='update_event_time'),
     path("update_location/<int:club_id>/<int:event_id>/", views.UpdateEventLocation.as_view(), name='update_event_location'),
+    path("update_category/<int:club_id>/<int:event_id>/", views.UpdateEventCategory.as_view(), name='update_event_category'),
 
     # create event URL
     path("create/<int:club_id>", views.CreateEventView.as_view(), name='create_event'),
