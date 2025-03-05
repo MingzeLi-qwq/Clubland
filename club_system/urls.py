@@ -1,6 +1,7 @@
 # club_system/urls.py
 from django.urls import path, re_path
 from . import views
+from event_system import views as event_views
 
 urlpatterns = [
     path('', views.clubs, name='clubs'),

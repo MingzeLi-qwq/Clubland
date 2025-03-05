@@ -293,63 +293,33 @@ class UpdateEventTime(LoginRequiredMixin, ClubManagerRequiredMixin, View):
 
         messages.success(request, "Event time updated successfully.")
         return redirect('club_manager_event_general', club_id=club_id, event_id=event_id)
+
+"""Update event location"""
+class UpdateEventLocation(LoginRequiredMixin, ClubManagerRequiredMixin, View):
+    def post(self, request, club_id, event_id):
+        club = get_object_or_404(Club, pk=club_id)
+        event = get_object_or_404(Event, id=event_id, club=club)
+        new_location = request.POST.get('event_location', '').strip()
+
+        redirect_url = 'admin_panel_event_general' if request.user.account_type == 'Admin' else 'club_manager_event_general'
+
+        if not new_location:
+            messages.error(request, "Event location cannot be empty.")
+            return redirect(redirect_url, club_id=club_id, event_id=event_id)
+            
+        if new_location == event.location:
+            messages.error(request, "The new location cannot be the same as the current one.")
+            return redirect(redirect_url, club_id=club_id, event_id=event_id)
+            
+        if Event.objects.filter(club=club, location=new_location).exclude(id=event_id).exists():
+            messages.error(request, "Another event already has this location.")
+            return redirect(redirect_url, club_id=club_id, event_id=event_id)
+
+        event.location = new_location
+        event.save()
+        messages.success(request, "Event location updated successfully.")
+        return redirect(redirect_url, club_id=club_id, event_id=event_id)
     
-
-class SearchRSVPCandidatesView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
-    """搜索可添加为RSVP的用户"""
-    def get(self, request, *args, **kwargs):
-        club_id = request.GET.get('club_id')
-        event_id = request.GET.get('event_id')
-        query = request.GET.get('q', '')
-        
-        # 获取尚未报名的用户
-        existing_rsvps = RSVP.objects.filter(event_id=event_id).values_list('user_id', flat=True)
-        
-        candidates = User.objects.filter(
-            Q(username__icontains=query) |
-            Q(email__icontains=query) |
-            Q(first_name__icontains=query) |
-            Q(last_name__icontains=query)
-        ).exclude(
-            id__in=existing_rsvps
-        )
-        
-        results = [{
-            'username': u.username,
-            'email': u.email,
-            'full_name': u.get_full_name(),
-        } for u in candidates]
-        
-        return JsonResponse(results, safe=False)
-
-class AddRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
-    """添加RSVP记录"""
-    def post(self, request, club_id, event_id, username):
-        try:
-            user = User.objects.get(username=username)
-            event = Event.objects.get(id=event_id)
-            
-            # 检查是否已存在
-            if RSVP.objects.filter(user=user, event=event).exists():
-                return JsonResponse({'detail': 'User already has RSVP'}, status=400)
-            
-            # 创建RSVP
-            RSVP.objects.create(
-                user=user,
-                event=event,
-                status=True
-            )
-            return JsonResponse({
-                'detail': f'{user.get_full_name} added to attendees',
-                'status': 'success'
-            })
-            
-        except User.DoesNotExist:
-            return JsonResponse({'detail': 'User not found'}, status=404)
-        except Event.DoesNotExist:
-            return JsonResponse({'detail': 'Event not found'}, status=404)
-        except Exception as e:
-            return JsonResponse({'detail': str(e)}, status=500)
 
 """--------------------------------------------------以上部分负责针对单个event的相关操作-------------------------------------------------"""
 
