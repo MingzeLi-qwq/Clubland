@@ -320,15 +320,24 @@ class UpdateEventLocation(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         messages.success(request, "Event location updated successfully.")
         return redirect(redirect_url, club_id=club_id, event_id=event_id)
 
+"""Update event event category"""
 class UpdateEventCategory(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, event_id):
         club = get_object_or_404(Club, pk=club_id)
         event = get_object_or_404(Event, id=event_id, club=club)
         selected_categories = request.POST.getlist('categories')
+        new_category_name = request.POST.get('new_category', '').strip()
 
         redirect_url = 'admin_panel_event_general' if request.user.account_type == 'Admin' else 'club_manager_event_general'
 
-        # 直接设置分类（允许空列表）
+        # 恢复新分类创建逻辑
+        if new_category_name:
+            if Category.objects.filter(name__iexact=new_category_name).exists():
+                messages.warning(request, f"Category '{new_category_name}' already exists")
+            else:
+                new_category = Category.objects.create(name=new_category_name)
+                selected_categories.append(str(new_category.id))
+        
         event.categories.set(selected_categories)
         messages.success(request, "Event categories updated successfully")
         return redirect(redirect_url, club_id=club_id, event_id=event_id)
