@@ -2,24 +2,29 @@
 {% load static %}
 
 {% block body %}
+
 <div class="container mt-5 mb-4">
+
     <!-- 标题 -->
     <div class="d-flex justify-content-between align-items-center">
-        <h2>Admin Panel</h2>
+        <h2>
+            <span class="text-secondary">Admin Panel - Club: {{ club.name }} - </span>
+            {{ event.name }}
+        </h2>
     </div>
 
     <div class="row mt-4 gy-3">
         <!-- 侧边菜单栏 -->
         <div class="col-md-3">
             <div class="list-group">
-                <a href="{% url 'admin_panel_clubs' %}" class="list-group-item list-group-item-action">
-                    Clubs
+                <a href="{% url 'admin_panel_club_events' club_id=club.club_id %}" class="list-group-item list-group-item-action bg-primary text-white">
+                    <i class="bi bi-arrow-left"></i> To Admin Club
                 </a>
-                <a href="{% url 'admin_panel_users' %}" class="list-group-item list-group-item-action">
-                    Users
+                <a href="{% url 'admin_panel_club_event_general' club_id=club.club_id event_id=event.id %}" class="list-group-item list-group-item-action">
+                    General
                 </a>
-                <a href="{% url 'admin_panel_requests' %}" class="list-group-item list-group-item-action">
-                    Requests
+                <a href="{% url 'admin_panel_club_event_RSVPs' club_id=club.club_id event_id=event.id %}" class="list-group-item list-group-item-action">
+                    RSVPs
                 </a>
             </div>
         </div>
@@ -49,5 +54,6 @@
         </div>
     </div>
 </div>
+
 
 {% endblock %}

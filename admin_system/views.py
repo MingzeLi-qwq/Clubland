@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
 from notification_system.models import Notification
+from event_system.models import Event, Category, RSVP
 
 
 def verifyAdminPassword(request):
@@ -70,11 +71,6 @@ class AdminPanelUsers(LoginRequiredMixin, UserTypeRequiredMixin, View):
             'user_count': user_count,
             'search_query': search_query,
         })
-    
-class AdminPanelEvents(LoginRequiredMixin, UserTypeRequiredMixin, View):
-    allowed_types = ['Admin']
-    def get(self, request, *args, **kwargs):
-        return render(request, 'admin_panel/events.html')
     
 class AdminPanelRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
@@ -150,11 +146,25 @@ class AdminPanelClubsEvents(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
 
     def get(self, request, club_id, *args, **kwargs):
-        club = Club.objects.get(pk=club_id)
-        return render(request, "admin_panel/admin_panel_club/events.html", {
-            'club':club,
-            'club_id':club_id,
-        })
+        club = get_object_or_404(Club, club_id=club_id)
+        search_query = request.GET.get('search', '')
+        events = Event.objects.filter(club=club)
+
+        if search_query:
+            events = events.filter(
+                Q(name__icontains=search_query) |
+                Q(start_time__icontains=search_query)
+            )
+
+        events = events.order_by('start_time')
+
+        context = {
+            'club': club,
+            'events': events,
+            'club_id': club_id,
+            'search_query': search_query,
+        }
+        return render(request, 'admin_panel/admin_panel_club/events.html', context)
     
 
 # 以下内容负责处理删除club的请求
@@ -193,6 +203,50 @@ class AdminDeleteClub(LoginRequiredMixin, UserTypeRequiredMixin, View):
         else:
             return self.get(request, club_id)
 """-----------------------------------------以上内容负责渲染Admin Panel Club---------------------------------------------------"""
+
+
+
+"""-----------------------------------------以下内容负责渲染Admin Panel Club Event---------------------------------------------------"""
+class AdminPanelClubsEventGeneral(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+    def get(self, request, club_id, event_id, *args, **kwargs):
+        club = get_object_or_404(Club, pk=club_id)
+        event = get_object_or_404(Event, pk=event_id)  # 新增event对象获取
+        all_categories = Category.objects.all()
+        return render(request, "admin_panel/admin_panel_club/admin_panel_club_event/general.html", {
+            'club': club,
+            'event': event,  # 传递event到模板
+            'club_id': club_id,
+            'event_id': event_id,
+            'all_categories': all_categories,
+        })
+
+class AdminPanelClubsEventRSVPs(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+    def get(self, request, club_id, event_id, *args, **kwargs):
+        club = get_object_or_404(Club, pk=club_id)
+        event = get_object_or_404(Event, pk=event_id)
+        
+        # 处理搜索
+        search_query = request.GET.get('search', '')
+        rsvps = RSVP.objects.filter(event=event).select_related('user')
+        
+        if search_query:
+            rsvps = rsvps.filter(
+                Q(user__first_name__icontains=search_query) |
+                Q(user__last_name__icontains=search_query) |
+                Q(user__email__icontains=search_query)
+            )
+        
+        context = {
+            'club': club,
+            'event': event,
+            'club_id': club_id,
+            'rsvps': rsvps,
+            'search_query': search_query,
+        }
+        return render(request, "admin_panel/admin_panel_club/admin_panel_club_event/RSVPs.html", context)
+"""-----------------------------------------以上内容负责渲染Admin Panel Club Event---------------------------------------------------"""
 
 
 
