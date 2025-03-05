@@ -346,8 +346,6 @@ class UpdateEventCategory(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         event.categories.set(selected_categories)
         messages.success(request, "Event categories updated successfully")
         return redirect(redirect_url, club_id=club_id, event_id=event_id)
-    
-
 """--------------------------------------------------以上部分负责针对单个event的相关操作-------------------------------------------------"""
 
 
@@ -369,4 +367,63 @@ def club_details(request, club_id):
         # 其它上下文...
     }
     return render(request, 'club_details.html', context)
+
+
+class SearchRSVPCandidatesView(View):
+    """搜索可添加为RSVP的用户"""
+    def get(self, request, *args, **kwargs):
+        club_id = request.GET.get('club_id')
+        event_id = request.GET.get('event_id')
+        query = request.GET.get('q', '')
+        
+        # 获取尚未报名的用户
+        
+        candidates = User.objects.filter(
+            Q(username__icontains=query) |
+            Q(email__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query),
+            account_type=User.ACCOUNT_TYPE_USER
+            )
+        # Exclude users who have already signed up
+        if event_id:
+            event = get_object_or_404(Event, pk=event_id)
+            candidates = candidates.exclude(rsvp__event=event)
+        
+        results = [{
+            'username': u.username,
+            'email': u.email,
+            'full_name': f"{u.first_name} {u.last_name}",
+        } for u in candidates]
+        
+        return JsonResponse(results, safe=False)
+
+class AddRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
+    """添加RSVP记录"""
+    def post(self, request, club_id, event_id, username):
+        try:
+            user = User.objects.get(username=username)
+            event = Event.objects.get(id=event_id)
+            
+            # 检查是否已存在
+            if RSVP.objects.filter(user=user, event=event).exists():
+                return JsonResponse({'detail': 'User already has RSVP'}, status=400)
+            
+            # 创建RSVP
+            RSVP.objects.create(
+                user=user,
+                event=event,
+                status=True
+            )
+            return JsonResponse({
+                'detail': f'{user.get_full_name} added to attendees',
+                'status': 'success'
+            })
+            
+        except User.DoesNotExist:
+            return JsonResponse({'detail': 'User not found'}, status=404)
+        except Event.DoesNotExist:
+            return JsonResponse({'detail': 'Event not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'detail': str(e)}, status=500)
 

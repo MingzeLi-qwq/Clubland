@@ -53,5 +53,58 @@
   </div>
 </div>
 
+<!-- 添加RSVP搜索框 -->
+<div class="card p-3 mt-4 shadow-sm">
+  <h5>Add Attendees</h5>
+  <p>Search for users to add to this event.</p>
+  <input type="text" id="rsvp-search" class="form-control" 
+         placeholder="Search by username, email, or name">
+  <div id="rsvp-search-results" class="list-group mt-2"></div>
+</div>
 
-  {% endblock %}
+<script>
+document.getElementById('rsvp-search').addEventListener('input', function() {
+  const query = this.value;
+  const club_id = "{{ club_id }}";
+  const event_id = "{{ event.id }}";
+  
+  if (query.length > 0) { 
+    fetch(`/clubs/manager/search_rsvp_candidates/?q=${query}&club_id=${club_id}&event_id=${event_id}`)
+      .then(response => response.json())
+      .then(data => {
+        const results = document.getElementById('rsvp-search-results');
+        results.innerHTML = '';
+        data.forEach(user => {
+          const item = document.createElement('a');
+          item.className = 'list-group-item list-group-item-action';
+          item.textContent = `${user.full_name} (${user.username} - ${user.email})`;
+          item.href = '#';
+          
+          item.addEventListener('click', async function() {
+              const response = await fetch(`/clubs/manager/add_rsvp/${club_id}/${event_id}/${encodeURIComponent(user.username)}/`, {
+                method: 'POST',
+                headers: {
+                  'X-CSRFToken': '{{ csrf_token }}',
+                  'Content-Type': 'application/json'
+                }
+              });
+              window.location.reload();
+          });
+          
+          results.appendChild(item);
+        });
+      });
+  } 
+});
+
+function showMessage(text, type) {
+  const messageBox = document.createElement('div');
+  messageBox.className = `alert alert-${type} alert-dismissible fade show`;
+  messageBox.innerHTML = `
+    ${text}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  `;
+  document.body.prepend(messageBox);
+}
+</script>
+{% endblock %}
