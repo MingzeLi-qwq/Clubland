@@ -40,8 +40,6 @@ class EventListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         params = self.request.GET
-        
-        # 组合搜索条件
         filters = Q()
 
         # 关键词搜索（名称、地点、描述）
@@ -59,7 +57,8 @@ class EventListView(ListView):
                 filters &= Q(start_time__gte=now)
             elif date_filter == 'past':
                 filters &= Q(end_time__lt=now)
-       # 自定义时间
+        
+        # 自定义时间
         if start_date := params.get('start_date'):
             filters &= Q(start_time__gte=start_date)
         if end_date := params.get('end_date'):
@@ -68,6 +67,10 @@ class EventListView(ListView):
         # 分类过滤
         if (category := params.get('category')) and category != 'all':
             filters &= Q(categories__name=category)    
+
+        # 俱乐部过滤
+        if (club_id := params.get('club')) and club_id != 'all':
+            filters &= Q(club__club_id=club_id)
 
         return queryset.filter(filters).distinct().order_by('start_time')
     
@@ -81,7 +84,9 @@ class EventListView(ListView):
             'current_category': params.get('category', 'all'),
             'start_date': params.get('start_date', ''),
             'end_date': params.get('end_date', ''),
+            'current_club': params.get('club', 'all'),
             'categories': Category.objects.all(),
+            'all_clubs': Club.objects.all(),  # 添加所有俱乐部到上下文
         })
         return context
 
