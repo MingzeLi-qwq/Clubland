@@ -26,6 +26,8 @@ from user_system.views import change_password
 from notification_system.views import notification_list
 from notification_system.views import notification_detail
 from notification_system.views import mark_all_as_read
+from notification_system.views import delete_notification
+from notification_system.views import delete_all_notifications
 
 import event_system.views
 import forum_system.views
@@ -69,7 +71,9 @@ urlpatterns = [
     path('notifications/', notification_list, name='notifications'),
     path('notifications/<int:notification_id>/', notification_detail, name='notification_detail'),
     path('notifications/mark_all_as_read/', mark_all_as_read, name='mark_all_as_read'),
-
+    path('notifications/delete/<int:notification_id>/', delete_notification, name='delete_notification'),
+    path('notifications/delete-all/', delete_all_notifications, name='delete_all_notifications'),
+          
     # Forum related / 论坛相关页面
     path('forum/', include('forum_system.urls', namespace='forum_system')),
     path('summernote/', include('django_summernote.urls')),
