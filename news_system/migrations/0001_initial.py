@@ -11,12 +11,13 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("club_system", "0009_alter_newclubrequest_status"),
+        ("event_system", "0002_alter_category_id"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="BlogPost",
+            name="News",
             fields=[
                 (
                     "id",
@@ -44,8 +45,17 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        related_name="blogPosts",
+                        related_name="news",
                         to="club_system.club",
+                    ),
+                ),
+                (
+                    "event",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="news_event",
+                        to="event_system.event",
                     ),
                 ),
             ],
@@ -54,7 +64,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name="ThreadPost",
+            name="Comment",
             fields=[
                 (
                     "id",
@@ -66,22 +76,22 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
-                ("content", models.TextField()),
+                ("text", models.TextField()),
                 (
                     "author",
                     models.ForeignKey(
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        related_name="%(class)s_authorship",
+                        related_name="commentAuthorship",
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
                 (
-                    "blog_post",
+                    "news",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="thread_posts",
-                        to="forum_system.blogpost",
+                        related_name="comments",
+                        to="news_system.news",
                     ),
                 ),
             ],
