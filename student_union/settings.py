@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'news_system.apps.NewsSystemConfig',
     'forum_system.apps.ForumSystemConfig',
     'club_hub',
+    "corsheaders",  # 允许跨域请求
     "rest_framework",
     'message_system',
     "admin_system",
@@ -65,6 +66,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'student_union.urls'
