@@ -1,0 +1,127 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'home' %}">
+      <i class="bi-people-fill"></i> miHoyo
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'clubs' %}">Clubs</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'news_system:news_list' %}">News</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'forum_system:blog_list' %}">Forums</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'events' %}">Events</a>
+        </li>
+        {% if user.is_authenticated %}
+          {% if user.account_type == 'Admin' %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'admin_panel_clubs' %}">Admin Panel</a>
+            </li>
+          {% else %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="clubDropdown" role="button"
+                 data-bs-toggle="dropdown" aria-expanded="false">
+                My Club
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="clubDropdown" id="clubMenu">
+                {% for membership in request.user.membership_set.all %}
+                  <li>
+                    <a class="dropdown-item" href="{% url 'club_dashboard' club_id=membership.club.club_id %}">
+                      {{ membership.club.name }}
+                    </a>
+                  </li>
+                {% empty %}
+                  <li><span class="dropdown-item text-muted">You haven't joined any clubs.</span></li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% endif %}
+        {% endif %}
+      </ul>
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        {% if user.is_authenticated %}
+          <!-- notification按钮 -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-bell" style="color: white; font-size: 20px;"></i>
+              {% if unread_notifications_count > 0 %}
+                <span class="badge bg-danger">{{ unread_notifications_count }}</span>
+              {% endif %}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+              {% for notification in notifications %}
+                <li>
+                  <a class="dropdown-item" href="{% url 'notification_detail' notification.id %}">
+                    {{ notification.message }}
+                  </a>
+                </li>
+              {% empty %}
+                <li><span class="dropdown-item text-muted">No new notifications</span></li>
+              {% endfor %}
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-center" href="{% url 'notifications' %}">View all</a>
+              </li>
+            </ul>
+          </li>
+          <!-- 消息通知按钮 -->
+          <li class="nav-item">
+            <a class="nav-link position-relative" href="{% url 'message_dashboard' %}">
+              <i class="fas fa-envelope" style="color: white; font-size: 20px;"></i>
+              {% if unread_messages_count > 0 %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{ unread_messages_count }}
+                </span>
+              {% endif %}
+            </a>
+          </li>
+          <!-- 用户头像和下拉菜单 -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
+              <span class="ms-2" style="position: relative; top: -3px;">{{ user.username }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li>
+                <a class="dropdown-item" href="{% url 'dashboard_personal_information' %}">Dashboard</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'logout' %}">Exit</a>
+              </li>
+            </ul>
+          </li>
+        {% else %}
+          <!-- 未登录：邮件图标跳转到登录 -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">
+              <i class="fas fa-envelope" style="color: white; font-size: 20px;"></i>
+            </a>
+          </li>
+          <!-- 未登录：用户头像跳转到登录 -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="{% url 'login' %}">Log in</a></li>
+              <li><a class="dropdown-item" href="{% url 'signup' %}">Sign up</a></li>
+            </ul>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
