@@ -1,5 +1,5 @@
 from django.db import models
-from CMS_mixins.models import TimestampMixin, AuthorshipMixin, BasicPost  # 修改为 BasicPost
+from CMS_mixins.CMS_models import TimestampMixin, AuthorshipMixin, BasicPost  # 修改为 BasicPost
 from user_system.models import User
 from club_system.models import Club
 from event_system.models import Event
