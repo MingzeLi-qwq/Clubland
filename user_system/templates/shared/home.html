@@ -101,7 +101,7 @@
 
 <!-- Showing Events -->
 <section class="container py-5">
-    <!-- 标题和 View All 按钮 -->
+    <!-- Title and View All button -->
     <div class="text-center mb-4">
         <h2 class="fw-bold">Upcoming Events</h2>
     </div>
@@ -118,7 +118,7 @@
         {% include 'shared/events_list.html' with events=events %}
     </div>
 
-    <!-- 分页导航 -->
+    <!-- Pagination -->
     <div id="pagination-container">
         {% include 'shared/pagination.html' with events=events %}
     </div>

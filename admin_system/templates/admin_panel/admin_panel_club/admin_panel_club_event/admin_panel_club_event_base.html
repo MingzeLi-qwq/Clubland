@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+<div class="container mt-5 mb-4">
+
+    <!-- 标题 -->
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>
+            <span class="text-secondary">Admin Panel - Club: {{ club.name }} - </span>
+            {{ event.name }}
+        </h2>
+    </div>
+
+    <div class="row mt-4 gy-3">
+        <!-- 侧边菜单栏 -->
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="{% url 'admin_panel_club_events' club_id=club.club_id %}" class="list-group-item list-group-item-action bg-primary text-white">
+                    <i class="bi bi-arrow-left"></i> To Admin Club
+                </a>
+                <a href="{% url 'admin_panel_club_event_general' club_id=club.club_id event_id=event.id %}" class="list-group-item list-group-item-action">
+                    General
+                </a>
+                <a href="{% url 'admin_panel_club_event_RSVPs' club_id=club.club_id event_id=event.id %}" class="list-group-item list-group-item-action">
+                    RSVPs
+                </a>
+            </div>
+        </div>
+
+        <!-- 主内容 -->
+        <div class="col-md-9">
+            <!-- 错误信息框样式  -->
+            <style>
+                .alert-error {
+                    background-color: #f8d7da;
+                    color: #721c24;
+                    border-color: #f5c6cb;
+                }
+            </style>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} mt-2">
+                    {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block panel_content %}
+            <!-- 动态内容区域 -->
+            {% endblock %}
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

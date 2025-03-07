@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
-from forum_system import summernote_setup
+
+# 改为绝对导入, 从 CMS_mixins 文件夹中导入 CMS_utils
+from CMS_mixins import CMS_utils
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,8 +45,10 @@ INSTALLED_APPS = [
     'club_system',
     'notification_system',
     'event_system',
-    'forum_system.apps.ForumSystemConfig',  # 推荐写法
+    'news_system.apps.NewsSystemConfig',
+    'forum_system.apps.ForumSystemConfig',
     'club_hub',
+    "corsheaders",  # 允许跨域请求
     "rest_framework",
     'message_system',
     "admin_system",
@@ -62,6 +66,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'student_union.urls'
@@ -199,8 +205,8 @@ SUMMERNOTE_CONFIG = {
 
     # 延迟加载（若想在页面底部初始化 summernote 可启用）
     'lazy': True,
-    # 使用 forum_system 中的上传路径生成函数
-    'attachment_upload_to': summernote_setup.upload_img_func,
+    # 使用从 CMS_mixins 导入的上传路径生成函数
+    'attachment_upload_to': CMS_utils.RTEUploadUtils.upload_img_func,
 }
 
 LOGIN_URL = '/login/'
