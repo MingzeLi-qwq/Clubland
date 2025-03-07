@@ -24,7 +24,6 @@ urlpatterns = [
     #Admin Panel User
     path('user/information/<str:username>/', views.AdminPanelUserInformation.as_view(), name='admin_panel_user_information'),
     path('user/memberships/<str:username>/', views.AdminPanelUserMemberships.as_view(), name='admin_panel_user_memberships'),
-    path('user/requests/<str:username>/', views.AdminPanelUserRequests.as_view(), name='admin_panel_user_requests'),
 
     #Admin Panel Request
     path('requests/new_club/', views.AdminPanelNewClubRequests.as_view(), name='admin_panel_new_club_requests'),

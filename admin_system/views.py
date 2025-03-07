@@ -272,15 +272,6 @@ class AdminPanelUserMemberships(LoginRequiredMixin, UserTypeRequiredMixin, View)
             'panel_user':panel_user,
             'panel_username':username,
         })
-    
-class AdminPanelUserRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
-    allowed_types = ['Admin']
-    def get(self, request, username, *args, **kwargs):
-        panel_user = get_object_or_404(User, username=username)
-        return render(request, "admin_panel/admin_panel_user/requests.html", {
-            'panel_user':panel_user,
-            'username':username,
-        })
 
 """-----------------------------------------以上内容负责渲染Admin Panel User---------------------------------------------------"""
 
