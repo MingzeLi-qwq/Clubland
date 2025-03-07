@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import News, Comment
 from .forms import NewsForm, CommentForm
 from event_system.models import Event
+from club_system.models import Club  # 新增导入以获取所有社团
 
 # 新闻列表页：显示所有新闻文章
 class NewsListView(ListView):
@@ -16,16 +17,27 @@ class NewsListView(ListView):
     context_object_name = 'posts'         # 在模板中通过 'posts' 变量访问查询结果
 
     def get_queryset(self):
+        queryset = News.objects.all()
+        club_filter = self.request.GET.get('club', '')
+        if club_filter:
+            queryset = queryset.filter(club__pk=club_filter)
         order = self.request.GET.get('order', 'desc')
         if order == 'asc':
-            return News.objects.all().order_by('created_at')
-        return News.objects.all().order_by('-created_at')
+            queryset = queryset.order_by('created_at')
+        else:
+            queryset = queryset.order_by('-created_at')
+        return queryset
     
     def get_paginate_by(self, queryset):
         per_page = self.request.GET.get('per_page')
-        if per_page and per_page.isdigit():
+        if (per_page and per_page.isdigit()):
             return int(per_page)
         return 10  # 默认每页 10 个
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clubs'] = Club.objects.all()  # 增加 clubs 上下文变量
+        return context
 
 
 # 新闻详情页：显示单篇新闻文章的内容
