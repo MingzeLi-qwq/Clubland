@@ -4,9 +4,9 @@ from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.views.generic.edit import FormMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.core.files.storage import default_storage
-from django.views.decorators.csrf import csrf_exempt
 from .models import BlogPost, ThreadPost
 from .forms import BlogPostForm, ThreadPostForm
+from CMS_mixins.CMS_utils import UserFormMixin  # 新增导入混入
 
 # 博客列表页：显示所有博客文章
 class BlogPostListView(ListView):
@@ -80,22 +80,13 @@ class BlogPostDetailView(FormMixin, DetailView):
         return HttpResponseRedirect(self.get_success_url())
 
 # 博客创建页：提供一个表单供用户创建新的博客文章
-class BlogPostCreateView(LoginRequiredMixin, CreateView):
+class BlogPostCreateView(LoginRequiredMixin, UserFormMixin, CreateView):
     model = BlogPost
     form_class = BlogPostForm
     template_name = 'blogpost_form.html'
     success_url = reverse_lazy('forum_system:blog_list')  # 提交成功后重定向到列表页
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        # 添加当前用户到表单参数中
-        kwargs['user'] = self.request.user
-        return kwargs
-
-    def form_valid(self, form):
-        # 自动将当前登录用户赋值给作者字段
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+    # ...existing代码已被抽象到 UserFormMixin 中...
     
 
 

@@ -3,11 +3,11 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.views.generic.edit import FormMixin
 from django.http import HttpResponseRedirect, JsonResponse
-from django.core.files.storage import default_storage
 from .models import News, Comment
 from .forms import NewsForm, CommentForm
 from event_system.models import Event
 from club_system.models import Club  # 新增导入以获取所有社团
+from CMS_mixins.CMS_utils import UserFormMixin  # 新增导入混入
 
 # 新闻列表页：显示所有新闻文章
 class NewsListView(ListView):
@@ -73,24 +73,11 @@ class NewsDetailView(FormMixin, DetailView):
         return HttpResponseRedirect(self.get_success_url())
 
 # 新闻创建页：提供一个表单供用户创建新的新闻文章
-class NewsCreateView(LoginRequiredMixin, CreateView):
+class NewsCreateView(LoginRequiredMixin, UserFormMixin, CreateView):
     model = News
     form_class = NewsForm
     template_name = 'news_form.html'
     success_url = reverse_lazy('news_system:news_list')  # 提交成功后重定向到列表页
-
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        # 添加当前用户到表单参数中
-        kwargs['user'] = self.request.user
-        return kwargs
-
-    def form_valid(self, form):
-        # 自动将当前登录用户赋值给作者字段
-        form.instance.author = self.request.user
-        return super().form_valid(form)
-    
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
