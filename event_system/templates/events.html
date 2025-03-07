@@ -5,9 +5,10 @@
 {% block body %}
 <div class="card shadow-sm mb-4">
   <div class="card-body">
-    <form method="GET" class="row g-3">
-      <!-- Search bar -->
-      <div class="col-lg-4">
+
+    <!-- Search field on a separate line -->
+    <form method="GET" class="row g-3 mb-3">
+      <div class="col-lg-12">
         <div class="input-group">
           <span class="input-group-text">
             <i class="bi-search"></i>
@@ -16,9 +17,13 @@
                  placeholder="Search events..." value="{{ current_search }}">
         </div>
       </div>
+    </form>
 
+
+    <!-- 其他筛选条件 -->
+    <form method="GET" class="row g-3">
       <!-- Date filter -->
-      <div class="col-lg-2">
+      <div class="col-lg-3">
         <select name="date" class="form-select">
           <option value="">All Dates</option>
           <option value="upcoming" {% if current_date_filter == "upcoming" %}selected{% endif %}>
@@ -30,8 +35,9 @@
         </select>
       </div>
 
-      <!-- Category filter -->
-      <div class="col-lg-2">
+
+      <!-- 分类筛选 -->
+      <div class="col-lg-3">
         <select name="category" class="form-select">
           <option value="all">All Categories</option>
           {% for category in categories %}
@@ -42,12 +48,26 @@
         </select>
       </div>
 
-      <!-- Custom date range -->
-      <div class="col-lg-2">
+
+      <!-- club select -->
+      <div class="col-lg-3">
+        <select name="club" class="form-select">
+            <option value="all">All Clubs</option>
+            {% for club in all_clubs %}
+            <option value="{{ club.club_id }}" 
+                    {% if current_club == club.club_id|stringformat:"s" %}selected{% endif %}>
+                {{ club.name }}
+            </option>
+            {% endfor %}
+        </select>
+      </div>
+
+      <!-- 自定义日期范围 -->
+      <div class="col-lg-3">
         <input type="date" name="start_date" class="form-control" 
                value="{{ start_date }}" placeholder="From date">
       </div>
-      <div class="col-lg-2">
+      <div class="col-lg-3">
         <input type="date" name="end_date" class="form-control"
                value="{{ end_date }}" placeholder="To date">
       </div>
@@ -77,6 +97,11 @@
               {% for category in event.categories.all %}
               <span class="badge bg-secondary">{{ category.name }}</span>
               {% endfor %}
+            </div>
+
+            <div class="club text-muted">
+              <i class="bi bi-flag me-2 text-primary"></i>
+              {{ event.club.name }} 
             </div>
             
             <div class="event-time text-muted">

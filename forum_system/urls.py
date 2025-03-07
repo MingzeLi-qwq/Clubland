@@ -1,8 +1,12 @@
 from django.urls import path
-from student_union import settings
 from .views import (
-    BlogPostListView, BlogPostDetailView, BlogPostCreateView,
-    BlogPostDeleteView, CommentDeleteView)
+    BlogPostListView, 
+    BlogPostDetailView, 
+    BlogPostCreateView,
+    BlogPostDeleteView, 
+    ThreadPostDeleteView
+)
+
 app_name = 'forum_system'
 
 urlpatterns = [
@@ -10,7 +14,7 @@ urlpatterns = [
     path('post/<int:pk>/', BlogPostDetailView.as_view(), name='blog_detail'),
     path('post/new/', BlogPostCreateView.as_view(), name='blog_create'),
     path('post/<int:pk>/delete/', BlogPostDeleteView.as_view(), name='blog_delete'),
-    path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment_delete'),
+    path('thread_post/<int:pk>/delete/', ThreadPostDeleteView.as_view(), name='threadpost_delete'),
 ]
 
 # if settings.DEBUG:
