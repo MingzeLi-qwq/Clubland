@@ -4,7 +4,6 @@ from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.views.generic.edit import FormMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.core.files.storage import default_storage
-from django.views.decorators.csrf import csrf_exempt
 from .models import News, Comment
 from .forms import NewsForm, CommentForm
 from event_system.models import Event
@@ -21,6 +20,7 @@ class NewsListView(ListView):
         club_filter = self.request.GET.get('club', '')
         if club_filter:
             queryset = queryset.filter(club__pk=club_filter)
+        # 默认以时间倒序排列新闻；当 GET 参数 order 缺省或不为 'asc' 时，按降序排序
         order = self.request.GET.get('order', 'desc')
         if order == 'asc':
             queryset = queryset.order_by('created_at')

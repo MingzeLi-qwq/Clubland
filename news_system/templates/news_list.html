@@ -17,8 +17,8 @@
         <div class="col-md-6 text-start">
           <label for="orderSelect">排序：</label>
           <select name="order" id="orderSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
-            <option value="desc" {% if request.GET.order == "desc" or not request.GET.order %}selected{% endif %}>时间倒序</option>
-            <option value="asc" {% if request.GET.order == "asc" %}selected{% endif %}>时间正序</option>
+            <option value="asc" {% if request.GET.order == "asc" %}selected{% endif %}>最早</option>
+            <option value="desc" {% if request.GET.order == "desc" or not request.GET.order %}selected{% endif %}>最新</option>
           </select>
         </div>
         <div class="col-md-6 text-end">
