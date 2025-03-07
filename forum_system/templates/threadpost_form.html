@@ -1,0 +1,13 @@
+{% if user.is_authenticated %}
+  <h4>添加讨论</h4>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      {{ form.content.label_tag }}  <!-- 修改后的标签语义 -->
+      {{ form.content }}
+    </div>
+    <button type="submit" class="btn btn-secondary">提交讨论</button>
+  </form>
+{% else %}
+  <p>请<a href="{% url 'login' %}">登录</a>后参与讨论</p>
+{% endif %}

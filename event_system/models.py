@@ -4,7 +4,9 @@ from user_system.models import User
 
 class Category(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True) 
+    class Meta:
+        verbose_name_plural = "Categories"
     
     def __str__(self):
         return self.name
@@ -19,13 +21,14 @@ class Event(models.Model):
     categories = models.ManyToManyField(Category)
     description = models.TextField()
     participants = models.ManyToManyField(User, blank=True, related_name='events_joined')
-    is_featured = models.BooleanField(default=False) #to show in home page 用于主页展示
+    is_featured = models.BooleanField(default=False)  # Used for homepage display
 
     def __str__(self):
         return f"{self.name} by {self.club.name}"
 
 #用户报名模型记录 to record users registed every event
 class RSVP(models.Model):
+    """Model to record user registrations for each event"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     status = models.BooleanField(default=True)

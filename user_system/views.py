@@ -12,16 +12,20 @@ from club_system.helpers.mixins import ClubMemberRequiredMixin, ClubExistsRequir
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-from club_system.models import Membership, NewClubRequest
+from club_system.models import Membership, NewClubRequest, Club
 from event_system.models import Event
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.template.loader import render_to_string
+from django.db.models import Q
 
 
 
 def home(request):
     """Display the application's start/home screen."""
+    if request.user.is_authenticated:
+        return redirect('Mine')  # Redirect authenticated users to Mine page
+    
     page = request.GET.get('page', 1)
     events_per_page = 3
     
@@ -101,10 +105,6 @@ def LogOutView(request):
 # def societies(request):
 #     """社团列表视图"""
 #     return render(request, 'shared/societies.html')
-
-def news(request):
-    """新闻视图"""
-    return render(request, 'shared/news.html')
 
 def events(request):
     """活动视图"""
@@ -189,6 +189,24 @@ class ClubMembershipDetail(LoginRequiredMixin, ClubExistsRequiredMixin, UserType
             'membership': membership
         }
         return render(request, 'user_system/dashboard/my_club_detail.html', context)
+
+@login_required
+def Mine(request):
+    """Mine view"""
+    # Get user's clubs through memberships
+    user_clubs = Club.objects.filter(membership__user=request.user)
+    
+    # Get user's upcoming events (both club events and RSVPed events)
+    upcoming_events = Event.objects.filter(
+        Q(club__in=user_clubs) |  # Events from user's clubs
+        Q(rsvp__user=request.user),  # Events user has RSVPed to
+        start_time__gte=timezone.now()
+    ).distinct().order_by('start_time')
+    
+    return render(request, 'user_system/mine.html', {
+        'clubs': user_clubs,
+        'events': upcoming_events,
+    })
 
 
 
