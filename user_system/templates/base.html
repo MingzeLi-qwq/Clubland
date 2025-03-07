@@ -61,13 +61,6 @@
               <a class="nav-link" href="{% url 'events' %}">Events</a>
             </li>
             
-            {% if not user.is_authenticated %}
-            <!-- 未登录用户显示Mine按钮 -->
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'Mine' %}">Mine</a>
-            </li>
-            {% endif %}
-            
             {% if user.is_authenticated %}
 
             {% if user.account_type == 'Admin' %}
