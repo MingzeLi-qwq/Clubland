@@ -8,7 +8,6 @@
       <h2 class="mb-0">新建博客文章</h2>
     </div>
     <div class="card-body">
-      <!-- 自动加载 django-summernote 所需的媒体文件 -->
       {{ form.media }}
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}

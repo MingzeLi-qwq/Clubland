@@ -20,7 +20,6 @@
         </select>
       </div>
     </div>
-    <!-- 保持现有查询参数 -->
     {% for key, value in request.GET.items %}
       {% if key != 'order_thread' and key != 'per_page_thread' and key != 'page_thread' %}
         <input type="hidden" name="{{ key }}" value="{{ value }}">
