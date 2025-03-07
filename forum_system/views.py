@@ -8,6 +8,7 @@ from .models import BlogPost, ThreadPost
 from .forms import BlogPostForm, ThreadPostForm
 from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request  # 修改：导入通用函数
 from club_system.models import Club
+from CMS_mixins.CMS_utils import RTEUploadUtils
 
 # 博客列表页：显示所有博客文章
 class BlogPostListView(ListView):
@@ -120,6 +121,12 @@ class BlogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         return self.request.user == self.get_object().author
 
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        RTEUploadUtils.delete_associated_images(instance)
+        return super().delete(request, *args, **kwargs)
+
+
 class ThreadPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = ThreadPost
     template_name = 'comment_confirm_delete.html'
@@ -129,6 +136,11 @@ class ThreadPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.request.user == self.get_object().author
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        RTEUploadUtils.delete_associated_images(instance)
+        return super().delete(request, *args, **kwargs)
 
 
 

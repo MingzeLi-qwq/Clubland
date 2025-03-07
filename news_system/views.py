@@ -8,6 +8,7 @@ from .forms import NewsForm, CommentForm
 from event_system.models import Event
 from club_system.models import Club  # 新增导入以获取所有社团
 from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request  # 修改：导入通用函数
+from CMS_mixins.CMS_utils import RTEUploadUtils  # 新增导入
 
 # 新闻列表页：显示所有新闻文章
 class NewsListView(ListView):
@@ -92,15 +93,18 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
         return reverse('news_system:news_detail', kwargs={'pk': self.kwargs.get('news_id')})
 
 
-
 class NewsDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = News
     template_name = 'news_confirm_delete.html'
     success_url = reverse_lazy('news_system:news_list')
 
-
     def test_func(self):
         return self.request.user == self.get_object().author
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        RTEUploadUtils.delete_associated_images(instance)
+        return super().delete(request, *args, **kwargs)
 
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
@@ -109,9 +113,13 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def get_success_url(self):
         return reverse('news_system:news_detail', kwargs={'pk': self.get_object().news.pk})
 
-
     def test_func(self):
         return self.request.user == self.get_object().author
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        RTEUploadUtils.delete_associated_images(instance)
+        return super().delete(request, *args, **kwargs)
 
 def load_events(request):
     club_id = request.GET.get('club')

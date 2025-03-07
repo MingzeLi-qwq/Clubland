@@ -13,6 +13,14 @@ class RTEUploadUtils:
         new_filename = f"{uuid.uuid4()}.{ext}"
         today = datetime.today().strftime('%Y/%m/%d')
         return os.path.join("attachments", today, new_filename)
+    
+    @staticmethod
+    def delete_associated_images(instance):
+        # 若实例中存在 image 字段（并含有文件），则删除该文件
+        if hasattr(instance, 'image') and instance.image:
+            image_path = instance.image.path
+            if os.path.exists(image_path):
+                os.remove(image_path)
 
 # 新增 UserFormMixin 封装表单常用方法
 class UserFormMixin:
@@ -67,3 +75,4 @@ def set_event_field(form, data, instance, club_field='club', event_field='event'
         form.fields[event_field].queryset = Event.objects.filter(club=getattr(instance, club_field))
     else:
         form.fields[event_field].queryset = Event.objects.none()
+
