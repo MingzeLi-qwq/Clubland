@@ -83,33 +83,33 @@
                 </ul>
             </li>
             {% endif %}
-
-
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="fas fa-bell" style="color: white; font-size: 20px;"></i>
-                  {% if unread_notifications_count > 0 %}
-                      <span class="badge bg-danger">{{ unread_notifications_count }}</span>
-                  {% endif %}
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
-                  {% for notification in notifications %}
-                      <li>
-                          <a class="dropdown-item" href="{% url 'notification_detail' notification.id %}">
-                              {{ notification.message }}
-                          </a>
-                      </li>
-                  {% empty %}
-                      <li><span class="dropdown-item text-muted">No new notifications</span></li>
-                  {% endfor %}
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item text-center" href="{% url 'notifications' %}">View all</a></li>
-              </ul>
-          </li>
             {% endif %}
           </ul>
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             {% if user.is_authenticated %}
+              <!-- notification按钮 -->
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fas fa-bell" style="color: white; font-size: 20px;"></i>
+                      {% if unread_notifications_count > 0 %}
+                          <span class="badge bg-danger">{{ unread_notifications_count }}</span>
+                      {% endif %}
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                      {% for notification in notifications %}
+                          <li>
+                              <a class="dropdown-item" href="{% url 'notification_detail' notification.id %}">
+                                  {{ notification.message }}
+                              </a>
+                          </li>
+                      {% empty %}
+                          <li><span class="dropdown-item text-muted">No new notifications</span></li>
+                      {% endfor %}
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item text-center" href="{% url 'notifications' %}">View all</a></li>
+                  </ul>
+              </li>
+              
               <!-- 消息通知按钮 -->
                   <li class="nav-item">
                     <a class="nav-link position-relative" href="{% url 'message_dashboard' %}">

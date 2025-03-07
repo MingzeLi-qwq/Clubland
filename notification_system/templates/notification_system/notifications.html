@@ -5,22 +5,30 @@
 <div class="container mt-4">
     <h2>Notifications</h2>
 
-    <!-- 批量標記為已讀按鈕 -->
-    <form id="mark-all-read-form" method="post" action="{% url 'mark_all_as_read' %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-secondary mb-3">Mark All as Read</button>
-    </form>
+    <div class="d-flex justify-content-between mb-3">
+        <!-- 批量標記為已讀按鈕 -->
+        <form id="mark-all-read-form" method="post" action="{% url 'mark_all_as_read' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary">Mark All as Read</button>
+        </form>
+
+        <!-- 删除所有通知按钮 -->
+        <button id="delete-all-btn" class="btn btn-danger">Delete All Notifications</button>
+    </div>
 
     <!-- 通知列表 -->
-    <ul class="list-group">
+    <ul class="list-group" id="notification-list">
         {% for notification in notifications %}
-            <li class="list-group-item {% if not notification.is_read %}list-group-item-warning{% endif %}">
-                <a href="{% url 'notification_detail' notification.id %}">
-                    {{ notification.message }}
-                </a>
-                <small class="text-muted d-block">
-                    Received on {{ notification.created_at|date:"Y-m-d H:i" }}
-                </small>
+            <li class="list-group-item {% if not notification.is_read %}list-group-item-warning{% endif %} d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="{% url 'notification_detail' notification.id %}">
+                        {{ notification.message }}
+                    </a>
+                    <small class="text-muted d-block">
+                        Received on {{ notification.created_at|date:"Y-m-d H:i" }}
+                    </small>
+                </div>
+                <button class="btn btn-sm btn-outline-danger delete-notification" data-id="{{ notification.id }}">Delete</button>
             </li>
         {% empty %}
             <li class="list-group-item text-muted">No notifications</li>
@@ -30,24 +38,88 @@
 
 <!-- JavaScript 來發送 AJAX 請求 -->
 <script>
-    document.getElementById('mark-all-read-form').onsubmit = function(e) {
-        e.preventDefault();  // 阻止默認的表單提交
+    // 獲取CSRF令牌
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
 
+    // 標記所有為已讀的功能
+    document.getElementById('mark-all-read-form').onsubmit = function(e) {
+        e.preventDefault();
         fetch(this.action, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': this.querySelector('[name="csrfmiddlewaretoken"]').value
             }
         })
-        .then(response => response.json())  // 解析 JSON 回應
+        .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
                 alert(`Successfully marked ${data.updated_count} notifications as read.`);
-                window.location.reload();  // 刷新頁面以更新通知狀態
+                window.location.reload();
             } else {
                 alert('Failed to mark notifications as read.');
             }
         });
     };
+
+    // 刪除單個通知
+    document.querySelectorAll('.delete-notification').forEach(button => {
+        button.addEventListener('click', function() {
+            const notificationId = this.getAttribute('data-id');
+            if (confirm('Are you sure you want to delete this notification?')) {
+                fetch(`/notifications/delete/${notificationId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        this.closest('li').remove();
+                        if (document.querySelectorAll('#notification-list li').length === 0) {
+                            document.getElementById('notification-list').innerHTML = '<li class="list-group-item text-muted">No notifications</li>';
+                        }
+                    } else {
+                        alert('Failed to delete notification.');
+                    }
+                });
+            }
+        });
+    });
+
+    // 刪除所有通知
+    document.getElementById('delete-all-btn').addEventListener('click', function() {
+        if (confirm('Are you sure you want to delete all notifications?')) {
+            fetch('/notifications/delete-all/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('All notifications have been deleted.');
+                    window.location.reload();
+                } else {
+                    alert('Failed to delete all notifications.');
+                }
+            });
+        }
+    });
 </script>
 {% endblock %}
