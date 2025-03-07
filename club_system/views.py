@@ -459,10 +459,12 @@ class ClubManagerEventGeneral(LoginRequiredMixin, ClubManagerRequiredMixin, View
     def get(self, request, club_id, event_id, *args, **kwargs ):
         club = get_object_or_404(Club, club_id=club_id)
         event = get_object_or_404(Event, pk=event_id)
+        all_categories = Category.objects.all()
         context = {
             'club': club,
             'event': event,
             'club_id': club_id,
+            'all_categories': all_categories,
         }
         return render(request, 'club_manager/event/general.html', context)
     

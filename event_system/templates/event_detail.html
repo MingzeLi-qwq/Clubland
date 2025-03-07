@@ -63,18 +63,37 @@
           {{ event.description|linebreaks }}
         </div>
       </div>
-
+      
+      <!-- 本活动的新闻 -->
+      <div class="mb-4">
+        <h4 class="mb-3">本活动的新闻</h4>
+        {% if event.news_event.all %}
+          <div class="list-group">
+            {% for news in event.news_event.all %}
+              <a href="{% url 'news_system:news_detail' news.pk %}" class="list-group-item list-group-item-action">
+                <h5 class="mb-1">{{ news.title }}</h5>
+                <small>{{ news.created_at|date:"Y-m-d H:i" }}</small>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>暂无.</p>
+        {% endif %}
+      </div>
+      
       <!-- 操作按钮 -->
       <div class="d-flex gap-3 border-top pt-4">
         {% if user.is_authenticated %}
-            <button class="btn btn-lg rsvp-btn {% if user_rsvp and user_rsvp.status %}btn-outline-danger{% else %}btn-primary{% endif %}"
-                    data-event-id="{{ event.pk }}">
-                {% if user_rsvp and user_rsvp.status %}
-                    <i class="bi-x-circle me-2"></i>Cancel RSVP
-                {% else %}
-                    <i class="bi-check-circle me-2"></i>RSVP Now
-                {% endif %}
-            </button>
+            {% if user.account_type != "Admin" %}
+                <button class="btn btn-lg rsvp-btn {% if user_rsvp and user_rsvp.status %}btn-outline-danger{% else %}btn-primary{% endif %}"
+                        data-event-id="{{ event.pk }}">
+                    {% if user_rsvp and user_rsvp.status %}
+                        <i class="bi-x-circle me-2"></i>Cancel RSVP
+                    {% else %}
+                        <i class="bi-check-circle me-2"></i>RSVP Now
+                    {% endif %}
+                </button>
+            {% endif %}
         {% else %}
             <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-lg btn-primary btn-lg">
                 <i class="bi-arrow-left me-2"></i>Login to RSVP
@@ -87,6 +106,8 @@
     </div>
   </div>
 </section>
+
+
 {% endblock %}
 
 {% block extra_js %}

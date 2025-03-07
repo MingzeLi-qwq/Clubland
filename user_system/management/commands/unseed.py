@@ -26,6 +26,9 @@ class Command(BaseCommand):
             call_command("unseed_rsvp")
             self.stdout.write(self.style.SUCCESS("✅ RSVP removed successfully!"))
 
+            call_command("unseed_news")
+            self.stdout.write(self.style.SUCCESS("✅ News removed successfully!"))
+
             call_command("unseed_blogposts")
             self.stdout.write(self.style.SUCCESS("✅ BlogPosts removed successfully!"))
 

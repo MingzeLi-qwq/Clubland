@@ -8,7 +8,6 @@
       <h2 class="mb-0">新建博客文章</h2>
     </div>
     <div class="card-body">
-      <!-- 自动加载 django-summernote 所需的媒体文件 -->
       {{ form.media }}
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -22,11 +21,11 @@
           {% endif %}
         </div>
         <div class="form-group">
-          <label for="{{ form.category.id_for_label }}" class="col-form-label">{{ form.category.label }}</label>
-          {{ form.category }}
-          {% if form.category.errors %}
+          <label for="{{ form.category.id_for_label }}" class="col-form-label">{{ form.club.label }}</label>
+          {{ form.club }}
+          {% if form.club.errors %}
             <div class="text-danger small">
-              {{ form.category.errors }}
+              {{ form.club.errors }}
             </div>
           {% endif %}
         </div>

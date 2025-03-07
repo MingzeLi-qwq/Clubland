@@ -30,6 +30,7 @@ from notification_system.views import delete_notification
 from notification_system.views import delete_all_notifications
 
 import event_system.views
+import news_system.views
 import forum_system.views
 
 from django.conf import settings
@@ -65,18 +66,27 @@ urlpatterns = [
 
 
     # path('societies/', user_system.views.societies, name='societies'),
-    path('news/', user_system.views.news, name='news'),
 
-    #Notification related / 通知相关页面
+    # Notification related / 通知相关页面
     path('notifications/', notification_list, name='notifications'),
     path('notifications/<int:notification_id>/', notification_detail, name='notification_detail'),
     path('notifications/mark_all_as_read/', mark_all_as_read, name='mark_all_as_read'),
+
     path('notifications/delete/<int:notification_id>/', delete_notification, name='delete_notification'),
     path('notifications/delete-all/', delete_all_notifications, name='delete_all_notifications'),
           
+
+
+    # Summernote related / 富文本编辑器相关
+    path('summernote/', include('django_summernote.urls')),
+
+    # News related / 新闻相关页面
+    path('news/', include('news_system.urls', namespace='news_system')),
+
     # Forum related / 论坛相关页面
     path('forum/', include('forum_system.urls', namespace='forum_system')),
-    path('summernote/', include('django_summernote.urls')),
+
+
     path('api/', include('club_hub.urls')),
     path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
 
