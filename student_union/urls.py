@@ -56,6 +56,7 @@ urlpatterns = [
     path('login/', user_system.views.LogInView.as_view(), name='login'),
     path('logout/', user_system.views.LogOutView, name='logout'),
     path('change_password/', user_system.views.change_password, name='change_password'), 
+    path('mine/', user_system.views.Mine, name='Mine'),
 
     # Personal Dashboard / 个人资料页
     path('dashboard/personal_information/', user_system.views.DashboardPersonalInformation.as_view(), name='dashboard_personal_information'),

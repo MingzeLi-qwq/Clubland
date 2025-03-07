@@ -4,7 +4,7 @@
 {% block body %}
 <section class="container py-5">
   <div class="card shadow-lg event-card">
-    <!-- 活动头图区 -->
+    <!-- Event header section -->
     <div class="card-header text-white position-relative">
       <div class="d-flex justify-content-between align-items-center">
         <h1 class="h3 mb-0">{{ event.name }}</h1>
@@ -12,7 +12,7 @@
     </div>
 
     <div class="card-body">
-      <!-- 活动基本信息 -->
+      <!-- Event basic information -->
       <div class="row g-4 mb-4">
         <div class="col-md-6">
           <div class="d-flex align-items-center gap-3">
@@ -56,7 +56,7 @@
         </div>
       </div>
 
-      <!-- 活动描述 -->
+      <!-- Event description -->
       <div class="mb-4">
         <h4 class="mb-3">Event Details</h4>
         <div class="event-description">
@@ -81,7 +81,7 @@
         {% endif %}
       </div>
       
-      <!-- 操作按钮 -->
+      <!-- Action buttons -->
       <div class="d-flex gap-3 border-top pt-4">
         {% if user.is_authenticated %}
             {% if user.account_type != "Admin" %}
