@@ -2,13 +2,14 @@
 {% load static %}
 
 {% block body %}
-<div class="container mt-5 mb-3">
+
+<div class="container mt-5 mb-4">
 
     <!-- 标题 -->
     <div class="d-flex justify-content-between align-items-center">
         <h2>
-            <span class="text-secondary">Admin Panel - </span>
-            User: {{ panel_user.first_name }} {{ panel_user.last_name }}
+            <span class="text-secondary">Admin Panel - Club: {{ club.name }} - </span>
+            {{ event.name }}
         </h2>
     </div>
 
@@ -16,14 +17,14 @@
         <!-- 侧边菜单栏 -->
         <div class="col-md-3">
             <div class="list-group">
-                <a href="{% url 'admin_panel_users' %}" class="list-group-item list-group-item-action bg-primary text-white">
-                    <i class="bi bi-arrow-left-short"></i> To Admin Panel
+                <a href="{% url 'admin_panel_club_events' club_id=club.club_id %}" class="list-group-item list-group-item-action bg-primary text-white">
+                    <i class="bi bi-arrow-left"></i> To Admin Club
                 </a>
-                <a href="{% url 'admin_panel_user_information' username=panel_user.username %}" class="list-group-item list-group-item-action">
-                    User Information
+                <a href="{% url 'admin_panel_club_event_general' club_id=club.club_id event_id=event.id %}" class="list-group-item list-group-item-action">
+                    General
                 </a>
-                <a href="{% url 'admin_panel_user_memberships' username=panel_user.username %}" class="list-group-item list-group-item-action">
-                    Memberships
+                <a href="{% url 'admin_panel_club_event_RSVPs' club_id=club.club_id event_id=event.id %}" class="list-group-item list-group-item-action">
+                    RSVPs
                 </a>
             </div>
         </div>
@@ -53,5 +54,6 @@
         </div>
     </div>
 </div>
+
 
 {% endblock %}

@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from .models import Notification
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
 def notification_list(request):
     '''获取当前用户的所有通知'''
@@ -38,3 +39,18 @@ def mark_all_as_read(request):
         return JsonResponse({'status': 'success', 'updated_count': updated_count})
     
     return JsonResponse({'status': 'failure'}, status=400)
+
+@login_required
+def delete_notification(request, notification_id):
+    if request.method == 'POST':
+        notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+        notification.delete()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+
+@login_required
+def delete_all_notifications(request):
+    if request.method == 'POST':
+        Notification.objects.filter(user=request.user).delete()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)

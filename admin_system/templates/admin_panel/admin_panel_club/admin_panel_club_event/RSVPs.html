@@ -1,6 +1,6 @@
-{% extends 'club_manager/event/club_manager_event_base.html' %}
+{% extends 'admin_panel/admin_panel_club/admin_panel_club_event/admin_panel_club_event_base.html' %}
 
-{% block content %}
+{% block panel_content %}
 <h4>RSVPs</h4>
 <p>Manage RSVPs for {{ event.name }}.</p>
 
@@ -69,7 +69,7 @@ document.getElementById('rsvp-search').addEventListener('input', function() {
   const event_id = "{{ event.id }}";
   
   if (query.length > 0) { 
-    fetch(`/clubs/manager/search_rsvp_candidates/?q=${query}&club_id=${club_id}&event_id=${event_id}`)
+    fetch(`/admin_panel/clubs/event/search_rsvp_candidates/?q=${query}&club_id=${club_id}&event_id=${event_id}`)
       .then(response => response.json())
       .then(data => {
         const results = document.getElementById('rsvp-search-results');
@@ -81,7 +81,7 @@ document.getElementById('rsvp-search').addEventListener('input', function() {
           item.href = '#';
           
           item.addEventListener('click', async function() {
-              const response = await fetch(`/clubs/manager/add_rsvp/${club_id}/${event_id}/${encodeURIComponent(user.username)}/`, {
+              const response = await fetch(`/admin_panel/clubs/event/add_rsvp/${club_id}/${event_id}/${encodeURIComponent(user.username)}/`, {
                 method: 'POST',
                 headers: {
                   'X-CSRFToken': '{{ csrf_token }}',

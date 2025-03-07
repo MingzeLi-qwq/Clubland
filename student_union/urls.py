@@ -26,6 +26,9 @@ from user_system.views import change_password
 from notification_system.views import notification_list
 from notification_system.views import notification_detail
 from notification_system.views import mark_all_as_read
+from notification_system.views import delete_notification
+from notification_system.views import delete_all_notifications
+
 
 import event_system.views
 import news_system.views
@@ -53,6 +56,7 @@ urlpatterns = [
     path('login/', user_system.views.LogInView.as_view(), name='login'),
     path('logout/', user_system.views.LogOutView, name='logout'),
     path('change_password/', user_system.views.change_password, name='change_password'), 
+    path('mine/', user_system.views.Mine, name='Mine'),
 
     # Personal Dashboard / 个人资料页
     path('dashboard/personal_information/', user_system.views.DashboardPersonalInformation.as_view(), name='dashboard_personal_information'),
@@ -70,12 +74,17 @@ urlpatterns = [
     path('notifications/<int:notification_id>/', notification_detail, name='notification_detail'),
     path('notifications/mark_all_as_read/', mark_all_as_read, name='mark_all_as_read'),
 
+    path('notifications/delete/<int:notification_id>/', delete_notification, name='delete_notification'),
+    path('notifications/delete-all/', delete_all_notifications, name='delete_all_notifications'),
+          
+
+
     # Summernote related / 富文本编辑器相关
     path('summernote/', include('django_summernote.urls')),
 
     # News related / 新闻相关页面
     path('news/', include('news_system.urls', namespace='news_system')),
-    
+
     # Forum related / 论坛相关页面
     path('forum/', include('forum_system.urls', namespace='forum_system')),
 
@@ -105,6 +114,8 @@ urlpatterns = [
     #--------------------------------------- Password verification for dangerous operations / 危险操作的密码验证 --------------------------------------------------
     path('verify-admin-password/', admin_system.views.verifyAdminPassword, name='verify_admin_password'),
     #--------------------------------------------Password verification for dangerous operations END --------------------------------------------------------
+
+    path("api/", include("club_hub.urls")),
 ]   
 
 
