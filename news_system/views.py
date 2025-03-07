@@ -7,7 +7,7 @@ from .models import News, Comment
 from .forms import NewsForm, CommentForm
 from event_system.models import Event
 from club_system.models import Club  # 新增导入以获取所有社团
-from CMS_mixins.CMS_utils import UserFormMixin  # 新增导入混入
+from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request  # 修改：导入通用函数
 
 # 新闻列表页：显示所有新闻文章
 class NewsListView(ListView):
@@ -29,10 +29,7 @@ class NewsListView(ListView):
         return queryset
     
     def get_paginate_by(self, queryset):
-        per_page = self.request.GET.get('per_page')
-        if (per_page and per_page.isdigit()):
-            return int(per_page)
-        return 10  # 默认每页 10 个
+        return get_paginate_by_request(self.request)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

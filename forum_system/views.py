@@ -6,7 +6,8 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.core.files.storage import default_storage
 from .models import BlogPost, ThreadPost
 from .forms import BlogPostForm, ThreadPostForm
-from CMS_mixins.CMS_utils import UserFormMixin  # 新增导入混入
+from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request  # 修改：导入通用函数
+from club_system.models import Club
 
 # 博客列表页：显示所有博客文章
 class BlogPostListView(ListView):
@@ -15,16 +16,22 @@ class BlogPostListView(ListView):
     context_object_name = 'posts'         # 在模板中通过 'posts' 变量访问查询结果
 
     def get_queryset(self):
+        queryset = super().get_queryset()
+        club_filter = self.request.GET.get('club', '')
+        if club_filter:
+            queryset = queryset.filter(club_id=club_filter)
         order = self.request.GET.get('order', 'desc')
         if order == 'asc':
-            return BlogPost.objects.all().order_by('created_at')
-        return BlogPost.objects.all().order_by('-created_at')
+            return queryset.order_by('created_at')
+        return queryset.order_by('-created_at')
     
     def get_paginate_by(self, queryset):
-        per_page = self.request.GET.get('per_page')
-        if per_page and per_page.isdigit():
-            return int(per_page)
-        return 10  # 默认每页 10 个
+        return get_paginate_by_request(self.request)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clubs'] = Club.objects.all()
+        return context
 
 
 # 博客详情页：显示单篇博客文章的内容

@@ -31,6 +31,22 @@
           </select>
         </div>
       </div>
+      <div class="row mt-3">
+        <div class="col-md-6">
+          <label for="clubSelect">社团：</label>
+          <select name="club" id="clubSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
+            <option value="">全部社团</option>
+            {% for club in clubs %}
+              <option value="{{ club.pk }}" {% if request.GET.club == club.pk|stringformat:"s" %}selected{% endif %}>{{ club.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      {% for key, value in request.GET.items %}
+        {% if key != "order" and key != "per_page" and key != "club" %}
+          <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endif %}
+      {% endfor %}
     </form>
   </div>
   

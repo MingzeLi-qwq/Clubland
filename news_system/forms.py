@@ -3,6 +3,7 @@ from django_summernote.widgets import SummernoteWidget
 from club_system.models import Club
 from event_system.models import Event
 from .models import News, Comment
+from CMS_mixins.CMS_utils import set_club_field, set_event_field
 
 # 要求：
 # 普通用户只能选择他们管理（is_manager）的社团
@@ -50,27 +51,8 @@ class NewsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
         super(NewsForm, self).__init__(*args, **kwargs)
-        if user:
-            if user.is_admin:
-                # 管理员可以选择全部社团，并允许置空
-                self.fields['club'].queryset = Club.objects.all()
-                self.fields['club'].required = False
-            else:
-                # 普通用户只能选择其管理的社团
-                self.fields['club'].queryset = Club.objects.filter(
-                    membership__user=user, membership__is_manager=True
-                ).distinct()
-        # 修改: 根据已提交数据中的社团过滤活动，字段名称改为 club
-        if self.data.get('club'):
-            try:
-                club_id = int(self.data.get('club'))
-                self.fields['event'].queryset = Event.objects.filter(club_id=club_id)
-            except (ValueError, TypeError):
-                self.fields['event'].queryset = Event.objects.none()
-        elif self.instance.pk and self.instance.club:
-            self.fields['event'].queryset = Event.objects.filter(club=self.instance.club)
-        else:
-            self.fields['event'].queryset = Event.objects.none()
+        set_club_field(self, user, manage_only=True)
+        set_event_field(self, self.data, self.instance, 'club', 'event')
 
     def clean(self):
         cleaned_data = super().clean()

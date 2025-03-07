@@ -2,6 +2,7 @@ from django import forms
 from django_summernote.widgets import SummernoteWidget
 from club_system.models import Club
 from .models import BlogPost, ThreadPost
+from CMS_mixins.CMS_utils import set_club_field
 
 class ThreadPostForm(forms.ModelForm):
     class Meta:
@@ -36,8 +37,4 @@ class BlogPostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
         super(BlogPostForm, self).__init__(*args, **kwargs)
-        if user:
-            if user.is_admin:
-                self.fields['club'].queryset = Club.objects.all()
-            else:
-                self.fields['club'].queryset = user.clubs_joined.all()
+        set_club_field(self, user, manage_only=False)
