@@ -205,10 +205,10 @@ def Mine(request):
         Q(club__in=user_clubs) |  # Events from user's clubs
         Q(rsvp__user=request.user),  # Events user has RSVPed to
         start_time__gte=timezone.now()
-    ).distinct().order_by('start_time')[:3]  # Get next 3 upcoming events
+    ).distinct().order_by('start_time')
     
     return render(request, 'user_system/mine.html', {
-        'clubs': user_clubs[:3],  # Show only first 3 clubs
+        'clubs': user_clubs,
         'events': upcoming_events,
     })
 
