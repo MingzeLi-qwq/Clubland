@@ -48,23 +48,25 @@
   
   <!-- 博客文章列表 -->
   <div class="list-group">
-    {% for post in posts %}
-      <a href="{% url 'forum_system:blog_detail' post.pk %}" class="list-group-item list-group-item-action">
-        <div class="d-flex w-100 justify-content-between">
-          <h5 class="mb-1">{{ post.title }}</h5>
-          <small>{{ post.created_at|date:"Y-m-d H:i" }}</small>
-        </div>
-        <p class="mb-1">
-          {% if post.club %}
-            所属社团：{{ post.club.name }}
-          {% else %}
-            所属社团：未指定
-          {% endif %}
-        </p>
-      </a>
-    {% empty %}
+    {% if posts %}
+      {% for post in posts %}
+        <a href="{% url 'forum_system:blog_detail' post.pk %}" class="list-group-item list-group-item-action">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ post.title }}</h5>
+            <small>{{ post.created_at|date:"Y-m-d H:i" }}</small>
+          </div>
+          <p class="mb-1">
+            {% if post.club %}
+              所属社团：{{ post.club.name }}
+            {% else %}
+              所属社团：未指定
+            {% endif %}
+          </p>
+        </a>
+      {% endfor %}
+    {% else %}
       <div class="list-group-item">暂无文章</div>
-    {% endfor %}
+    {% endif %}
   </div>
 
   {% if is_paginated %}
