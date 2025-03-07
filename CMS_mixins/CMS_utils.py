@@ -33,6 +33,8 @@ def get_paginate_by_request(request, param='per_page', default=10):
     return default
 
 def set_club_field(form, user, manage_only=False):
+    from django.apps import apps
+    Club = apps.get_model("club_system", "Club")
     """
     设置 club 字段的可选范围:
       - 若用户是管理员，则列出所有社团并允许为空。
@@ -50,6 +52,8 @@ def set_club_field(form, user, manage_only=False):
             form.fields['club'].queryset = getattr(user, 'clubs_joined', Club.objects.none())
 
 def set_event_field(form, data, instance, club_field='club', event_field='event'):
+    from django.apps import apps
+    Event = apps.get_model("event_system", "Event")
     """
     根据所选社团过滤可选活动。
     """
