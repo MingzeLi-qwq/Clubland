@@ -203,7 +203,7 @@ SUMMERNOTE_CONFIG = {
     # 延迟加载（若想在页面底部初始化 summernote 可启用）
     'lazy': True,
     # 使用从 CMS_mixins 导入的上传路径生成函数
-    'attachment_upload_to': CMS_utils.upload_img_func,
+    'attachment_upload_to': CMS_utils.RTEUploadUtils.upload_img_func,
 }
 
 LOGIN_URL = '/login/'
