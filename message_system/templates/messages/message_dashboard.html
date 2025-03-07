@@ -7,8 +7,12 @@
         <!-- 左侧消息列表 -->
         <div class="sidebar">
             <h5>Messages</h5>
+
+            <!-- 搜索栏 -->
+            <input type="text" v-model="searchQuery" placeholder="Search users..." class="search-input">
+
             <ul class="chat-list">
-                <li v-for="(chat, index) in chatList" :key="index" @click="selectChat(index)" :class="{ active: currentChatIndex === index }">
+                <li v-for="(chat, index) in filteredChatList" :key="index" @click="selectChat(index)" :class="{ active: currentChatIndex === index }">
                     <div class="icon-wrapper">
                         <i :class="chat.icon"></i>
                     </div>
@@ -33,11 +37,10 @@
                 </div>
             </div>
 
-            <!-- 优化的输入框 -->
+            <!-- 输入框 -->
             <div class="chat-footer">
                 <textarea v-model="newMessage" 
                           @keydown="handleKeyPress"
-                          @input="adjustTextareaHeight" 
                           placeholder="Input Message..." 
                           class="message-input"></textarea>
                 <button @click="sendMessage" class="send-btn">Send</button>
@@ -48,51 +51,94 @@
 
 <!-- Vue 逻辑 -->
 {% block extra_js %}
-<script src="https://unpkg.com/vue@3.2.36/dist/vue.global.js"></script>
 <script>
-const app = Vue.createApp({
-    data() {
-        return {
-            chatList: [
-                { name: "无畏契约赛事", icon: "fas fa-gamepad", lastMessage: "🔥 快来看比赛", messages: [{ text: "你好！", sender: "other" }] },
-                { name: "崩坏星穹铁道", icon: "fas fa-space-shuttle", lastMessage: "全新世界开启！", messages: [{ text: "你好呀！", sender: "other" }] },
-                { name: "哔哩哔哩晚会", icon: "fas fa-tv", lastMessage: "直播开始提醒", messages: [{ text: "今晚看直播吗？", sender: "other" }] }
-            ],
-            currentChatIndex: 0,
-            newMessage: "",
-        };
-    },
-    computed: {
-        currentChat() {
-            return this.chatList[this.currentChatIndex];
-        }
-    },
-    methods: {
-        selectChat(index) {
-            this.currentChatIndex = index;
-        },
-        sendMessage() {
-            if (this.newMessage.trim()) {
-                this.currentChat.messages.push({ text: this.newMessage, sender: "me" });
-                this.newMessage = "";
-                this.resetTextareaHeight();  // 发送后重置输入框高度
-            }
-        },
-        handleKeyPress(event) {
-            if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                this.sendMessage();
-            }
-        },
-        adjustTextareaHeight(event) {
-            event.target.style.height = "auto";
-            event.target.style.height = (event.target.scrollHeight) + "px";
-        },
-        resetTextareaHeight() {
-            document.querySelector(".message-input").style.height = "40px";
-        }
+    function getCSRFToken() {
+        return document.cookie.split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
     }
-}).mount("#app");
+    
+    const app = Vue.createApp({
+        data() {
+            return {
+                chatList: [],
+                searchQuery: "",
+                currentChatIndex: 0,
+                newMessage: "",
+            };
+        },
+        computed: {
+            filteredChatList() {
+                if (!this.searchQuery.trim()) return this.chatList;
+                return this.chatList.filter(chat => 
+                    chat.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+                );
+            },
+            currentChat() {
+                return this.chatList[this.currentChatIndex] || { name: "", messages: [] };
+            }
+        },
+        methods: {
+            fetchMessages() {
+                fetch('/api/messages/')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.chatList = data.messages.map(msg => ({
+                            name: msg.sender,
+                            avatar: "https://via.placeholder.com/40",
+                            lastMessage: msg.text,
+                            messages: [{ text: msg.text, sender: "other" }]
+                        }));
+                    })
+                    .catch(error => console.error("Failed to load messages:", error));
+            },
+            searchUsers() {
+                if (!this.searchQuery.trim()) return;
+                fetch(`/api/search_users/?q=${this.searchQuery}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        this.chatList = data.users.map(user => ({
+                            name: user.username,
+                            avatar: "https://via.placeholder.com/40",
+                            lastMessage: "",
+                            messages: []
+                        }));
+                    })
+                    .catch(error => console.error("Failed to search users:", error));
+            },
+            sendMessage() {
+                if (this.newMessage.trim() && this.currentChat) {
+                    fetch('/api/send/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken()
+                        },
+                        body: JSON.stringify({
+                            receiver: this.currentChat.name,
+                            text: this.newMessage
+                        })
+                    }).then(response => response.json())
+                      .then(() => {
+                          this.currentChat.messages.push({ text: this.newMessage, sender: "me" });
+                          this.newMessage = "";
+                      })
+                      .catch(error => console.error("Failed to send message:", error));
+                }
+            },
+            selectChat(index) {
+                this.currentChatIndex = index;
+            }
+        },
+        watch: {
+            searchQuery() {
+                this.searchUsers();
+            }
+        },
+        mounted() {
+            this.fetchMessages();
+        }
+    }).mount("#app");
 </script>
 {% endblock %}
 
@@ -215,6 +261,15 @@ const app = Vue.createApp({
 
 .send-btn:hover {
     background: #0056b3;
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
 }
 </style>
 

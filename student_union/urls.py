@@ -26,7 +26,7 @@ from user_system.views import change_password
 from notification_system.views import notification_list
 from notification_system.views import notification_detail
 from notification_system.views import mark_all_as_read
-
+from message_system.views import get_user_messages, send_message, search_users
 import event_system.views
 import forum_system.views
 
@@ -78,9 +78,9 @@ urlpatterns = [
 
     # Message related / 消息相关
     path('messages/message_dashboard', message_system.views.message_dashboard, name='message_dashboard'),
-
-
-
+    path('api/messages/', message_system.views.get_user_messages, name='get_user_messages'),
+    path('api/send/', message_system.views.send_message, name='send_message'),
+    path("api/search_users/", message_system.views.search_users, name="search_users"),
     #---------------------------------------------------- Event related / Event相关页面 -----------------------------------------------------------------------
     path('events/', include('event_system.urls')),
     #-------------------------------------------------------- Event related END ----------------------------------------------------------------------------
