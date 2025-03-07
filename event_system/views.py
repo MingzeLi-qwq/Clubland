@@ -377,9 +377,6 @@ class UpdateEventCategory(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         else:
             redirect_url = 'club_manager_event_general'
 
-
-"""Search for users who can be added as RSVP"""
-class SearchRSVPCandidatesView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         # 恢复新分类创建逻辑
         if new_category_name:
             if Category.objects.filter(name__iexact=new_category_name).exists():
@@ -391,6 +388,7 @@ class SearchRSVPCandidatesView(LoginRequiredMixin, ClubManagerRequiredMixin, Vie
         event.categories.set(selected_categories)
         messages.success(request, "Event categories updated successfully")
         return redirect(redirect_url, club_id=club_id, event_id=event_id)
+
 """--------------------------------------------------以上部分负责针对单个event的相关操作-------------------------------------------------"""
 
 
