@@ -27,6 +27,7 @@ from notification_system.views import notification_list
 from notification_system.views import notification_detail
 from notification_system.views import mark_all_as_read
 
+
 import event_system.views
 import forum_system.views
 
@@ -98,6 +99,8 @@ urlpatterns = [
     #--------------------------------------- Password verification for dangerous operations / 危险操作的密码验证 --------------------------------------------------
     path('verify-admin-password/', admin_system.views.verifyAdminPassword, name='verify_admin_password'),
     #--------------------------------------------Password verification for dangerous operations END --------------------------------------------------------
+
+    path("api/", include("club_hub.urls")),
 ]   
 
 
