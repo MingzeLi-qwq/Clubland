@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models import RSVP, Category, Event  # 导入 Event 模型
+from .models import RSVP, Category, Event  # Import Event model
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('name', 'club', 'start_time', 'location')  # 列表展示的字段
-    search_fields = ('name', 'location')  # 可搜索字段
-    filter_horizontal = ('participants',)  # 让多对多字段在 admin 界面更方便管理
+    list_display = ('name', 'club', 'start_time', 'location')  # Fields to display in list view
+    search_fields = ('name', 'location')  # Searchable fields
+    filter_horizontal = ('participants',)  # Better management for many-to-many fields
 
 @admin.register(RSVP)
 class RSVPAdmin(admin.ModelAdmin):

@@ -6,7 +6,7 @@
 <div class="card shadow-sm mb-4">
   <div class="card-body">
     <form method="GET" class="row g-3">
-      <!-- 搜索栏 -->
+      <!-- Search bar -->
       <div class="col-lg-4">
         <div class="input-group">
           <span class="input-group-text">
@@ -17,7 +17,7 @@
         </div>
       </div>
 
-      <!-- 日期筛选 -->
+      <!-- Date filter -->
       <div class="col-lg-2">
         <select name="date" class="form-select">
           <option value="">All Dates</option>
@@ -30,7 +30,7 @@
         </select>
       </div>
 
-      <!-- 分类筛选 -->
+      <!-- Category filter -->
       <div class="col-lg-2">
         <select name="category" class="form-select">
           <option value="all">All Categories</option>
@@ -42,7 +42,7 @@
         </select>
       </div>
 
-      <!-- 自定义日期范围 -->
+      <!-- Custom date range -->
       <div class="col-lg-2">
         <input type="date" name="start_date" class="form-control" 
                value="{{ start_date }}" placeholder="From date">
@@ -52,7 +52,7 @@
                value="{{ end_date }}" placeholder="To date">
       </div>
 
-      <!-- 操作按钮 -->
+      <!-- Action buttons -->
       <div class="col-lg-12 text-end mt-3">
         <button type="submit" class="btn btn-primary px-4">
           </i>Search
@@ -65,7 +65,7 @@
   </div>
 </div>
 
-  <!-- 事件列表 -->
+  <!-- Event list -->
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
     {% for event in events %}
     <div class="col">
@@ -110,7 +110,7 @@
     {% endfor %}
   </div>
 
-<!-- 分页导航 -->
+<!-- Pagination -->
 {% if is_paginated %}
 <nav class="mt-5">
   <ul class="pagination justify-content-center">

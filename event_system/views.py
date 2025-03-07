@@ -18,8 +18,9 @@ from user_system.models import User
 def events_home(request):
     return render(request, 'events.html')
 
-"""此方法用于检查Event name是否重复, 更重要的是忽略了大小写和空格"""
+"""This method checks if an Event name already exists, ignoring case and spaces"""
 def isSameEventNameExist(name):
+    """Check if event name exists (case-insensitive and ignoring spaces)"""
     normalized_name = ''.join(name.split()).lower()
     events = Event.objects.all()
     for event in events:
@@ -28,9 +29,9 @@ def isSameEventNameExist(name):
             return True
     return False
 
-"""-------------------------------------------以下部分在Event页面渲染event列表和event详情页面-----------------------------------------------------"""
+"""------------------------------------------- Event List and Detail Page Rendering Section -----------------------------------------------------"""
 class EventListView(ListView):
-    """在event页面渲染event列表"""
+    """Render event list on events page"""
     model = Event
     template_name = 'events.html'
     context_object_name = "events" 
@@ -41,10 +42,10 @@ class EventListView(ListView):
         queryset = super().get_queryset()
         params = self.request.GET
         
-        # 组合搜索条件
+        # Combine search conditions
         filters = Q()
 
-        # 关键词搜索（名称、地点、描述）
+        # Keyword search (name, location, description)
         if search := params.get('search'):
             filters &= Q(
                 Q(name__icontains=search) |
@@ -52,20 +53,20 @@ class EventListView(ListView):
                 Q(description__icontains=search)
             )
         
-        # 时间过滤
+        # Time filter
         now = timezone.now()
         if date_filter := params.get('date'):
             if date_filter == 'upcoming':
                 filters &= Q(start_time__gte=now)
             elif date_filter == 'past':
                 filters &= Q(end_time__lt=now)
-       # 自定义时间
+       # Custom time range
         if start_date := params.get('start_date'):
             filters &= Q(start_time__gte=start_date)
         if end_date := params.get('end_date'):
             filters &= Q(start_time__lte=end_date)  
 
-        # 分类过滤
+        # Category filter
         if (category := params.get('category')) and category != 'all':
             filters &= Q(categories__name=category)    
 
@@ -86,7 +87,7 @@ class EventListView(ListView):
         return context
 
 def event_detail(request, pk):
-    """event详情页面"""
+    """Event detail page"""
     event = get_object_or_404(Event, pk=pk)
     user_rsvp = RSVP.objects.filter(
         user=request.user, 
@@ -102,14 +103,14 @@ def event_detail(request, pk):
 
 @login_required
 def rsvp_toggle(request, pk):
-    """ 处理 RSVP 状态切换 """
+    """Handle RSVP status toggle"""
     if request.method != 'POST':
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
     event = get_object_or_404(Event, pk=pk)
     rsvp, created = RSVP.objects.get_or_create(user=request.user, event=event)
 
-    # 切换状态
+    # Toggle status
     rsvp.status = not rsvp.status if not created else True
     rsvp.save()
 
@@ -118,11 +119,11 @@ def rsvp_toggle(request, pk):
         'new_status': rsvp.status,
         'message': 'RSVP status updated'
     })
-"""-------------------------------------------以上部分在Event页面渲染event列表和event详情页面-----------------------------------------------------"""
+"""------------------------------------------- Above section handles Event list and detail page rendering -----------------------------------------------------"""
 
 
-"""--------------------------------------------------以下部分负责针对单个event的相关操作-------------------------------------------------"""
-"""Remove RSVP / 移除RSVP"""
+"""-------------------------------------------------- Event-specific Operations Section -------------------------------------------------"""
+"""Remove RSVP"""
 class RemoveRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, event_id, rsvp_id):
         rsvp = get_object_or_404(RSVP, pk=rsvp_id)
@@ -130,12 +131,12 @@ class RemoveRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         messages.success(request, f"RSVP for {rsvp.user.get_full_name} has been removed")
         return redirect('club_manager_event_RSVPs', club_id=club_id, event_id=event_id)
     
-"""Create new even / 创建新的event"""
+"""Create new event"""
 class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = get_object_or_404(Club, pk=club_id)
         categories = Category.objects.all()
-        # 渲染活动创建表单页面
+        # Render event creation form page
         return render(request, 'club_manager/create_event.html', {
             'club_id': club_id, 
             'club': club,
@@ -295,14 +296,15 @@ class UpdateEventTime(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         return redirect('club_manager_event_general', club_id=club_id, event_id=event_id)
     
 
+"""Search for users who can be added as RSVP"""
 class SearchRSVPCandidatesView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
-    """搜索可添加为RSVP的用户"""
+    """Search for users who can be added as RSVP"""
     def get(self, request, *args, **kwargs):
         club_id = request.GET.get('club_id')
         event_id = request.GET.get('event_id')
         query = request.GET.get('q', '')
         
-        # 获取尚未报名的用户
+        # Get users who haven't registered yet
         existing_rsvps = RSVP.objects.filter(event_id=event_id).values_list('user_id', flat=True)
         
         candidates = User.objects.filter(
@@ -322,18 +324,19 @@ class SearchRSVPCandidatesView(LoginRequiredMixin, ClubManagerRequiredMixin, Vie
         
         return JsonResponse(results, safe=False)
 
+"""Add RSVP record"""
 class AddRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
-    """添加RSVP记录"""
+    """Add RSVP record"""
     def post(self, request, club_id, event_id, username):
         try:
             user = User.objects.get(username=username)
             event = Event.objects.get(id=event_id)
             
-            # 检查是否已存在
+            # Check if already exists
             if RSVP.objects.filter(user=user, event=event).exists():
                 return JsonResponse({'detail': 'User already has RSVP'}, status=400)
             
-            # 创建RSVP
+            # Create RSVP
             RSVP.objects.create(
                 user=user,
                 event=event,
@@ -351,16 +354,16 @@ class AddRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         except Exception as e:
             return JsonResponse({'detail': str(e)}, status=500)
 
-"""--------------------------------------------------以上部分负责针对单个event的相关操作-------------------------------------------------"""
+"""-------------------------------------------------- Above section handles Event-specific operations -------------------------------------------------"""
 
 
 def club_details(request, club_id):
     club = get_object_or_404(Club, pk=club_id)
 
-    # 比如拿该俱乐部最近的活动，不加时间过滤：
+    # Get recent events for this club without time filter
     recent_events = Event.objects.filter(club=club).order_by('-start_time')[:3]
 
-    # ... 只想要未来活动，还要加上 start_time__gte=timezone.now() ...
+    # To get only future events, add start_time__gte=timezone.now()
     # recent_events = Event.objects.filter(
     #     club=club,
     #     start_time__gte=timezone.now()
@@ -369,7 +372,7 @@ def club_details(request, club_id):
     context = {
         'club': club,
         'recent_events': recent_events,
-        # 其它上下文...
+        # Other context...
     }
     return render(request, 'club_details.html', context)
 
