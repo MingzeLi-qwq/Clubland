@@ -8,7 +8,9 @@
       <span>{{ post.title }}</span>
       {% if user == post.author %}
       <div class="d-flex justify-content-end mt-3">
-        <a href="{% url 'forum_system:blog_delete' post.pk %}" class="btn btn-danger btn-sm flex-shrink-0">删除文章</a>
+        <a href="{% url 'forum_system:blog_delete' post.pk %}" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit;">
+          <i class="bi bi-trash" style="color: inherit;"></i>
+        </a>
       </div>
     {% endif %}
     </h2>

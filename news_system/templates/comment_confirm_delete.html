@@ -5,6 +5,7 @@
   <p>你确定要删除这条评论吗？</p>
   <form method="post">
     {% csrf_token %}
+    <!-- 恢复删除按钮样式 -->
     <button type="submit" class="btn btn-danger">删除</button>
     <a href="{% if object.news %}{% url 'news_system:news_detail' object.news.pk %}{% else %}#{% endif %}" class="btn btn-secondary">取消</a>
   </form>
