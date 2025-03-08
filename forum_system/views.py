@@ -21,7 +21,7 @@ class BlogPostListView(ListView):
         queryset = super().get_queryset()
         q = self.request.GET.get('q', '')
         if q:
-            queryset = queryset.filter(Q(title__icontains=q) | Q(content__icontains=q))
+            queryset = queryset.filter(Q(title__icontains=q) | Q(content__icontains(q)))
         club_filter = self.request.GET.get('club', '')
         if club_filter:
             queryset = queryset.filter(club_id=club_filter)
@@ -133,7 +133,7 @@ class BlogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 class ThreadPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = ThreadPost
-    template_name = 'comment_confirm_delete.html'
+    template_name = 'threadpost_confirm_delete.html'  # 修改模板名称
 
     def get_success_url(self):
         return reverse('forum_system:blog_detail', kwargs={'pk': self.get_object().blog_post.pk})

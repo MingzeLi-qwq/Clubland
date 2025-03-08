@@ -60,7 +60,9 @@
               </div>
               <div>
                 {% if user == comment.author %}
-                  <a href="{% url 'news_system:comment_delete' comment.pk %}" class="btn btn-danger btn-sm">删除评论</a>
+                  <a href="{% url 'news_system:comment_delete' comment.pk %}" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit;">
+                    <i class="bi bi-trash" style="color: inherit;"></i>
+                  </a>
                 {% endif %}
               </div>
             </div>
