@@ -2,13 +2,82 @@
 
 {% block title %}Mine{% endblock %}
 
-
 {% block body %}
 <div class="container mt-4">
     <h1 class="mb-4">Welcome, {{ user.username }}!</h1>
 
-    <!-- Debug Information - For testing and troubleshooting
-    <div class="alert alert-info mb-4" id="debug-info">
+    {% if user.account_type == 'Admin' %}
+    <!-- Admin Dashboard -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Admin Dashboard</h3>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <a href="{% url 'admin_panel_clubs' %}" class="text-decoration-none">
+                                <div class="card bg-primary text-white mb-3 dashboard-card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Clubs</h5>
+                                        <h2 class="display-4" id="club-count">{{ clubs|length }}</h2>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'events' %}" class="text-decoration-none">
+                                <div class="card bg-success text-white mb-3 dashboard-card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Events</h5>
+                                        <h2 class="display-4" id="event-count">{{ events|length }}</h2>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'admin_panel_users' %}" class="text-decoration-none">
+                                <div class="card bg-info text-white mb-3 dashboard-card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Users</h5>
+                                        <h2 class="display-4" id="user-count">{{ users_count|default:"0" }}</h2>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'news_system:news_list' %}" class="text-decoration-none">
+                                <div class="card bg-warning text-white mb-3 dashboard-card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">News</h5>
+                                        <h2 class="display-4" id="news-count">{{ news_count|default:"0" }}</h2>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <a href="{% url 'admin_panel_clubs' %}" class="btn btn-lg btn-primary">
+                            <i class="me-2"></i> Go to Admin Panel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Debug Information - For admin only -->
+    <!-- <div class="alert alert-info mb-4" id="debug-info">
+        <h5>System Information</h5>
+        <p>Total clubs loaded: <strong>{{ clubs|length }}</strong></p>
+        <p>Total events loaded: <strong>{{ events|length }}</strong></p>
+        <p>Total news loaded: <strong>{{ news_count|default:"0" }}</strong></p>
+        <p>User session info: <strong>{{ user.username }} ({{ user.account_type }})</strong></p>
+    </div> -->
+    
+    {% else %}
+    <!-- Regular User View -->
+    <!-- Debug Information - For testing and troubleshooting -->
+    <!-- <div class="alert alert-info mb-4" id="debug-info">
         <h5>Debug Info</h5>
         <p>Total clubs loaded: <strong>{{ clubs|length }}</strong></p>
         <ul>
@@ -46,17 +115,16 @@
                 {% endfor %}
             </div>
             
-            <!-- Club Pagination - Always visible for testing -->
+            <!-- Club Pagination -->
             <div class="d-flex justify-content-between align-items-center mt-4">
-                <button id="prevClub" class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center" disabled>
+                <button id="prevClub" class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center">
                     <i class="bi bi-arrow-left me-1"></i>
                     <span>Previous</span>
                 </button>
                 <div class="page-indicator">
-                    Page <span id="currentClubPage">1</span> of <span id="totalClubPages">{{ clubs|length|divisibleby:3|yesno:'0,1' }}</span>
+                    Page <span id="currentClubPage">1</span> of <span id="totalClubPages">1</span>
                 </div>
-                <button id="nextClub" class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center" 
-                       {% if clubs|length <= 3 %}disabled{% endif %}>
+                <button id="nextClub" class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center">
                     <span>Next</span>
                     <i class="bi bi-arrow-right ms-1"></i>
                 </button>
@@ -64,6 +132,7 @@
             {% else %}
             <div class="text-center p-4 bg-light rounded">
                 <p class="text-muted mb-0">You haven't joined any clubs yet.</p>
+                <a href="{% url 'clubs' %}" class="btn btn-primary mt-3">Explore Clubs</a>
             </div>
             {% endif %}
         </div>
@@ -73,36 +142,41 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2>Upcoming Events</h2>
+                <h2>My Upcoming Events</h2>
                 <a href="{% url 'events' %}" class="btn btn-outline-primary">View All</a>
             </div>
             
-            <!-- Event Cards -->
             {% if events %}
-            <div class="event-carousel">
-                <div id="eventCarousel" class="carousel slide" data-bs-ride="false" data-bs-interval="false">
+            <div class="event-carousel-wrapper">
+                <div id="eventCarousel" class="carousel slide" data-bs-ride="false">
                     <div class="carousel-inner">
                         {% for event in events %}
                         <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <div class="event-card card shadow-sm">
+                            <div class="card event-card">
                                 <div class="card-body">
-                                    <h5 class="card-title fw-bold">{{ event.name }}</h5>
+                                    <h5 class="card-title">{{ event.title }}</h5>
                                     <div class="event-info">
                                         <div class="info-item mb-2">
-                                            <i class="bi-calendar-event"></i>
-                                            <small>{{ event.start_time|date:"M d, Y H:i" }}</small>
+                                            <i class="bi bi-calendar3"></i>
+                                            <span>{{ event.start_time|date:"F j, Y" }}</span>
                                         </div>
                                         <div class="info-item mb-2">
-                                            <i class="bi-geo-alt"></i>
-                                            <small>{{ event.location }}</small>
+                                            <i class="bi bi-clock"></i>
+                                            <span>{{ event.start_time|date:"g:i A" }} - {{ event.end_time|date:"g:i A" }}</span>
+                                        </div>
+                                        <div class="info-item mb-2">
+                                            <i class="bi bi-geo-alt"></i>
+                                            <span>{{ event.location }}</span>
                                         </div>
                                         <div class="countdown" data-start-time="{{ event.start_time|date:'c' }}">
-                                            Starts in: <span class="countdown-value">calculating...</span>
+                                            <strong>Starts in:</strong> <span class="countdown-value">calculating...</span>
                                         </div>
                                     </div>
-                                    <a href="{% url 'event_detail' event.pk %}" class="btn btn-outline-primary btn-sm">
-                                        View Details
-                                    </a>
+                                    <div class="mt-3">
+                                        <a href="{% url 'event_detail' event.pk %}" class="btn btn-outline-primary btn-sm w-100">
+                                            View Details
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -132,6 +206,7 @@
             {% endif %}
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -140,170 +215,193 @@
     document.addEventListener('DOMContentLoaded', function() {
         console.log("DOM已加载，开始初始化脚本...");
         
-        // 事件倒计时功能
-        function updateCountdown() {
-            document.querySelectorAll('.countdown').forEach(countdown => {
-                const startTime = new Date(countdown.dataset.startTime);
-                const now = new Date();
-                const diff = startTime - now;
+        {% if user.account_type == 'Admin' %}
+            // Admin dashboard - Fetch additional stats
+            fetchUserCount();
+            fetchNewsCount();
+            
+            function fetchUserCount() {
+                fetch('/api/get_users_count/', { method: 'GET' })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('user-count').textContent = data.count || '0';
+                })
+                .catch(error => {
+                    console.error('Error fetching user count:', error);
+                });
+            }
+            
+            function fetchNewsCount() {
+                fetch('/api/get_news_count/', { method: 'GET' })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('news-count').textContent = data.count || '0';
+                })
+                .catch(error => {
+                    console.error('Error fetching news count:', error);
+                });
+            }
+        {% else %}
+            /* Regular user functionality */
+            function updateCountdown() {
+                document.querySelectorAll('.countdown').forEach(countdown => {
+                    const startTime = new Date(countdown.dataset.startTime);
+                    const now = new Date();
+                    const diff = startTime - now;
 
-                if (diff > 0) {
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    if (diff > 0) {
+                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-                    let timeString = '';
-                    if (days > 0) timeString += `${days}d `;
-                    if (hours > 0) timeString += `${hours}h `;
-                    if (minutes > 0) timeString += `${minutes}m `;
-                    timeString += `${seconds}s`;
+                        let timeString = '';
+                        if (days > 0) timeString += `${days}d `;
+                        if (hours > 0) timeString += `${hours}h `;
+                        if (minutes > 0) timeString += `${minutes}m `;
+                        timeString += `${seconds}s`;
 
-                    countdown.querySelector('.countdown-value').textContent = timeString;
-                } else {
-                    countdown.querySelector('.countdown-value').textContent = 'Event started';
+                        countdown.querySelector('.countdown-value').textContent = timeString;
+                    } else {
+                        countdown.querySelector('.countdown-value').textContent = 'Event started';
+                    }
+                });
+            }
+            
+            // 每秒更新倒计时
+            setInterval(updateCountdown, 1000);
+            updateCountdown(); // 立即执行一次
+
+            // 事件轮播功能
+            const eventCarousel = document.getElementById('eventCarousel');
+            if (eventCarousel) {
+                const carousel = new bootstrap.Carousel(eventCarousel, {
+                    interval: false // 禁用自动循环
+                });
+
+                // 事件导航按钮
+                const prevEventBtn = document.getElementById('prevEvent');
+                const nextEventBtn = document.getElementById('nextEvent');
+                
+                // 事件页面跟踪
+                let currentEventPage = 1;
+                const totalEventPages = parseInt(document.getElementById('totalPages')?.textContent || '1');
+                
+                prevEventBtn?.addEventListener('click', function() {
+                    carousel.prev();
+                    currentEventPage = currentEventPage > 1 ? currentEventPage - 1 : totalEventPages;
+                    document.getElementById('currentPage').textContent = currentEventPage;
+                });
+                
+                nextEventBtn?.addEventListener('click', function() {
+                    carousel.next();
+                    currentEventPage = currentEventPage < totalEventPages ? currentEventPage + 1 : 1;
+                    document.getElementById('currentPage').textContent = currentEventPage;
+                });
+                
+                // 事件变化处理程序
+                eventCarousel.addEventListener('slid.bs.carousel', function (event) {
+                    currentEventPage = event.to + 1;
+                    document.getElementById('currentPage').textContent = currentEventPage;
+                });
+            }
+
+            // Club分页功能实现
+            const clubItems = document.querySelectorAll('.club-item');
+            const totalClubs = clubItems.length;
+            
+            console.log(`找到 ${totalClubs} 个俱乐部，开始处理分页...`);
+            
+            // 设置每页显示的俱乐部数量
+            const clubsPerPage = 3;
+            // 计算总页数 (向上取整)
+            const totalPages = Math.ceil(totalClubs / clubsPerPage);
+            
+            console.log(`每页显示 ${clubsPerPage} 个俱乐部，共需 ${totalPages} 页`);
+            
+            // 更新总页数显示
+            const totalPagesElement = document.getElementById('totalClubPages');
+            if (totalPagesElement) {
+                totalPagesElement.textContent = totalPages;
+                console.log(`已更新总页数显示：${totalPages}`);
+            }
+            
+            // 初始化当前页为第1页
+            let currentPage = 1;
+            
+            // 获取分页按钮
+            const prevButton = document.getElementById('prevClub');
+            const nextButton = document.getElementById('nextClub');
+            
+            // 更新按钮状态的函数
+            function updateButtonState() {
+                if (prevButton) prevButton.disabled = currentPage <= 1;
+                if (nextButton) nextButton.disabled = currentPage >= totalPages;
+                console.log(`按钮状态已更新: 上一页=${prevButton?.disabled ? '禁用' : '可用'}, 下一页=${nextButton?.disabled ? '禁用' : '可用'}`);
+            }
+            
+            // 定义显示指定页码的函数
+            function showPage(pageNumber) {
+                console.log(`尝试显示第 ${pageNumber} 页...`);
+                
+                if (pageNumber < 1 || pageNumber > totalPages) {
+                    console.log(`页码 ${pageNumber} 无效，范围应为 1-${totalPages}`);
+                    return;
                 }
-            });
-        }
-
-        // 每秒更新倒计时
-        setInterval(updateCountdown, 1000);
-        updateCountdown(); // 立即执行一次
-
-        // 事件轮播功能
-        const eventCarousel = document.getElementById('eventCarousel');
-        if (eventCarousel) {
-            const carousel = new bootstrap.Carousel(eventCarousel, {
-                interval: false // 禁用自动循环
-            });
-
-            // 事件导航按钮
-            const prevEventBtn = document.getElementById('prevEvent');
-            const nextEventBtn = document.getElementById('nextEvent');
-            
-            // 事件页面跟踪
-            let currentEventPage = 1;
-            const totalEventPages = parseInt(document.getElementById('totalPages')?.textContent || '1');
-            
-            prevEventBtn?.addEventListener('click', function() {
-                carousel.prev();
-                currentEventPage = currentEventPage > 1 ? currentEventPage - 1 : totalEventPages;
-                document.getElementById('currentPage').textContent = currentEventPage;
-            });
-            
-            nextEventBtn?.addEventListener('click', function() {
-                carousel.next();
-                currentEventPage = currentEventPage < totalEventPages ? currentEventPage + 1 : 1;
-                document.getElementById('currentPage').textContent = currentEventPage;
-            });
-            
-            // 事件变化处理程序
-            eventCarousel.addEventListener('slid.bs.carousel', function (event) {
-                currentEventPage = event.to + 1;
-                document.getElementById('currentPage').textContent = currentEventPage;
-            });
-        }
-
-        // Club分页功能实现
-        const clubItems = document.querySelectorAll('.club-item');
-        const totalClubs = clubItems.length;
-        
-        console.log(`找到 ${totalClubs} 个俱乐部，开始处理分页...`);
-        
-        // 设置每页显示的俱乐部数量
-        const clubsPerPage = 3;
-        // 计算总页数 (向上取整)
-        const totalPages = Math.ceil(totalClubs / clubsPerPage);
-        
-        console.log(`每页显示 ${clubsPerPage} 个俱乐部，共需 ${totalPages} 页`);
-        
-        // 更新总页数显示
-        const totalPagesElement = document.getElementById('totalClubPages');
-        if (totalPagesElement) {
-            totalPagesElement.textContent = totalPages;
-            console.log(`已更新总页数显示：${totalPages}`);
-        }
-        
-        // 初始化当前页为第1页
-        let currentPage = 1;
-        
-        // 获取分页按钮
-        const prevButton = document.getElementById('prevClub');
-        const nextButton = document.getElementById('nextClub');
-        
-        // 更新按钮状态的函数
-        function updateButtonState() {
-            if (prevButton) prevButton.disabled = currentPage <= 1;
-            if (nextButton) nextButton.disabled = currentPage >= totalPages;
-            console.log(`按钮状态已更新: 上一页=${prevButton?.disabled ? '禁用' : '可用'}, 下一页=${nextButton?.disabled ? '禁用' : '可用'}`);
-        }
-        
-        // 定义显示指定页码的函数
-        function showPage(pageNumber) {
-            console.log(`尝试显示第 ${pageNumber} 页...`);
-            
-            if (pageNumber < 1 || pageNumber > totalPages) {
-                console.log(`页码 ${pageNumber} 无效，范围应为 1-${totalPages}`);
-                return;
-            }
-            
-            // 首先隐藏所有俱乐部
-            clubItems.forEach((item, index) => {
-                item.style.display = 'none';
-                console.log(`隐藏俱乐部 #${index+1}: ${item.querySelector('.card-title').textContent}`);
-            });
-            
-            // 计算当前页应该显示的俱乐部的起始和结束索引
-            const startIndex = (pageNumber - 1) * clubsPerPage;
-            const endIndex = Math.min(startIndex + clubsPerPage, totalClubs);
-            
-            console.log(`当前页显示范围: 从索引 ${startIndex} 到 ${endIndex-1}`);
-            
-            // 显示当前页的俱乐部
-            for (let i = startIndex; i < endIndex; i++) {
-                if (clubItems[i]) {
-                    clubItems[i].style.display = 'block';
-                    console.log(`显示俱乐部 #${i+1}: ${clubItems[i].querySelector('.card-title').textContent}`);
+                
+                // 首先隐藏所有俱乐部
+                clubItems.forEach((item, index) => {
+                    item.style.display = 'none';
+                    console.log(`隐藏俱乐部 #${index+1}: ${item.querySelector('.card-title').textContent}`);
+                });
+                
+                // 计算当前页应该显示的俱乐部的起始和结束索引
+                const startIndex = (pageNumber - 1) * clubsPerPage;
+                const endIndex = Math.min(startIndex + clubsPerPage, totalClubs);
+                
+                console.log(`当前页显示范围: 从索引 ${startIndex} 到 ${endIndex-1}`);
+                
+                // 显示当前页的俱乐部
+                for (let i = startIndex; i < endIndex; i++) {
+                    if (clubItems[i]) {
+                        clubItems[i].style.display = 'block';
+                        console.log(`显示俱乐部 #${i+1}: ${clubItems[i].querySelector('.card-title').textContent}`);
+                    }
                 }
+                
+                // 更新当前页码显示
+                const currentPageElement = document.getElementById('currentClubPage');
+                if (currentPageElement) {
+                    currentPageElement.textContent = pageNumber;
+                    console.log(`已更新当前页码显示：${pageNumber}`);
+                }
+                
+                // 更新当前页变量
+                currentPage = pageNumber;
+                
+                // 更新按钮状态
+                updateButtonState();
             }
             
-            // 更新当前页码显示
-            const currentPageElement = document.getElementById('currentClubPage');
-            if (currentPageElement) {
-                currentPageElement.textContent = pageNumber;
-                console.log(`当前页码已更新为 ${pageNumber}`);
-            }
-            
-            // 更新当前页码变量
-            currentPage = pageNumber;
-            
-            // 更新按钮状态
-            updateButtonState();
-        }
-        
-        // 为上一页按钮添加点击事件
-        if (prevButton) {
-            prevButton.addEventListener('click', function() {
-                console.log(`点击了"上一页"按钮，当前页: ${currentPage}`);
+            // 绑定按钮点击事件
+            prevButton?.addEventListener('click', function() {
+                console.log('点击了"上一页"按钮');
                 if (currentPage > 1) {
                     showPage(currentPage - 1);
                 }
             });
-        }
-        
-        // 为下一页按钮添加点击事件
-        if (nextButton) {
-            nextButton.addEventListener('click', function() {
-                console.log(`点击了"下一页"按钮，当前页: ${currentPage}`);
+            
+            nextButton?.addEventListener('click', function() {
+                console.log('点击了"下一页"按钮');
                 if (currentPage < totalPages) {
                     showPage(currentPage + 1);
                 }
             });
-        }
-        
-        // 初始化显示第一页
-        showPage(1);
-        console.log("俱乐部分页初始化完成！");
+            
+            // 初始化第一页
+            showPage(1);
+            console.log('初始化完成，显示第1页');
+        {% endif %}
     });
 </script>
 {% endblock %}
@@ -342,14 +440,13 @@
     
     .event-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        box-shadow: 0 0.5rem 1rem rgba(244, 3, 3, 0.15);
     }
     
     .event-card .card-body {
-        padding: 1.25rem;
-        height: 100%;
         display: flex;
         flex-direction: column;
+        gap: 1rem;
     }
     
     .event-card .card-title {
@@ -360,14 +457,27 @@
     }
     
     .event-info {
-        margin-bottom: 1rem;
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
     }
     
     .info-item {
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        justify-content: center;
+    }
+    
+    .info-item i {
+        color: #0d6efd;
+        font-size: 1.1rem;
+    }
+    
+    .info-item span,
+    .info-item small {
+        color: #6c757d;
     }
     
     .countdown {
@@ -375,6 +485,9 @@
         font-weight: 500;
         color: #dc3545;
         text-align: center;
+        padding: 0.5rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
     }
 
     /* Button styles */
@@ -419,7 +532,11 @@
     /* Event carousel wrapper */
     .event-carousel-wrapper {
         position: relative;
-        margin-bottom: 30px;
+        padding: 1rem;
+    }
+
+    .carousel-item {
+        padding: 1rem;
     }
 
     /* Page indicator */
@@ -464,6 +581,25 @@
         overflow: hidden;
         text-overflow: ellipsis;
         height: 2.75rem;
+    }
+
+    /* Admin dashboard styles */
+    .display-4 {
+        font-size: 2.5rem;
+        font-weight: 500;
+    }
+    
+    .bg-primary, .bg-success, .bg-info, .bg-warning {
+        transition: all 0.3s ease;
+    }
+    
+    .dashboard-card {
+        cursor: pointer;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     }
 
     /* Ensure Bootstrap Icons are loaded */

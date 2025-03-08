@@ -18,6 +18,8 @@ from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.template.loader import render_to_string
 from django.db.models import Q
+from django.contrib.auth import get_user_model
+from news_system.models import News
 
 
 
@@ -193,20 +195,40 @@ class ClubMembershipDetail(LoginRequiredMixin, ClubExistsRequiredMixin, UserType
 @login_required
 def Mine(request):
     """Mine view"""
-    # Get user's clubs through memberships
-    user_clubs = Club.objects.filter(membership__user=request.user)
-    
-    # Get user's upcoming events (both club events and RSVPed events)
-    upcoming_events = Event.objects.filter(
-        Q(club__in=user_clubs) |  # Events from user's clubs
-        Q(rsvp__user=request.user),  # Events user has RSVPed to
-        start_time__gte=timezone.now()
-    ).distinct().order_by('start_time')
-    
-    return render(request, 'user_system/mine.html', {
-        'clubs': user_clubs,
-        'events': upcoming_events,
-    })
+    # Check if user is an admin
+    if hasattr(request.user, 'account_type') and request.user.account_type == 'Admin':
+        # Admin view - get all data for dashboard
+        all_clubs = Club.objects.all()
+        all_events = Event.objects.filter(start_time__gte=timezone.now()).order_by('start_time')
+        
+        # Get user count - import User model at the top of the file
+        User = get_user_model()
+        users_count = User.objects.count()
+        
+        # Get news count - import News model at the top of the file
+        news_count = News.objects.count()
+        
+        return render(request, 'user_system/mine.html', {
+            'clubs': all_clubs,
+            'events': all_events,
+            'users_count': users_count,
+            'news_count': news_count,
+        })
+    else:
+        # Regular user view - original functionality
+        user_clubs = Club.objects.filter(membership__user=request.user)
+        
+        # Get user's upcoming events (both club events and RSVPed events)
+        upcoming_events = Event.objects.filter(
+            Q(club__in=user_clubs) |  # Events from user's clubs
+            Q(rsvp__user=request.user),  # Events user has RSVPed to
+            start_time__gte=timezone.now()
+        ).distinct().order_by('start_time')
+        
+        return render(request, 'user_system/mine.html', {
+            'clubs': user_clubs,
+            'events': upcoming_events,
+        })
 
 
 
