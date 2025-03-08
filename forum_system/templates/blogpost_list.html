@@ -5,12 +5,25 @@
 <div class="container mt-4">
   <h2 class="mb-4">博客文章列表</h2>
   
-  <!-- 写新文章按钮 -->
-  <div class="mb-3">
-    <a href="{% url 'forum_system:blog_create' %}" class="btn btn-primary">写新文章</a>
+  <!-- 写新文章按钮和搜索表单合并在同一行 -->
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <a href="{% url 'forum_system:blog_create' %}" class="btn btn-primary">写新文章</a>
+    </div>
+    <div class="col-md-6 text-end">
+      <form method="get" class="d-inline-block">
+        <input type="text" name="q" id="searchInput" class="form-control d-inline-block" style="width:auto;" value="{{ request.GET.q }}">
+        <button type="submit" class="btn btn-primary">搜索</button>
+        {% for key, value in request.GET.items %}
+          {% if key not in "q" %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+          {% endif %}
+        {% endfor %}
+      </form>
+    </div>
   </div>
-  
-  <!-- 筛选条件表单：排序和每页显示数量 -->
+
+  <!-- 筛选条件表单：排序、每页显示、社团过滤 -->
   <div class="mb-3">
     <form method="get">
       <div class="row">
@@ -43,6 +56,12 @@
           </select>
         </div>
       </div>
+      <!-- 保持其他查询参数 -->
+      {% for key, value in request.GET.items %}
+        {% if key != "order" and key != "per_page" and key != "club" and key != "q" %}
+          <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endif %}
+      {% endfor %}
     </form>
   </div>
   

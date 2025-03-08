@@ -9,6 +9,7 @@ from event_system.models import Event
 from club_system.models import Club  # 新增导入以获取所有社团
 from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request  # 修改：导入通用函数
 from CMS_mixins.CMS_utils import RTEUploadUtils  # 新增导入
+from django.db.models import Q
 
 # 新闻列表页：显示所有新闻文章
 class NewsListView(ListView):
@@ -18,6 +19,9 @@ class NewsListView(ListView):
 
     def get_queryset(self):
         queryset = News.objects.all()
+        q = self.request.GET.get('q', '')
+        if q:
+            queryset = queryset.filter(Q(title__icontains=q) | Q(content__icontains=q))
         club_filter = self.request.GET.get('club', '')
         if club_filter:
             queryset = queryset.filter(club__pk=club_filter)

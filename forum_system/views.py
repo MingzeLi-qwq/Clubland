@@ -9,6 +9,7 @@ from .forms import BlogPostForm, ThreadPostForm
 from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request  # 修改：导入通用函数
 from club_system.models import Club
 from CMS_mixins.CMS_utils import RTEUploadUtils
+from django.db.models import Q
 
 # 博客列表页：显示所有博客文章
 class BlogPostListView(ListView):
@@ -18,6 +19,9 @@ class BlogPostListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        q = self.request.GET.get('q', '')
+        if q:
+            queryset = queryset.filter(Q(title__icontains=q) | Q(content__icontains=q))
         club_filter = self.request.GET.get('club', '')
         if club_filter:
             queryset = queryset.filter(club_id=club_filter)
