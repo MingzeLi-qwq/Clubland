@@ -55,11 +55,22 @@
             <h5 class="mb-1">{{ post.title }}</h5>
             <small>{{ post.created_at|date:"Y-m-d H:i" }}</small>
           </div>
-          <p class="mb-1">
-            {% if post.club %}
-              所属社团：{{ post.club.name }}
+          <!-- 预览正文，限制2行显示 -->
+          <p class="mb-1" style="display: -webkit-box; -webkit-line-clamp:2; -webkit-box-orient: vertical; overflow: hidden;">
+            {{ post.content|striptags }}
+          </p>
+          <!-- 显示作者和所属社团 -->
+          <p class="mb-0">
+            {% if post.author %}
+              {{ post.author.first_name }} {{ post.author.last_name }} ({{ post.author.username }})
             {% else %}
-              所属社团：未指定
+              未知作者
+            {% endif %}
+            &nbsp;&nbsp;|&nbsp;&nbsp;
+            {% if post.club %}
+              {{ post.club.name }}
+            {% else %}
+              未指定社团
             {% endif %}
           </p>
         </a>
