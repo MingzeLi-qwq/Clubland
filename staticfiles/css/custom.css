@@ -209,16 +209,6 @@
 
 /* ============ 适配移动端 ============ */
 @media (max-width: 768px) {
-    .navbar {
-        backdrop-filter: none;
-        box-shadow: none;
-    }
-
-    .navbar-nav .nav-link {
-        padding: 10px 15px;
-        border-radius: 8px;
-    }
-
 
     .event-card {
         border-radius: 12px;
