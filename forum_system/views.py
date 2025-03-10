@@ -21,7 +21,7 @@ class BlogPostListView(ListView):
         queryset = super().get_queryset()
         q = self.request.GET.get('q', '')
         if q:
-            queryset = queryset.filter(Q(title__icontains=q) | Q(content__icontains(q)))
+            queryset = queryset.filter(Q(title__icontains=q) | Q(content__icontains=q))
         club_filter = self.request.GET.get('club', '')
         if club_filter:
             queryset = queryset.filter(club_id=club_filter)

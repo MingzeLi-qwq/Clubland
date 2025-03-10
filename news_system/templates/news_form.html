@@ -66,6 +66,15 @@
 <!-- 引入 jQuery 并添加动态更新活动的脚本 -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
+  // 添加AJAX全局设置，确保所有AJAX请求都包含CSRF令牌
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      if (!this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", $("input[name='csrfmiddlewaretoken']").val());
+      }
+    }
+  });
+  
   // 修改: 将选中社团的 id 从 id_category 改为 id_club
   var url = "{% url 'news_system:ajax_load_events' %}";
   $("#id_club").change(function(){
