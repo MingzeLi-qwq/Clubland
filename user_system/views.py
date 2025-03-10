@@ -208,6 +208,10 @@ def Mine(request):
         'events': upcoming_events,
     })
 
+def about_us(request):
+    """关于我们页面"""
+    return render(request, 'shared/about_us.html')
+
 
 
 

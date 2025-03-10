@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container mt-5">
+  <div class="row mb-5">
+    <div class="col-12 text-center">
+      <h1 class="display-4 fw-bold mb-4">关于我们</h1>
+      <p class="lead text-muted">miHoyo学生会管理平台</p>
+    </div>
+  </div>
+
+  <!-- 关于平台 -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h2 class="display-6 fw-bold mb-4">关于学生会平台</h2>
+          <p class="mb-4">miHoyo是我校学生会开发的官方平台，旨在便于学生社团管理、活动组织和校园信息传递。</p>
+          <ul class="list-unstyled">
+            <li class="d-flex mb-4">
+              <div class="flex-shrink-0 text-primary fs-3 me-3">
+                <i class="bi-people"></i>
+              </div>
+              <div>
+                <h3 class="h5">校园社区</h3>
+                <p class="text-muted mb-0">连接全校社团和学生，促进校园文化建设</p>
+              </div>
+            </li>
+            <li class="d-flex mb-4">
+              <div class="flex-shrink-0 text-primary fs-3 me-3">
+                <i class="bi-calendar-check"></i>
+              </div>
+              <div>
+                <h3 class="h5">活动管理</h3>
+                <p class="text-muted mb-0">简化社团活动的组织、宣传和管理流程</p>
+              </div>
+            </li>
+            <li class="d-flex mb-4">
+              <div class="flex-shrink-0 text-primary fs-3 me-3">
+                <i class="bi-info-circle"></i>
+              </div>
+              <div>
+                <h3 class="h5">信息共享</h3>
+                <p class="text-muted mb-0">为学生提供及时、准确的校园资讯</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  
+  <!-- 系统功能部分 -->
+  <section class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-5">系统功能</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm hover-scale">
+            <div class="card-body p-4 text-center">
+              <div class="feature-icon bg-primary text-white mb-4 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi-people-fill fs-3"></i>
+              </div>
+              <h3 class="h4">社团管理</h3>
+              <p class="text-muted">创建、管理和加入学生社团，组织社团活动</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm hover-scale">
+            <div class="card-body p-4 text-center">
+              <div class="feature-icon bg-primary text-white mb-4 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi-calendar-event fs-3"></i>
+              </div>
+              <h3 class="h4">活动规划</h3>
+              <p class="text-muted">创建和管理活动，收集报名信息</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm hover-scale">
+            <div class="card-body p-4 text-center">
+              <div class="feature-icon bg-primary text-white mb-4 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi-chat-dots fs-3"></i>
+              </div>
+              <h3 class="h4">论坛交流</h3>
+              <p class="text-muted">创建话题，参与讨论，分享想法</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4 mt-2">
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm hover-scale">
+            <div class="card-body p-4 text-center">
+              <div class="feature-icon bg-primary text-white mb-4 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi-newspaper fs-3"></i>
+              </div>
+              <h3 class="h4">新闻发布</h3>
+              <p class="text-muted">发布和阅读校园最新资讯</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm hover-scale">
+            <div class="card-body p-4 text-center">
+              <div class="feature-icon bg-primary text-white mb-4 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi-bell fs-3"></i>
+              </div>
+              <h3 class="h4">通知系统</h3>
+              <p class="text-muted">接收重要信息和活动通知</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm hover-scale">
+            <div class="card-body p-4 text-center">
+              <div class="feature-icon bg-primary text-white mb-4 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi-envelope fs-3"></i>
+              </div>
+              <h3 class="h4">站内消息</h3>
+              <p class="text-muted">与其他成员进行私人交流</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 底部空白 -->
+<div class="bg-light" style="height: 50px;"></div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .feature-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hover-scale {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-scale:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15)!important;
+  }
+</style>
+{% endblock %}
