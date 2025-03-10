@@ -14,10 +14,14 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from club_system.models import Membership, NewClubRequest, Club
 from event_system.models import Event
+from news_system.models import News  # 添加导入News模型
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.template.loader import render_to_string
 from django.db.models import Q
+import re
+from bs4 import BeautifulSoup
+from django.utils.html import strip_tags
 
 
 
@@ -32,6 +36,39 @@ def home(request):
     upcoming_events_list = Event.objects.filter(
         start_time__gte=timezone.now()
     ).order_by('start_time')
+    
+    # 查询最新的社团 - 按照创建时间倒序排列，取最新的4个
+    new_clubs = Club.objects.order_by('-club_id')[:4]
+    
+    # 查询最新的新闻 - 按照创建时间倒序排列，取最新的3条
+    news_items = News.objects.order_by('-created_at')[:3]
+    
+    # 增强新闻数据，添加摘要和图片URL
+    enhanced_news = []
+    for news in news_items:
+        # 从内容中提取第一张图片的URL
+        first_image_url = None
+        if news.content:
+            # 使用BeautifulSoup解析HTML内容
+            soup = BeautifulSoup(news.content, 'html.parser')
+            img_tag = soup.find('img')
+            if img_tag and img_tag.has_attr('src'):
+                first_image_url = img_tag['src']
+        
+        # 创建摘要 - 从内容中提取纯文本并截取前100个字符
+        summary = ""
+        if news.content:
+            text_content = strip_tags(news.content)
+            summary = text_content[:100] + "..." if len(text_content) > 100 else text_content
+        
+        enhanced_news.append({
+            'id': news.id,
+            'title': news.title,
+            'summary': summary,
+            'first_image_url': first_image_url,
+            'created_at': news.created_at,
+            'url': f'/news/{news.id}/'  # 假设新闻详情页的URL格式
+        })
     
     paginator = Paginator(upcoming_events_list, events_per_page)
     try:
@@ -58,6 +95,8 @@ def home(request):
     
     return render(request, 'shared/home.html', {
         'events': events,
+        'new_clubs': new_clubs,
+        'recent_news': enhanced_news,
     })
 
 
