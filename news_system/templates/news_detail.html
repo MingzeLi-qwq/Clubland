@@ -2,15 +2,17 @@
 
 {% block body %}
 <div class="container my-4">
-  <!-- 修改文章展示盒：使用简洁的白色背景和边框 -->
-  <div class="mb-3 p-4 border rounded" style="background-color: #ffffff;">
+  <!-- 移除白色背景颜色，仅保留边框和内边距 -->
+  <div class="mb-3 p-4 border rounded">
     <h2 class="mb-2">
-      <span>{{ post.title }}</span>
-      {% if user == post.author %}
-      <div class="d-flex justify-content-end mt-3">
-        <a href="{% url 'news_system:news_delete' post.pk %}" class="btn btn-danger btn-sm flex-shrink-0">删除文章</a>
+      <div class="d-flex justify-content-between align-items-center">
+        <span>{{ post.title }}</span>
+        {% if user == post.author or user.is_admin %}
+          <a href="{% url 'news_system:news_delete' post.pk %}" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit;">
+            <i class="bi bi-trash" style="color: inherit;"></i>
+          </a>
+        {% endif %}
       </div>
-    {% endif %}
     </h2>
     <hr/>
     <div class="mb-2">
@@ -41,36 +43,7 @@
   </div>
   
   <div class="mb-4">
-    <h4>评论</h4>
-    {% if post.newsComments.all %}
-      {% for comment in post.newsComments.all %}
-        <div class="card mb-3">
-          <div class="card-header bg-light">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                {% if comment.author %}
-                  {{ comment.author.first_name }} {{ comment.author.last_name }}&nbsp;&nbsp;<small class="text-muted">{{ comment.author.username }}</small>
-                {% else %}
-                  用户不存在
-                {% endif %}
-                &nbsp;
-                <small class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</small>
-              </div>
-              <div>
-                {% if user == comment.author %}
-                  <a href="{% url 'news_system:comment_delete' comment.pk %}" class="btn btn-danger btn-sm">删除评论</a>
-                {% endif %}
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <p class="card-text">{{ comment.text }}</p>
-          </div>
-        </div>
-      {% endfor %}
-    {% else %}
-      <p>暂无评论</p>
-    {% endif %}
+    {% include "comment_list.html" %}
   </div>
 
   {% include "comment_form.html" %}

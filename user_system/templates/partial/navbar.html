@@ -1,8 +1,8 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm border-bottom mb-3">
   <div class="container">
-    <a class="navbar-brand" href="{% url 'home' %}">
-      <i class="bi-people-fill"></i> miHoyo
+    <a class="navbar-brand fw-semibold text-white" href="{% url 'home' %}">
+      <i class="bi-award-fill"></i> kclsu
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -11,25 +11,25 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'clubs' %}">Clubs</a>
+          <a class="nav-link rounded px-2 py-1" href="{% url 'clubs' %}">Clubs</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'news_system:news_list' %}">News</a>
+          <a class="nav-link rounded px-2 py-1" href="{% url 'news_system:news_list' %}">News</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'forum_system:blog_list' %}">Forums</a>
+          <a class="nav-link rounded px-2 py-1" href="{% url 'forum_system:blog_list' %}">Forums</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'events' %}">Events</a>
+          <a class="nav-link rounded px-2 py-1" href="{% url 'events' %}">Events</a>
         </li>
         {% if user.is_authenticated %}
           {% if user.account_type == 'Admin' %}
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'admin_panel_clubs' %}">Admin Panel</a>
+              <a class="nav-link rounded px-2 py-1" href="{% url 'admin_panel_clubs' %}">Admin Panel</a>
             </li>
           {% else %}
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="clubDropdown" role="button"
+              <a class="nav-link dropdown-toggle rounded px-2 py-1" href="#" id="clubDropdown" role="button"
                  data-bs-toggle="dropdown" aria-expanded="false">
                 My Club
               </a>
@@ -41,7 +41,11 @@
                     </a>
                   </li>
                 {% empty %}
-                  <li><span class="dropdown-item text-muted">You haven't joined any clubs.</span></li>
+                  <li>
+                    <span class="dropdown-item text-muted">
+                      You haven't joined any clubs.
+                    </span>
+                  </li>
                 {% endfor %}
               </ul>
             </li>
@@ -50,11 +54,11 @@
       </ul>
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         {% if user.is_authenticated %}
-          <!-- notification按钮 -->
+          <!-- 通知按钮 -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" 
+            <a class="nav-link dropdown-toggle rounded px-2 py-1" href="#" id="notificationDropdown" role="button" 
                data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-bell" style="color: white; font-size: 20px;"></i>
+              <i class="fas fa-bell text-white fs-5"></i>
               {% if unread_notifications_count > 0 %}
                 <span class="badge bg-danger">{{ unread_notifications_count }}</span>
               {% endif %}
@@ -67,7 +71,11 @@
                   </a>
                 </li>
               {% empty %}
-                <li><span class="dropdown-item text-muted">No new notifications</span></li>
+                <li>
+                  <span class="dropdown-item text-muted">
+                    No new notifications
+                  </span>
+                </li>
               {% endfor %}
               <li><hr class="dropdown-divider"></li>
               <li>
@@ -75,10 +83,10 @@
               </li>
             </ul>
           </li>
-          <!-- 消息通知按钮 -->
+          <!-- 消息按钮 -->
           <li class="nav-item">
-            <a class="nav-link position-relative" href="{% url 'message_dashboard' %}">
-              <i class="fas fa-envelope" style="color: white; font-size: 20px;"></i>
+            <a class="nav-link position-relative rounded px-2 py-1" href="{% url 'message_dashboard' %}">
+              <i class="fas fa-envelope text-white fs-5"></i>
               {% if unread_messages_count > 0 %}
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                   {{ unread_messages_count }}
@@ -86,12 +94,12 @@
               {% endif %}
             </a>
           </li>
-          <!-- 用户头像和下拉菜单 -->
+          <!-- 用户头像及下拉菜单 -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+            <a class="nav-link dropdown-toggle rounded px-2 py-1" href="#" id="navbarDropdown" role="button" 
                data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
-              <span class="ms-2" style="position: relative; top: -3px;">{{ user.username }}</span>
+              <i class="fas fa-user-circle text-secondary fs-4"></i>
+              <span class="ms-2 align-middle">{{ user.username }}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
               <li>
@@ -103,21 +111,25 @@
             </ul>
           </li>
         {% else %}
-          <!-- 未登录：邮件图标跳转到登录 -->
+          <!-- 未登录：邮件图标 -->
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">
-              <i class="fas fa-envelope" style="color: white; font-size: 20px;"></i>
+            <a class="nav-link rounded px-2 py-1" href="{% url 'login' %}">
+              <i class="fas fa-envelope text-white fs-5"></i>
             </a>
           </li>
-          <!-- 未登录：用户头像跳转到登录 -->
+          <!-- 未登录：用户图标 -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+            <a class="nav-link dropdown-toggle rounded px-2 py-1" href="#" id="navbarDropdown" role="button" 
                data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
+              <i class="fas fa-user-circle text-secondary fs-4"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="{% url 'login' %}">Log in</a></li>
-              <li><a class="dropdown-item" href="{% url 'signup' %}">Sign up</a></li>
+              <li>
+                <a class="dropdown-item" href="{% url 'login' %}">Log in</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'signup' %}">Sign up</a>
+              </li>
             </ul>
           </li>
         {% endif %}

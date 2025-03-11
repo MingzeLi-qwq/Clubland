@@ -1,9 +1,9 @@
 {% if user.is_authenticated %}
   <h4>添加讨论</h4>
-  <form method="post">
+  <form method="post" id="threadpost-form">
     {% csrf_token %}
     <div class="mb-3">
-      {{ form.content.label_tag }}  <!-- 修改后的标签语义 -->
+      <!-- {{ form.content.label_tag }} -->
       {{ form.content }}
     </div>
     <button type="submit" class="btn btn-secondary">提交讨论</button>
@@ -11,3 +11,40 @@
 {% else %}
   <p>请<a href="{% url 'login' %}">登录</a>后参与讨论</p>
 {% endif %}
+
+<!-- 添加CSRF令牌刷新功能 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    // 更新CSRF令牌函数
+    function updateCsrfToken() {
+      $.get(window.location.href, function(data) {
+        const newDoc = new DOMParser().parseFromString(data, 'text/html');
+        const newToken = newDoc.querySelector('input[name=csrfmiddlewaretoken]').value;
+        document.querySelectorAll('input[name=csrfmiddlewaretoken]').forEach(function(input) {
+          input.value = newToken;
+        });
+      });
+    }
+    
+    // 定期刷新CSRF令牌（每5分钟）
+    setInterval(updateCsrfToken, 5 * 60 * 1000);
+    
+    // 表单提交前确保summernote内容已同步
+    $("#threadpost-form").submit(function() {
+      // 确保summernote编辑器内容已同步到表单
+      if (typeof $('#id_content').summernote === 'function') {
+        $('#id_content').summernote('update');
+      }
+    });
+    
+    // 添加AJAX全局设置
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", $("input[name='csrfmiddlewaretoken']").val());
+        }
+      }
+    });
+  });
+</script>

@@ -52,6 +52,7 @@ urlpatterns = [
     #path('accounts/', include('accounts.urls')),
     path('', user_system.views.home, name='home'),
     path('signup/', user_system.views.SignUpView.as_view(), name='signup'),
+    path('about-us/', user_system.views.about_us, name='about_us'),  # 添加关于我们页面的路由
 
     path('login/', user_system.views.LogInView.as_view(), name='login'),
     path('logout/', user_system.views.LogOutView, name='logout'),
