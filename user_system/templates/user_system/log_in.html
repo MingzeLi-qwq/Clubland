@@ -6,6 +6,15 @@
     <div class="auth-box shadow-lg">
         <h2 class="text-center fw-bold mb-4">Welcome Back</h2>
         <p class="text-center text-muted">Log in to continue</p>
+        
+        {% if messages %}
+        <div class="alert alert-danger mb-4">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <form method="POST">
             {% csrf_token %}
             <div class="mb-3">

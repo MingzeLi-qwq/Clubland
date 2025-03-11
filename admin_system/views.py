@@ -142,6 +142,16 @@ class AdminPanelClubsNews(LoginRequiredMixin, UserTypeRequiredMixin, View):
             'club_id':club_id,
         })
     
+class AdminPanelClubsDashboard(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+    def get(self, request, club_id, *args, **kwargs):
+        club = Club.objects.get(pk=club_id)
+        return render(request, "admin_panel/admin_panel_club/dashboard.html", {
+            'club':club,
+            'club_id':club_id,
+        })
+
+
 class AdminPanelClubsEvents(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
 
