@@ -1,6 +1,6 @@
 {% if user.is_authenticated %}
   <h4>添加讨论</h4>
-  <form method="post">
+  <form method="post" id="threadPostForm">
     {% csrf_token %}
     <div class="mb-3">
       <!-- {{ form.content.label_tag }} -->
@@ -8,6 +8,32 @@
     </div>
     <button type="submit" class="btn btn-secondary">提交讨论</button>
   </form>
+
+  <!-- 添加CSRF刷新处理脚本 -->
+  <script>
+    $(document).ready(function() {
+      // 获取CSRF令牌更新函数
+      function updateThreadPostCsrfToken() {
+        $.get("{% url 'club_hub:get_csrf_token' %}", function(data) {
+          $('#threadPostForm input[name="csrfmiddlewaretoken"]').val(data.csrfToken);
+        });
+      }
+      
+      // 监听Summernote图片上传完成事件
+      $(document).on('summernote.image.uploaded', function() {
+        updateThreadPostCsrfToken();
+      });
+      
+      // 在表单提交前也更新一次令牌
+      $('#threadPostForm').on('submit', function(e) {
+        e.preventDefault();
+        updateThreadPostCsrfToken();
+        setTimeout(() => {
+          this.submit();
+        }, 300);
+      });
+    });
+  </script>
 {% else %}
   <p>请<a href="{% url 'login' %}">登录</a>后参与讨论</p>
 {% endif %}

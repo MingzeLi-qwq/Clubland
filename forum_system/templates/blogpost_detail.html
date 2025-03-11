@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block body %}
 <div class="container my-4">
@@ -46,4 +47,33 @@
     <a href="{% url 'forum_system:blog_list' %}" class="btn btn-primary">返回列表</a>
   </div>
 </div>
+
+<!-- 确保在页面底部加载jQuery，并添加CSRF刷新脚本 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    // 获取CSRF令牌更新函数
+    function updateCsrfToken() {
+      $.get("{% url 'club_hub:get_csrf_token' %}", function(data) {
+        $('input[name="csrfmiddlewaretoken"]').val(data.csrfToken);
+      });
+    }
+    
+    // 监听Summernote图片上传完成事件
+    $(document).on('summernote.image.uploaded', function() {
+      updateCsrfToken();
+    });
+    
+    // 在表单提交前也更新一次令牌
+    $('form').on('submit', function(e) {
+      if ($(this).find('.note-editor').length > 0) {  // 只处理包含Summernote编辑器的表单
+        e.preventDefault();
+        updateCsrfToken();
+        setTimeout(() => {
+          this.submit();
+        }, 300);
+      }
+    });
+  });
+</script>
 {% endblock %}
