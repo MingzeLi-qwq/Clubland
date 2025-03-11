@@ -26,44 +26,76 @@ from django.utils.html import strip_tags
 
 
 def home(request):
-    """优化后的首页视图，包含缓存和查询优化"""
-    if request.user.is_authenticated:
-        return redirect('Mine')
-
-    # 使用select_related优化关联查询
-    upcoming_events = Event.objects.filter(
+    """Display the application's start/home screen."""
+    # if request.user.is_authenticated:
+    #     return redirect('Mine')  # Redirect authenticated users to Mine page
+    
+    page = request.GET.get('page', 1)
+    events_per_page = 3
+    
+    upcoming_events_list = Event.objects.filter(
         start_time__gte=timezone.now()
-    ).select_related('club').order_by('start_time')
+    ).order_by('start_time')
+    
+    # 查询最新的社团 - 按照创建时间倒序排列，取最新的4个
+    new_clubs = Club.objects.order_by('-club_id')[:4]
+    
+    # 查询最新的新闻 - 按照创建时间倒序排列，取最新的3条
+    news_items = News.objects.order_by('-created_at')[:3]
+    
+    # 增强新闻数据，添加摘要和图片URL
+    enhanced_news = []
+    for news in news_items:
+        # 从内容中提取第一张图片的URL
+        first_image_url = None
+        if news.content:
+            # 使用BeautifulSoup解析HTML内容
+            soup = BeautifulSoup(news.content, 'html.parser')
+            img_tag = soup.find('img')
+            if img_tag and img_tag.has_attr('src'):
+                first_image_url = img_tag['src']
 
-    # 直接获取最新社团
-    new_clubs = Club.objects.select_related('creator').order_by('-created_at')[:4]
-
-    # 简化新闻数据处理
-    news_items = News.objects.select_related('author').order_by('-created_at')[:3]
-    simplified_news = [
-        {
-            'id': n.id,
-            'title': n.title,
-
-            'cover': n.cover_url,  # 假设模型已有封面图字段
-            'url': reverse('news_detail', args=[n.id])
-        }
-        for n in news_items
-    ]
-
-    # 简单分页（移除AJAX支持）
-    paginator = Paginator(upcoming_events, 3)
-    page_number = request.GET.get('page')
+        
+        enhanced_news.append({
+            'id': news.id,
+            'title': news.title,
+            'author': news.author,
+            'club': news.club,
+            'event': news.event,
+            'first_image_url': first_image_url,
+            'created_at': news.created_at,
+            'url': f'/news/{news.id}/' 
+        })
+    
+    paginator = Paginator(upcoming_events_list, events_per_page)
     try:
-        events_page = paginator.page(page_number)
-    except (PageNotAnInteger, EmptyPage):
-        events_page = paginator.page(1)
-
+        events = paginator.page(page)
+    except PageNotAnInteger:
+        events = paginator.page(1)
+    except EmptyPage:
+        events = paginator.page(paginator.num_pages)
+    
+    # 处理 AJAX 请求
+    if request.GET.get('ajax'):
+        # 渲染部分模板
+        events_html = render_to_string('shared/events_list.html', {'events': events})
+        pagination_html = render_to_string('shared/pagination.html', {'events': events})
+        
+        return JsonResponse({
+            'events_html': events_html,
+            'pagination_html': pagination_html,
+            'current_page': events.number,
+            'total_pages': paginator.num_pages,
+            'has_next': events.has_next(),
+            'has_previous': events.has_previous(),
+        })
+    
     return render(request, 'shared/home.html', {
-        'events': events_page,
+        'events': events,
         'new_clubs': new_clubs,
-        'recent_news': simplified_news,
+        'recent_news': enhanced_news,
     })
+
 
 
 
