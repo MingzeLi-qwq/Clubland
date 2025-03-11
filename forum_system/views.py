@@ -123,7 +123,8 @@ class BlogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     success_url = reverse_lazy('forum_system:blog_list')
 
     def test_func(self):
-        return self.request.user == self.get_object().author
+        # 允许作者或管理员删除
+        return self.request.user == self.get_object().author or self.request.user.is_admin
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -139,7 +140,8 @@ class ThreadPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return reverse('forum_system:blog_detail', kwargs={'pk': self.get_object().blog_post.pk})
 
     def test_func(self):
-        return self.request.user == self.get_object().author
+        # 允许作者或管理员删除
+        return self.request.user == self.get_object().author or self.request.user.is_admin
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
