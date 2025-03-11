@@ -9,6 +9,7 @@ from event_system.models import Event
 from club_system.models import Club  # 新增导入以获取所有社团
 from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request  # 修改：导入通用函数
 from CMS_mixins.CMS_utils import RTEUploadUtils  # 新增导入
+from django.db.models import Q
 
 # 新闻列表页：显示所有新闻文章
 class NewsListView(ListView):
@@ -18,6 +19,9 @@ class NewsListView(ListView):
 
     def get_queryset(self):
         queryset = News.objects.all()
+        q = self.request.GET.get('q', '')
+        if q:
+            queryset = queryset.filter(Q(title__icontains=q) | Q(content__icontains=q))
         club_filter = self.request.GET.get('club', '')
         if club_filter:
             queryset = queryset.filter(club__pk=club_filter)
@@ -76,6 +80,18 @@ class NewsCreateView(LoginRequiredMixin, UserFormMixin, CreateView):
     form_class = NewsForm
     template_name = 'news_form.html'
     success_url = reverse_lazy('news_system:news_list')  # 提交成功后重定向到列表页
+    
+    def form_valid(self, form):
+        # 确保正确保存作者信息
+        form.instance.author = self.request.user
+        # 记录表单校验成功，可以帮助调试
+        print("表单验证成功，准备保存...")
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        # 记录表单验证错误信息，便于调试
+        print(f"表单验证失败: {form.errors}")
+        return super().form_invalid(form)
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):

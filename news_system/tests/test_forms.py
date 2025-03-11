@@ -1,0 +1,146 @@
+from django.test import TestCase
+from django.utils import timezone
+from news_system.forms import NewsForm, CommentForm
+from news_system.models import News, Comment
+from user_system.models import User
+from club_system.models import Club, Membership
+from event_system.models import Event
+
+class NewsFormTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # 创建测试用户
+        cls.user = User.objects.create(
+            username="@testuser",
+            email="test@example.com",
+            first_name="Test",
+            last_name="User",
+            account_type="User",
+            password="testpassword"
+        )
+        
+        cls.admin_user = User.objects.create(
+            username="@adminuser",
+            email="admin@example.com",
+            first_name="Admin",
+            last_name="User",
+            account_type="Admin",
+            password="adminpassword"
+        )
+        
+        # 创建测试社团
+        cls.club = Club.objects.create(
+            name="Test Club",
+            description="Test Club Description"
+        )
+        
+        # 创建另一个测试社团
+        cls.another_club = Club.objects.create(
+            name="Another Club",
+            description="Another Club Description"
+        )
+        
+        # 将用户设为社团管理员
+        Membership.objects.create(
+            user=cls.user,
+            club=cls.club,
+            is_manager=True
+        )
+        
+        # 创建测试活动
+        cls.event = Event.objects.create(
+            name="Test Event",
+            club=cls.club,
+            start_time=timezone.now(),
+            end_time=timezone.now() + timezone.timedelta(hours=2),
+            location="Test Location",
+            description="Test Event Description"
+        )
+        
+        # 创建另一个社团的活动
+        cls.another_event = Event.objects.create(
+            name="Another Event",
+            club=cls.another_club,
+            start_time=timezone.now(),
+            end_time=timezone.now() + timezone.timedelta(hours=2),
+            location="Another Location",
+            description="Another Event Description"
+        )
+    
+    def test_news_form_init_for_normal_user(self):
+        """测试普通用户初始化表单时只能选择他们管理的社团"""
+        form = NewsForm(user=self.user)
+        self.assertEqual(form.fields['club'].queryset.count(), 1)
+        self.assertEqual(form.fields['club'].queryset.first(), self.club)
+    
+    def test_news_form_init_for_admin(self):
+        """测试管理员初始化表单时可以选择所有社团"""
+        form = NewsForm(user=self.admin_user)
+        self.assertEqual(form.fields['club'].queryset.count(), 2)
+        self.assertFalse(form.fields['club'].required)  # 管理员可以不选择社团
+    
+    def test_news_form_validation_with_valid_data(self):
+        """测试有效数据的表单验证"""
+        form_data = {
+            'title': 'Test News',
+            'club': self.club.pk,
+            'event': self.event.pk,
+            'content': 'Test Content'
+        }
+        form = NewsForm(data=form_data, user=self.user)
+        self.assertTrue(form.is_valid())
+    
+    def test_news_form_validation_without_club(self):
+        """测试没有选择社团时的表单验证"""
+        form_data = {
+            'title': 'Test News',
+            'content': 'Test Content'
+        }
+        # 普通用户必须选择社团
+        form = NewsForm(data=form_data, user=self.user)
+        self.assertFalse(form.is_valid())
+        
+        # 管理员可以不选择社团
+        form = NewsForm(data=form_data, user=self.admin_user)
+        self.assertTrue(form.is_valid())
+    
+    def test_news_form_validation_with_event_without_club(self):
+        """测试选择活动但没有选择社团时的表单验证"""
+        form_data = {
+            'title': 'Test News',
+            'event': self.event.pk,
+            'content': 'Test Content'
+        }
+        form = NewsForm(data=form_data, user=self.admin_user)
+        self.assertFalse(form.is_valid())
+        self.assertIn('未选择社团时，不允许选择活动', str(form.errors))
+    
+    def test_news_form_validation_with_mismatched_club_and_event(self):
+        """测试选择的活动不属于所选社团时的表单验证"""
+        form_data = {
+            'title': 'Test News',
+            'club': self.club.pk,
+            'event': self.another_event.pk,  # 这个活动属于另一个社团
+            'content': 'Test Content'
+        }
+        form = NewsForm(data=form_data, user=self.user)
+        self.assertFalse(form.is_valid())
+        self.assertIn('选择的活动不属于所选的社团', str(form.errors))
+
+class CommentFormTest(TestCase):
+    def test_comment_form_validation_with_valid_data(self):
+        """测试有效数据的评论表单验证"""
+        form_data = {
+            'text': 'Test Comment'
+        }
+        form = CommentForm(data=form_data)
+        self.assertTrue(form.is_valid())
+    
+    def test_comment_form_validation_with_empty_text(self):
+        """测试空评论内容的表单验证"""
+        form_data = {
+            'text': ''
+        }
+        form = CommentForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('text', form.errors)
