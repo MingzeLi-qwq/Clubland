@@ -13,59 +13,105 @@
     {% endfor %}
   </div>
 {% endif %}
-<!-- Hero Section -->
-<section class="hero-section min-vh-75 d-flex align-items-center bg-light">
-  <div class="container">
-    <div class="row justify-content-center text-center">
-      <div class="col-lg-8">
-        <!-- Branding -->
-        <div class="mb-5">
-          <h1 class="display-3 fw-bold text-primary mb-3">
-            <i class="bi-people-fill"></i> miHoyo
-          </h1>
-          <p class="lead text-muted fs-4">学生会管理平台</p>
-          <p class="mb-4">学生社团活动管理、交流讨论、信息发布</p>
-        </div>
 
-        <!-- Action Buttons -->
-        <div class="d-flex justify-content-center gap-3 mb-5">
-          {% if user.is_authenticated %}
-            <a href="{% url 'dashboard_personal_information' %}" class="btn btn-primary btn-lg px-4 py-3">
-              <i class="bi-speedometer2 me-2"></i>进入控制面板
-            </a>
-          {% else %}
-            <a href="{% url 'signup' %}" class="btn btn-primary btn-lg px-4 py-3">
-              <i class="bi-rocket-takeoff me-2"></i>注册账号
-            </a>
-            <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg px-4 py-3">
-              <i class="bi-box-arrow-in-right me-2"></i>登录
-            </a>
-          {% endif %}
-        </div>
+<!-- 介绍区域 -->
+<section class="py-5">
+  <div class="container text-center">
+    <h1 class="display-4 fw-bold">We're King's College London Students' Union</h1>
+    <p class="lead">Your home for KCLSU events, student groups, news and much more.</p>
+  </div>
+</section>
+
+<!-- 近期活动 -->
+<section id="events" class="py-4">
+  <div class="container">
+    <div class="bg-white p-4 rounded-3 shadow">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">近期活动</h2>
+        <a href="#" class="btn btn-outline-primary btn-sm">查看全部</a>
+      </div>
+
+      <div class="row g-4" id="events-container">
+          {% include 'shared/events_list.html' with events=events %}
+      </div>
+
+      <!-- Pagination -->
+      <div id="pagination-container" class="sticky-bottom d-flex justify-content-center">
+          {% include 'shared/pagination.html' with events=events %}
       </div>
     </div>
   </div>
 </section>
 
-<!-- 即将到来的活动 -->
-<section class="py-5 bg-light">
+<!-- 新社团来袭 -->
+<section class="py-4">
   <div class="container">
-    <h2 class="text-center mb-4">近期活动</h2>
-    <p class="text-center text-muted mb-5">校园内即将举行的社团活动</p>
-
-    <div class="row g-4" id="events-container">
-        {% include 'shared/events_list.html' with events=events %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">新社团来袭</h2>
+      <a href="{% url 'clubs' %}" class="btn btn-outline-primary btn-sm">查看全部</a>
     </div>
-
-    <!-- Pagination -->
-    <div id="pagination-container">
-        {% include 'shared/pagination.html' with events=events %}
+    
+    {% if new_clubs %}
+    <div class="row g-4" id="clubs-container">
+      {% for club in new_clubs %}
+        <div class="col-md-3 mb-4">
+          <div class="card h-100 border-0 shadow-sm d-flex flex-column" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            {% if club.first_image_url %}
+              <img src="{{ club.first_image_url }}" class="card-img-top" alt="{{ club.name }}">
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">
+                <a class="link-secondary" href="{% url 'club_detail' club_id=club.club_id %}">{{ club.name }}</a>
+              </h5>
+              <p class="card-text flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                {{ club.description }}
+              </p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
     </div>
+    {% else %}
+    <div class="text-center p-4 bg-light rounded">
+      <p class="text-muted mb-0">暂无新社团</p>
+    </div>
+    {% endif %}
   </div>
 </section>
 
-<!-- 底部空白 -->
-<div class="bg-light" style="height: 50px;"></div>
+<!-- 最近新闻 -->
+<section class="py-4">
+  <div class="container">
+    <h2 class="text-center mb-4">最近新闻</h2>
+    <div class="row g-4">
+      {% for news in recent_news %}
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm d-flex flex-column" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            {% if news.first_image_url %}
+              <div class="ratio ratio-16x9">
+                <img src="{{ news.first_image_url }}" class="card-img-top object-fit-cover" alt="{{ news.title }}">
+              </div>
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">
+                <a class="link-secondary" href="{{ news.url }}">{{ news.title }}</a>
+              </h5>
+              <p class="card-text flex-grow-1">{{ news.summary }}</p>
+              <div class="d-flex justify-content-between align-items-center mt-auto">
+                <small class="text-muted">{{ news.created_at|date:"Y-m-d" }}</small>
+                {# 按钮已移除 #}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <p class="text-center">暂无新闻</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
 
 {% endblock %}
 
@@ -107,33 +153,6 @@ document.addEventListener('click', function(e) {
     }
 });
 </script>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-  .hero-section {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  }
-
-  .card-img-top {
-    height: 200px;
-    object-fit: cover;
-  }
-
-  /* 分页按钮定位优化 */
-  #pagination-container {
-    position: sticky;
-    bottom: 20px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 15px;
-    border-radius: 50px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 100;
-    display: flex;
-    justify-content: center;
-    margin-top: 30px;
-  }
-</style>
 {% endblock %}
 
 
