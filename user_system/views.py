@@ -59,7 +59,7 @@ def home(request):
         summary = ""
         if news.content:
             text_content = strip_tags(news.content)
-            summary = text_content[:100] + "..." if len(text_content) > 100 else text_content
+            summary = text_content[:300] + "..." if len(text_content) > 300 else text_content
         
         enhanced_news.append({
             'id': news.id,
