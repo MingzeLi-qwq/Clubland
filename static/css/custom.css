@@ -90,7 +90,7 @@
 }
 
 .auth-box {
-    background: white;
+    /* background: white; */
     border-radius: 16px; /* 圆角风格 */
     padding: 40px; /* 增加内边距 */
     width: 100%;

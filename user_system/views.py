@@ -27,8 +27,8 @@ from django.utils.html import strip_tags
 
 def home(request):
     """Display the application's start/home screen."""
-    # if request.user.is_authenticated:
-    #     return redirect('Mine')  # Redirect authenticated users to Mine page
+    if request.user.is_authenticated:
+        return redirect('Mine')  # Redirect authenticated users to Mine page
     
     page = request.GET.get('page', 1)
     events_per_page = 3
