@@ -55,7 +55,7 @@
     <div class="row g-4" id="clubs-container">
       {% for club in new_clubs %}
         <div class="col-md-3 mb-4">
-          <div class="card h-100 border-0 shadow-sm d-flex flex-column">
+          <div class="card h-100 border-0 shadow-sm d-flex flex-column" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
             {% if club.first_image_url %}
               <img src="{{ club.first_image_url }}" class="card-img-top" alt="{{ club.name }}">
             {% endif %}
@@ -63,7 +63,9 @@
               <h5 class="card-title">
                 <a class="link-secondary" href="{% url 'club_detail' club_id=club.club_id %}">{{ club.name }}</a>
               </h5>
-              <p class="card-text flex-grow-1 line-clamp-2">{{ club.description }}</p>
+              <p class="card-text flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                {{ club.description }}
+              </p>
             </div>
           </div>
         </div>
@@ -84,7 +86,7 @@
     <div class="row g-4">
       {% for news in recent_news %}
         <div class="col-md-4">
-          <div class="card h-100 border-0 shadow-sm d-flex flex-column">
+          <div class="card h-100 border-0 shadow-sm d-flex flex-column" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
             {% if news.first_image_url %}
               <div class="ratio ratio-16x9">
                 <img src="{{ news.first_image_url }}" class="card-img-top object-fit-cover" alt="{{ news.title }}">
@@ -97,6 +99,7 @@
               <p class="card-text flex-grow-1">{{ news.summary }}</p>
               <div class="d-flex justify-content-between align-items-center mt-auto">
                 <small class="text-muted">{{ news.created_at|date:"Y-m-d" }}</small>
+                {# 按钮已移除 #}
               </div>
             </div>
           </div>
