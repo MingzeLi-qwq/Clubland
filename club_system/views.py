@@ -69,14 +69,17 @@ class ClubDetailView(ClubExistsRequiredMixin, View):
         events = Event.objects.filter(club=club)
         member_count = club.members.count()
         managers = club.membership_set.filter(is_manager=True)
-        is_manager = False
+        is_manager=False
+        is_member=False
         if request.user.is_authenticated:
             is_manager = managers.filter(user=request.user).exists()
+            is_member = Membership.objects.filter(user=request.user, club=club).exists()       
         return render(request, 'club_detail.html', {
             'club': club,
             'member_count': member_count,
             'managers': managers,
             'is_manager': is_manager,
+            'is_member': is_member,
             'events': events,
         })
     
