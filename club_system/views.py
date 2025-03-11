@@ -212,11 +212,11 @@ class ClubManagerEvents(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         }
         return render(request, 'club_manager/events.html', context)
 
-class ClubManagerHub(LoginRequiredMixin, ClubManagerRequiredMixin, View):
+class ClubManagerDashboard(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = get_object_or_404(Club, club_id=club_id)
 
-        return render(request, 'club_manager/hub.html', {
+        return render(request, 'club_manager/dashboard.html', {
             'club_id': club_id,
             'club': club,
         })
