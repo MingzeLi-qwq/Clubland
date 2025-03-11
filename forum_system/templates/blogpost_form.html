@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
       {{ form.media }}
-      <form method="post" enctype="multipart/form-data">
+      <form method="post" enctype="multipart/form-data" id="blogPostForm">
         {% csrf_token %}
         <div class="form-group">
           <label for="{{ form.title.id_for_label }}" class="col-form-label">{{ form.title.label }}</label>
@@ -48,4 +48,31 @@
     <a href="{% url 'forum_system:blog_list' %}" class="btn btn-link">返回列表</a>
   </div>
 </div>
+
+<!-- 添加CSRF刷新处理 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    // 获取CSRF令牌更新函数
+    function updateCsrfToken() {
+      $.get("{% url 'club_hub:get_csrf_token' %}", function(data) {
+        $('input[name="csrfmiddlewaretoken"]').val(data.csrfToken);
+      });
+    }
+    
+    // 监听Summernote图片上传完成事件
+    $(document).on('summernote.image.upload', function() {
+      updateCsrfToken();
+    });
+
+    // 在表单提交前也更新一次令牌
+    $('#blogPostForm').on('submit', function(e) {
+      e.preventDefault();
+      updateCsrfToken();
+      setTimeout(() => {
+        this.submit();
+      }, 300);
+    });
+  });
+</script>
 {% endblock %}

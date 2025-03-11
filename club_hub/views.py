@@ -12,7 +12,11 @@ from django.middleware.csrf import get_token
 
 
 def get_csrf_token(request):
+    """
+    获取新的CSRF令牌
+    """
     return JsonResponse({"csrfToken": get_token(request)})
+
 class WidgetViewSet(viewsets.ModelViewSet):
     serializer_class = WidgetSerializer
     permission_classes = [IsAuthenticated]

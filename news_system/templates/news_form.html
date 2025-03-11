@@ -10,7 +10,7 @@
     <div class="card-body">
       <!-- 自动加载 django-summernote 所需的媒体文件 -->
       {{ form.media }}
-      <form method="post" enctype="multipart/form-data">
+      <form method="post" enctype="multipart/form-data" id="newsForm">
         {% csrf_token %}
         <div class="form-group mb-3">
           <label for="{{ form.title.id_for_label }}" class="col-form-label">{{ form.title.label }}</label>
@@ -73,6 +73,27 @@
         xhr.setRequestHeader("X-CSRFToken", $("input[name='csrfmiddlewaretoken']").val());
       }
     }
+  });
+  
+  // 获取CSRF令牌更新函数
+  function updateCsrfToken() {
+    $.get("{% url 'club_hub:get_csrf_token' %}", function(data) {
+      $('input[name="csrfmiddlewaretoken"]').val(data.csrfToken);
+    });
+  }
+  
+  // 监听Summernote图片上传完成事件
+  $(document).on('summernote.image.uploaded', function() {
+    updateCsrfToken();
+  });
+  
+  // 在表单提交前也更新一次令牌
+  $('#newsForm').on('submit', function(e) {
+    e.preventDefault();
+    updateCsrfToken();
+    setTimeout(() => {
+      this.submit();
+    }, 300);
   });
   
   // 修改: 将选中社团的 id 从 id_category 改为 id_club
