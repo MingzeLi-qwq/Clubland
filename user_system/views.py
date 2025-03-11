@@ -35,11 +35,8 @@ def home(request):
         start_time__gte=timezone.now()
     ).select_related('club').order_by('start_time')
 
-    # 使用缓存获取最新社团
-    new_clubs = cache.get('home_new_clubs')
-    if not new_clubs:
-        new_clubs = Club.objects.select_related('creator').order_by('-created_at')[:4]
-        cache.set('home_new_clubs', new_clubs, 300)  # 缓存5分钟
+    # 直接获取最新社团
+    new_clubs = Club.objects.select_related('creator').order_by('-created_at')[:4]
 
     # 简化新闻数据处理
     news_items = News.objects.select_related('author').order_by('-created_at')[:3]
