@@ -94,6 +94,9 @@ class LogInView(View):
             user = form.get_user()
             login(request, user)
             return redirect("home")
+        else:
+            # 添加错误提示
+            messages.error(request, "Invalid username or password.")
         return render(request, self.template_name, {"form": form})
 
 def LogOutView(request):

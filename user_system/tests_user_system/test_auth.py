@@ -60,6 +60,8 @@ class UserAuthTests(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
+        # 验证错误消息存在
+        self.assertContains(response, "Invalid username or password")
 
     def test_change_password(self):
         """测试用户修改密码"""
