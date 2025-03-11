@@ -1,0 +1,17 @@
+{% extends "club_manager/club_manager_base.html" %}
+
+{% block manager_content %}
+
+<h4>Hub</h4>
+<p>Go to club hub page to view and change</p>
+
+<hr class="my-4 mb-4">
+
+<div class="mt-3">
+    <a href="{% url 'club_dashboard' club_id=club.club_id %}" 
+       class="btn btn-primary  rounded-pill px-4">
+        Go to Club Hub →
+    </a>
+</div>
+
+{% endblock %}

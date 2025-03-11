@@ -14,6 +14,7 @@ urlpatterns = [
     path('manager/members/<int:club_id>/', views.ClubManagerMembers.as_view(), name='club_manager_members'),
     path('manager/news/<int:club_id>/', views.ClubManagerNews.as_view(), name='club_manager_news'),
     path('manager/events/<int:club_id>/', views.ClubManagerEvents.as_view(), name='club_manager_events'),
+    path('manager/hub/<int:club_id>/', views.ClubManagerHub.as_view(), name='club_manager_hub'),
 
     # Club manager change name and description
     path('manager/update_name/<int:club_id>/', views.UpdateClubName.as_view(), name='update_club_name'),
