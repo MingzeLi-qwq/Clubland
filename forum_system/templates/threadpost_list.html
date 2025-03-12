@@ -45,7 +45,7 @@
               </div>
               <div>
                 {% if user == threadpost.author or user.is_admin %}
-                  <a href="{% url 'forum_system:threadpost_delete' threadpost.pk %}" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit;">
+                  <a href="#" onclick="confirmThreadDelete('{% url 'forum_system:threadpost_delete' threadpost.pk %}')" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit;">
                     <i class="bi bi-trash" style="color: inherit;"></i>
                   </a>
                 {% endif %}
@@ -101,3 +101,22 @@
     <p>暂无讨论</p>
   {% endif %}
 </div>
+
+<script>
+function confirmThreadDelete(url) {
+  if (confirm("确定要删除这条讨论吗？")) {
+    let form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+    
+    let csrfToken = document.createElement('input');
+    csrfToken.type = 'hidden';
+    csrfToken.name = 'csrfmiddlewaretoken';
+    csrfToken.value = '{{ csrf_token }}';
+    
+    form.appendChild(csrfToken);
+    document.body.appendChild(form);
+    form.submit();
+  }
+}
+</script>

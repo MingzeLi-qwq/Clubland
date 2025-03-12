@@ -229,10 +229,9 @@ class BlogPostViewsTest(TestCase):
         # 先确认博客存在
         self.assertTrue(BlogPost.objects.filter(pk=self.blog_post.pk).exists())
         
-        # 测试GET请求 - 显示确认页面
+        # 测试GET请求 - 现在应该重定向到博客列表
         response = self.client.get(reverse('forum_system:blog_delete', args=[self.blog_post.pk]))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'blogpost_confirm_delete.html')
+        self.assertRedirects(response, reverse('forum_system:blog_list'))
         
         # 测试POST请求 - 实际删除
         response = self.client.post(reverse('forum_system:blog_delete', args=[self.blog_post.pk]))
@@ -293,10 +292,9 @@ class ThreadPostViewsTest(TestCase):
         # 先确认讨论存在
         self.assertTrue(ThreadPost.objects.filter(pk=self.thread_post.pk).exists())
         
-        # 测试GET请求 - 显示确认页面
+        # 测试GET请求 - 现在应该重定向回博客详情页
         response = self.client.get(reverse('forum_system:threadpost_delete', args=[self.thread_post.pk]))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'threadpost_confirm_delete.html')
+        self.assertRedirects(response, reverse('forum_system:blog_detail', args=[self.blog_post.pk]))
         
         # 测试POST请求 - 实际删除
         response = self.client.post(reverse('forum_system:threadpost_delete', args=[self.thread_post.pk]))
