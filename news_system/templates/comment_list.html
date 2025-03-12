@@ -17,7 +17,7 @@
           </div>
           <div>
             {% if user == comment.author or user.is_admin %}
-              <a href="#" class="delete-comment" data-id="{{ comment.pk }}" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit;">
+              <a href="#" onclick="confirmCommentDelete('{% url 'news_system:comment_delete' comment.pk %}')" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit;">
                 <i class="bi bi-trash" style="color: inherit;"></i>
               </a>
             {% endif %}
