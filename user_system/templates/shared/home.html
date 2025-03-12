@@ -103,16 +103,11 @@
     <div class="bg-white p-4 rounded-3 shadow">
       <div class="d-flex justify-content-between align-items-center">
         <h2 class="mb-0">近期活动</h2>
-        <a href="#" class="btn btn-outline-primary btn-sm">查看全部</a>
+        <a href="{% url 'events' %}" class="btn btn-outline-primary btn-sm">查看全部</a>
       </div>
 
       <div class="row g-4" id="events-container">
           {% include 'shared/events_list.html' with events=events %}
-      </div>
-
-      <!-- Pagination -->
-      <div id="pagination-container" class="sticky-bottom d-flex justify-content-center">
-          {% include 'shared/pagination.html' with events=events %}
       </div>
     </div>
   </div>
@@ -157,7 +152,10 @@
 <!-- 最近新闻 -->
 <section class="py-4">
   <div class="container">
-    <h2 class="text-center mb-4">最近新闻</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">最近新闻</h2>
+      <a href="{% url 'news_system:news_list' %}" class="btn btn-outline-primary btn-sm">查看全部</a>
+    </div>
     <div class="row g-4">
       {% for news in recent_news %}
         <div class="col-md-4">
@@ -199,43 +197,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-function loadEvents(page) {
-    // 添加加载指示器
-    const eventsContainer = document.getElementById('events-container');
-    if (eventsContainer) {
-        eventsContainer.style.opacity = '0.5';
-
-        fetch(`?page=${page}&ajax=1`)
-            .then(response => response.json())
-            .then(data => {
-                // 更新事件列表
-                eventsContainer.innerHTML = data.events_html;
-                eventsContainer.style.opacity = '1';
-                
-                // 更新分页控件
-                const paginationContainer = document.getElementById('pagination-container');
-                if (paginationContainer) {
-                    paginationContainer.innerHTML = data.pagination_html;
-                }
-            })
-            .catch(error => {
-                console.error('Error loading events:', error);
-                eventsContainer.style.opacity = '1';
-            });
-    }
-}
-
-// 使用事件委托处理分页点击
-document.addEventListener('click', function(e) {
-    const target = e.target.closest('.pagination-btn');
-    if (target) {
-        e.preventDefault();
-        const page = target.dataset.page;
-        loadEvents(page);
-    }
-});
-</script>
 {% endblock %}
 
 
