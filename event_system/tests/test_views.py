@@ -99,7 +99,7 @@ class EventsViewsTest(TestCase):
         updated_rsvp = RSVP.objects.get(pk=self.rsvp.pk)
         self.assertTrue(updated_rsvp.status)
 
-    ### 5. 测试更新操作（由于源代码未更新，所有更新操作均不改变数据）
+    ### 5. 测试club manager & admin更新操作视图
     def test_update_event_name_view(self):
         self.client.login(username='manager', password='pass123')
         url = reverse('update_event_name', kwargs={
