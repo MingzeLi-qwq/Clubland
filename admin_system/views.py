@@ -266,12 +266,43 @@ class AdminPanelUserInformation(LoginRequiredMixin, UserTypeRequiredMixin, View)
 
 class AdminPanelUserMemberships(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
+    
     def get(self, request, username, *args, **kwargs):
         panel_user = get_object_or_404(User, username=username)
+        search_query = request.GET.get('search', '')
+        
+        # 分离管理者和普通成员查询集
+        memberships = Membership.objects.filter(user=panel_user)
+        if search_query:
+            memberships = memberships.filter(
+                Q(club__name__icontains=search_query)
+            )
+        
+        managers = memberships.filter(is_manager=True).order_by('-date_joined')
+        regulars = memberships.filter(is_manager=False).order_by('-date_joined')
+        
         return render(request, "admin_panel/admin_panel_user/memberships.html", {
-            'panel_user':panel_user,
-            'panel_username':username,
+            'panel_user': panel_user,
+            'panel_username': username,
+            'managers': managers,
+            'regulars': regulars,
+            'manager_count': managers.count(),
+            'regular_count': regulars.count(),
+            'search_query': search_query,
         })
+
+class AdminPanelRemoveMemberships(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+    
+    def post(self, request, username, club_id):
+        
+        # 执行删除
+        membership = get_object_or_404(Membership, user__username=username, club__club_id=club_id)
+        club_name = membership.club.name
+        membership.delete()
+        
+        messages.success(request, f"Removed membership from {club_name}")
+        return redirect('admin_panel_user_memberships', username=username)
 
 """-----------------------------------------以上内容负责渲染Admin Panel User---------------------------------------------------"""
 
