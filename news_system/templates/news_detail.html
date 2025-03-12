@@ -46,7 +46,14 @@
     {% include "comment_list.html" %}
   </div>
 
-  {% include "comment_form.html" %}
+  <!-- 只有登录用户才能看到评论表单 -->
+  {% if user.is_authenticated %}
+    {% include "comment_form.html" %}
+  {% else %}
+    <div class="alert alert-info">
+      请<a href="{% url 'login' %}">登录</a>后发表评论
+    </div>
+  {% endif %}
   
   <div class="mt-3">
     <a href="{% url 'news_system:news_list' %}" class="btn btn-primary">返回列表</a>

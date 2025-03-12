@@ -54,12 +54,19 @@ class NewsDetailView(FormMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Add the comment form only if user is authenticated
+        # 移除可能由父类FormMixin添加的表单
+        if 'form' in context:
+            del context['form']
+        # 只有登录用户才会获得评论表单
         if self.request.user.is_authenticated:
             context['form'] = self.get_form()
         return context
 
     def post(self, request, *args, **kwargs):
+        # 如果用户未登录，直接返回未授权错误或重定向到登录页
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect(reverse('login'))
+            
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():

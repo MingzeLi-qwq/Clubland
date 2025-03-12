@@ -327,9 +327,9 @@ class NewsViewsTest(TestCase):
     
     def test_admin_can_delete_any_news(self):
         """测试管理员用户可以删除任何人的新闻文章"""
-        # 创建管理员用户
+        # 创建管理员用户，确保用户名一致
         admin_user = User.objects.create_user(
-            username="@test_adminuser",
+            username="@adminuser",  # 修改为与login使用的用户名一致
             email="admin@example.com",
             first_name="Admin",
             last_name="User",
@@ -342,7 +342,8 @@ class NewsViewsTest(TestCase):
         
         # 管理员应该能够删除其他用户的新闻
         response = self.client.post(reverse('news_system:news_delete', kwargs={'pk': self.news.pk}))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)  # 应该重定向到新闻列表页面
+        # 验证新闻是否已删除
         self.assertFalse(News.objects.filter(pk=self.news.pk).exists())
     
     def test_load_events_ajax_view(self):
