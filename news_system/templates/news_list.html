@@ -6,22 +6,24 @@
   <h2 class="mb-4">News 文章列表</h2>
   
   <!-- 写新文章按钮和搜索表单 - 移动端优化 -->
-  <div class="row mb-3">
+  <div class="row g-2 mb-2">
     <div class="col-12 col-md-6 mb-2 mb-md-0">
-      <a href="{% url 'news_system:news_create' %}" class="btn btn-primary w-100 w-md-auto">写新文章</a>
+      <a href="{% url 'news_system:news_create' %}" class="btn btn-primary">写新文章</a>
     </div>
     <div class="col-12 col-md-6">
-      <form method="get" class="d-flex justify-content-md-end">
-        <div class="input-group">
-          <input type="text" name="q" id="searchInput" class="form-control" value="{{ request.GET.q }}">
-          <button type="submit" class="btn btn-primary">搜索</button>
-        </div>
-        {% for key, value in request.GET.items %}
-          {% if key not in "q" %}
-            <input type="hidden" name="{{ key }}" value="{{ value }}">
-          {% endif %}
-        {% endfor %}
-      </form>
+      <div class="d-flex justify-content-md-end align-items-center">
+        <form method="get" class="d-flex">
+          <div class="input-group">
+            <input type="text" name="q" id="searchInput" class="form-control" value="{{ request.GET.q }}">
+            <button type="submit" class="btn btn-primary">搜索</button>
+          </div>
+          {% for key, value in request.GET.items %}
+            {% if key not in "q" %}
+              <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endif %}
+          {% endfor %}
+        </form>
+      </div>
     </div>
   </div>
   
