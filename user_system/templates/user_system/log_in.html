@@ -6,7 +6,16 @@
     <div class="auth-box shadow-lg">
         <h2 class="text-center fw-bold mb-4">Welcome Back</h2>
         <p class="text-center text-muted">Log in to continue</p>
-        <form method="POST">
+        
+        {% if messages %}
+        <div class="alert alert-danger mb-4">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" id="login-form">
             {% csrf_token %}
             <div class="mb-3">
                 <label for="id_username" class="form-label">Username</label>
@@ -23,4 +32,43 @@
         </p>
     </div>
 </div>
+
+<!-- 添加CSRF令牌刷新脚本 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // 页面加载时刷新CSRF令牌
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // 强制刷新CSRF令牌
+        function refreshCSRFToken() {
+            $.get(window.location.href, function(data) {
+                let newToken = $(data).find('input[name="csrfmiddlewaretoken"]').val();
+                $('input[name="csrfmiddlewaretoken"]').val(newToken);
+            });
+        }
+        
+        // 页面加载后立即刷新CSRF令牌
+        refreshCSRFToken();
+        
+        // 表单提交前确保CSRF令牌是最新的
+        $('#login-form').on('submit', function() {
+            let csrfToken = getCookie('csrftoken');
+            $('input[name="csrfmiddlewaretoken"]').val(csrfToken);
+        });
+    });
+</script>
 {% endblock %}

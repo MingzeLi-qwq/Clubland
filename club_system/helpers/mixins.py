@@ -27,7 +27,8 @@ class ClubMemberRequiredMixin(AccessMixin):
             </body>
             </html>
             """
-            return HttpResponse(mark_safe(message))  # mark_safe 让 HTML 代码生效
+            # 添加 403 状态码
+            return HttpResponse(mark_safe(message), status=403)
         return super().dispatch(request, *args, **kwargs)
 
 class ClubManagerRequiredMixin(AccessMixin):
@@ -63,7 +64,8 @@ class ClubManagerRequiredMixin(AccessMixin):
             </body>
             </html>
             """
-            return HttpResponse(mark_safe(message))  # mark_safe 让 HTML 代码生效
+            # 添加 403 状态码
+            return HttpResponse(mark_safe(message), status=403)  # mark_safe 让 HTML 代码生效
         return super().dispatch(request, *args, **kwargs)
     
 class NonClubManagerRequiredMixin(AccessMixin):
@@ -87,7 +89,8 @@ class NonClubManagerRequiredMixin(AccessMixin):
             </body>
             </html>
             """
-            return HttpResponse(mark_safe(message))  # mark_safe 让 HTML 代码生效
+            # 添加 403 状态码
+            return HttpResponse(mark_safe(message), status=403)  # mark_safe 让 HTML 代码生效
         return super().dispatch(request, *args, **kwargs)
 
 class NonClubMemberRequiredMixin(AccessMixin):
@@ -112,7 +115,8 @@ class NonClubMemberRequiredMixin(AccessMixin):
             </body>
             </html>
             """
-            return HttpResponse(mark_safe(message))  # mark_safe 让 HTML 代码生效
+            # 添加 403 状态码
+            return HttpResponse(mark_safe(message), status=403)
         return super().dispatch(request, *args, **kwargs)
     
 class ClubExistsRequiredMixin(AccessMixin):
@@ -136,5 +140,6 @@ class ClubExistsRequiredMixin(AccessMixin):
             </body>
             </html>
             """
-            return HttpResponse(mark_safe(message))  # mark_safe 让 HTML 代码生效
+            # 使用 404 状态码更符合资源不存在的语义
+            return HttpResponse(mark_safe(message), status=404)
         return super().dispatch(request, *args, **kwargs)

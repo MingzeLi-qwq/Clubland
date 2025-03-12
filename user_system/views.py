@@ -37,8 +37,8 @@ def home(request):
         start_time__gte=timezone.now()
     ).order_by('start_time')
     
-    # 查询最新的社团 - 按照创建时间倒序排列，取最新的4个
-    new_clubs = Club.objects.order_by('-club_id')[:4]
+    # 查询最新的社团 - 按照创建时间倒序排列，取最近的3个
+    new_clubs = Club.objects.order_by('-club_id')[:3]
     
     # 查询最新的新闻 - 按照创建时间倒序排列，取最新的3条
     news_items = News.objects.order_by('-created_at')[:3]
@@ -131,12 +131,16 @@ class LogInView(View):
             user = form.get_user()
             login(request, user)
             return redirect("home")
+        else:
+            # 添加错误提示
+            messages.error(request, "Invalid username or password.")
         return render(request, self.template_name, {"form": form})
 
 def LogOutView(request):
     logout(request)
     messages.success(request, "You have successfully logged out.")
-    return redirect('home')
+    # 直接重定向到登录页面，而不是首页
+    return redirect('login')
 
 
 # def societies(request):

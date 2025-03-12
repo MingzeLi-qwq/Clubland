@@ -69,14 +69,17 @@ class ClubDetailView(ClubExistsRequiredMixin, View):
         events = Event.objects.filter(club=club)
         member_count = club.members.count()
         managers = club.membership_set.filter(is_manager=True)
-        is_manager = False
+        is_manager=False
+        is_member=False
         if request.user.is_authenticated:
             is_manager = managers.filter(user=request.user).exists()
+            is_member = Membership.objects.filter(user=request.user, club=club).exists()       
         return render(request, 'club_detail.html', {
             'club': club,
             'member_count': member_count,
             'managers': managers,
             'is_manager': is_manager,
+            'is_member': is_member,
             'events': events,
         })
     
@@ -208,6 +211,17 @@ class ClubManagerEvents(LoginRequiredMixin, ClubManagerRequiredMixin, View):
             'search_query': search_query,
         }
         return render(request, 'club_manager/events.html', context)
+
+class ClubManagerDashboard(LoginRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, *args, **kwargs):
+        club = get_object_or_404(Club, club_id=club_id)
+
+        return render(request, 'club_manager/dashboard.html', {
+            'club_id': club_id,
+            'club': club,
+        })
+        
+
 """------------------------------------------------------------End--------------------------------------------------------------"""
 
 
