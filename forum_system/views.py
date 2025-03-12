@@ -57,7 +57,7 @@ class BlogPostDetailView(FormMixin, DetailView):
         # 新增讨论的排序和分页
         from django.core.paginator import Paginator
         threadposts_qs = self.object.thread_posts.all()
-        order_thread = self.request.GET.get('order_thread', 'desc')
+        order_thread = self.request.GET.get('order_thread', 'asc')  # 修改默认值为 'asc'
         if order_thread == 'asc':
             threadposts_qs = threadposts_qs.order_by('created_at')
         else:

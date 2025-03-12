@@ -7,7 +7,7 @@
         <label for="orderThreadSelect">排序：</label>
         <select name="order_thread" id="orderThreadSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
           <option value="desc" {% if order_thread == "desc" %}selected{% endif %}>时间倒序</option>
-          <option value="asc" {% if order_thread == "asc" %}selected{% endif %}>时间正序</option>
+          <option value="asc" {% if order_thread == "asc" or not order_thread %}selected{% endif %}>时间正序</option>
         </select>
       </div>
       <div class="col-md-6 text-end">
