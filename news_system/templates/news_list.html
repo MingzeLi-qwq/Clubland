@@ -2,18 +2,20 @@
 {% load static %}
 
 {% block body %}
-<div class="container mt-4">
+<div class="container-fluid mt-4">
   <h2 class="mb-4">News 文章列表</h2>
   
-  <!-- 写新文章按钮和搜索表单合并在同一行 -->
+  <!-- 写新文章按钮和搜索表单 - 移动端优化 -->
   <div class="row mb-3">
-    <div class="col-md-6">
-      <a href="{% url 'news_system:news_create' %}" class="btn btn-primary">写新文章</a>
+    <div class="col-12 col-md-6 mb-2 mb-md-0">
+      <a href="{% url 'news_system:news_create' %}" class="btn btn-primary w-100 w-md-auto">写新文章</a>
     </div>
-    <div class="col-md-6 text-end">
-      <form method="get" class="d-inline-block">
-        <input type="text" name="q" id="searchInput" class="form-control d-inline-block" style="width:auto;" value="{{ request.GET.q }}">
-        <button type="submit" class="btn btn-primary">搜索</button>
+    <div class="col-12 col-md-6">
+      <form method="get" class="d-flex justify-content-md-end">
+        <div class="input-group">
+          <input type="text" name="q" id="searchInput" class="form-control" value="{{ request.GET.q }}">
+          <button type="submit" class="btn btn-primary">搜索</button>
+        </div>
         {% for key, value in request.GET.items %}
           {% if key not in "q" %}
             <input type="hidden" name="{{ key }}" value="{{ value }}">
@@ -23,31 +25,33 @@
     </div>
   </div>
   
-  <!-- 筛选条件表单：排序和每页显示数量 -->
+  <!-- 筛选条件表单：排序和每页显示数量 - 移动端优化 -->
   <div class="mb-3">
     <form method="get">
-      <div class="row">
-        <div class="col-md-6 text-start">
-          <label for="orderSelect">排序：</label>
+      <div class="row g-2">
+        <div class="col-12 col-md-6 mb-2 mb-md-0">
+          <label for="orderSelect" class="me-2">排序：</label>
           <select name="order" id="orderSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
             <option value="asc" {% if request.GET.order == "asc" %}selected{% endif %}>最早</option>
             <option value="desc" {% if request.GET.order == "desc" or not request.GET.order %}selected{% endif %}>最新</option>
           </select>
         </div>
-        <div class="col-md-6 text-end">
-          <label for="perPageSelect">每页显示：</label>
-          <select name="per_page" id="perPageSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
-            <option value="5" {% if request.GET.per_page == "5" %}selected{% endif %}>5</option>
-            <option value="10" {% if request.GET.per_page == "10" or not request.GET.per_page %}selected{% endif %}>10</option>
-            <option value="20" {% if request.GET.per_page == "20" %}selected{% endif %}>20</option>
-            <option value="50" {% if request.GET.per_page == "50" %}selected{% endif %}>50</option>
-          </select>
+        <div class="col-12 col-md-6 mb-2 mb-md-0">
+          <div class="d-flex justify-content-md-end align-items-center">
+            <label for="perPageSelect" class="me-2">每页显示：</label>
+            <select name="per_page" id="perPageSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
+              <option value="5" {% if request.GET.per_page == "5" %}selected{% endif %}>5</option>
+              <option value="10" {% if request.GET.per_page == "10" or not request.GET.per_page %}selected{% endif %}>10</option>
+              <option value="20" {% if request.GET.per_page == "20" %}selected{% endif %}>20</option>
+              <option value="50" {% if request.GET.per_page == "50" %}selected{% endif %}>50</option>
+            </select>
+          </div>
         </div>
       </div>
       <!-- 新增社团过滤 -->
-      <div class="row mt-3">
-        <div class="col-md-6">
-          <label for="clubSelect">社团：</label>
+      <div class="row mt-2">
+        <div class="col-12 col-md-6">
+          <label for="clubSelect" class="me-2">社团：</label>
           <select name="club" id="clubSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
             <option value="">全部社团</option>
             {% for club in clubs %}
@@ -69,7 +73,7 @@
   <div class="list-group">
     {% for post in posts %}
       <a href="{% url 'news_system:news_detail' post.pk %}" class="list-group-item list-group-item-action">
-        <div class="d-flex w-100 justify-content-between">
+        <div class="d-flex w-100 justify-content-between flex-column flex-sm-row">
           <h5 class="mb-1">{{ post.title }}</h5>
           <small>{{ post.created_at|date:"Y-m-d H:i" }}</small>
         </div>
@@ -98,117 +102,48 @@
           {% endif %}
         </p>
       </a>
-    {% empty %}
-      <div class="list-group-item">暂无文章</div>
     {% endfor %}
   </div>
-  
-<!-- 添加分页代码：这部分在原模板中缺失 -->
-{% if is_paginated %}
-<nav aria-label="Page navigation" class="mt-4">
-  <ul class="pagination justify-content-center">
-    {% if page_obj.has_previous %}
-      <li class="page-item">
-        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}{% if request.GET.club %}&club={{ request.GET.club }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
-          <span aria-hidden="true">&laquo;</span>
-        </a>
-      </li>
-    {% else %}
-      <li class="page-item disabled">
-        <span class="page-link" aria-hidden="true">&laquo;</span>
-      </li>
-    {% endif %}
-    
-    {% for num in paginator.page_range %}
-      {% if page_obj.number == num %}
-        <li class="page-item active">
-          <span class="page-link">{{ num }}</span>
-        </li>
-      {% else %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ num }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}{% if request.GET.club %}&club={{ request.GET.club }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
-        </li>
-      {% endif %}
-    {% endfor %}
-    
-    {% if page_obj.has_next %}
-      <li class="page-item">
-        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}{% if request.GET.club %}&club={{ request.GET.club }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
-          <span aria-hidden="true">&raquo;</span>
-        </a>
-      </li>
-    {% else %}
-      <li class="page-item disabled">
-        <span class="page-link" aria-hidden="true">&raquo;</span>
-      </li>
-    {% endif %}
-  </ul>
-</nav>
-{% endif %}
 
-<!-- 添加删除确认模态框 -->
-<div class="modal fade" id="deleteNewsModal" tabindex="-1" aria-labelledby="deleteNewsModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteNewsModalLabel">确认删除新闻文章</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>你确定要删除 "<span id="newsTitle"></span>" 吗？</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-        <button type="button" class="btn btn-danger" id="confirmDeleteNews">删除</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 添加 JavaScript 处理删除操作 -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-  $(document).ready(function() {
-    // 如果列表页有删除按钮，添加事件处理
-    $('.delete-news').click(function(e) {
-      e.preventDefault();
-      var newsId = $(this).data('id');
-      var newsTitle = $(this).data('title');
-      $('#newsTitle').text(newsTitle);
-      
-      var modal = new bootstrap.Modal(document.getElementById('deleteNewsModal'));
-      modal.show();
-      
-      $('#confirmDeleteNews').data('id', newsId);
-    });
-    
-    $('#confirmDeleteNews').click(function() {
-      var newsId = $(this).data('id');
-      $.ajax({
-        url: '{% url "news_system:news_delete" 999 %}'.replace('999', newsId),
-        type: 'POST',
-        data: {
-          csrfmiddlewaretoken: '{{ csrf_token }}'
-        },
-        success: function(data) {
-          // 重新加载页面显示更新后的列表
-          window.location.reload();
-        },
-        error: function(xhr, status, error) {
-          alert('删除失败: ' + error);
-        }
-      });
-    });
-    
-    // 设置 CSRF 令牌
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-          xhr.setRequestHeader("X-CSRFToken", $("input[name='csrfmiddlewaretoken']").val());
-        }
-      }
-    });
-  });
-</script>
+  <!-- 分页导航 -->
+  {% if paginator.num_pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-4">
+      <ul class="pagination justify-content-center flex-wrap">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">&laquo;</span>
+          </li>
+        {% endif %}
+        
+        {% for num in paginator.page_range %}
+          {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">&raquo;</span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
 </div>
 {% endblock %}

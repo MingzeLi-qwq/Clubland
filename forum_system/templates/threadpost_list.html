@@ -2,22 +2,24 @@
   <h4>讨论</h4>
   <!-- 排序和每页显示表单 -->
   <form method="get" id="threadpost-sort-form" class="mb-3">
-    <div class="row">
-      <div class="col-md-6">
+    <div class="row g-2">
+      <div class="col-12 col-md-6 mb-2 mb-md-0">
         <label for="orderThreadSelect">排序：</label>
         <select name="order_thread" id="orderThreadSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
           <option value="desc" {% if order_thread == "desc" %}selected{% endif %}>时间倒序</option>
           <option value="asc" {% if order_thread == "asc" or not order_thread %}selected{% endif %}>时间正序</option>
         </select>
       </div>
-      <div class="col-md-6 text-end">
-        <label for="perPageThreadSelect">每页显示：</label>
-        <select name="per_page_thread" id="perPageThreadSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
-          <option value="5" {% if per_page_thread == 5 %}selected{% endif %}>5</option>
-          <option value="10" {% if per_page_thread == 10 %}selected{% endif %}>10</option>
-          <option value="20" {% if per_page_thread == 20 %}selected{% endif %}>20</option>
-          <option value="50" {% if per_page_thread == 50 %}selected{% endif %}>50</option>
-        </select>
+      <div class="col-12 col-md-6 mb-2 mb-md-0">
+        <div class="d-flex justify-content-md-end align-items-center">
+          <label for="perPageThreadSelect">每页显示：</label>
+          <select name="per_page_thread" id="perPageThreadSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
+            <option value="5" {% if per_page_thread == 5 %}selected{% endif %}>5</option>
+            <option value="10" {% if per_page_thread == 10 %}selected{% endif %}>10</option>
+            <option value="20" {% if per_page_thread == 20 %}selected{% endif %}>20</option>
+            <option value="50" {% if per_page_thread == 50 %}selected{% endif %}>50</option>
+          </select>
+        </div>
       </div>
     </div>
     {% for key, value in request.GET.items %}
@@ -32,7 +34,7 @@
       {% for threadpost in threadposts %}
         <div class="card mb-3">
           <div class="card-header bg-light">
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
               <div>
                 {% if threadpost.author %}
                   {{ threadpost.author.first_name }} {{ threadpost.author.last_name }}&nbsp;&nbsp;
@@ -62,7 +64,7 @@
     <!-- 分页导航 -->
     {% if paginator_thread.num_pages > 1 %}
       <nav aria-label="Threadpost pagination" class="mt-3">
-        <ul class="pagination justify-content-center">
+        <ul class="pagination justify-content-center flex-wrap">
           {% if page_obj_thread.has_previous %}
             <li class="page-item">
               <a class="page-link" href="?page_thread={{ page_obj_thread.previous_page_number }}&order_thread={{ order_thread }}&per_page_thread={{ per_page_thread }}" aria-label="Previous">
