@@ -139,7 +139,8 @@ class LogInView(View):
 def LogOutView(request):
     logout(request)
     messages.success(request, "You have successfully logged out.")
-    return redirect('home')
+    # 直接重定向到登录页面，而不是首页
+    return redirect('login')
 
 
 # def societies(request):
