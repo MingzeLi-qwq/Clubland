@@ -2,7 +2,14 @@
 {% load static %}
 {% load param_replace %}
 {% block body %}
-<!-- Flash Messages -->
+<style>
+    .link-secondary {
+        text-decoration: none !important;
+    }
+    .link-secondary:hover {
+        text-decoration: underline !important;
+    }
+</style>
 {% if messages %}
   <div class="container mt-3">
     {% for message in messages %}
@@ -14,7 +21,6 @@
   </div>
 {% endif %}
 
-<!-- 介绍区域 -->
 <section class="py-5">
   <div class="container text-center">
     <h1 class="display-4 fw-bold">We're King's College London Students' Union</h1>
@@ -22,7 +28,6 @@
   </div>
 </section>
 
-<!-- 系统功能部分 -->
 <section>
   <div class="container">
     <h2 class="text-center mb-5">系统功能</h2>
@@ -97,40 +102,61 @@
   </div>
 </section>
 
-<!-- 近期活动 -->
 <section id="events" class="py-4">
   <div class="container">
-    <div class="bg-white p-4 rounded-3 shadow">
       <div class="d-flex justify-content-between align-items-center">
         <h2 class="mb-0">近期活动</h2>
-        <a href="#" class="btn btn-outline-primary btn-sm">查看全部</a>
+        <a href="{% url 'events' %}" class="btn btn-outline-primary btn-sm">查看全部</a>
       </div>
 
       <div class="row g-4" id="events-container">
-          {% include 'shared/events_list.html' with events=events %}
-      </div>
+          {% if events %}
+            {% for event in events %}
+              <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-scale d-flex flex-column" onclick="window.location.href='{% url 'event_detail' event.id %}'" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                  <div class="card-body">
+                    <h5 class="card-title"><a class="link-secondary" href="{% url 'event_detail' event.id %}">{{ event.name }}</a></h5>
+                    <p class="card-text text-muted mb-2">{{ event.content|striptags|truncatechars:100 }}</p>
 
-      <!-- Pagination -->
-      <div id="pagination-container" class="sticky-bottom d-flex justify-content-center">
-          {% include 'shared/pagination.html' with events=events %}
+                    <div class="d-flex flex-column align-items-start">
+                      <small class="mb-1"><i class="bi bi-calendar-event text-primary me-2"></i>{{ event.start_time|date:"Y年m月d日 H:i" }}</small>
+                      <small class="mb-1"><i class="bi bi-geo-alt text-primary me-2"></i>{{ event.location }}</small>
+                      {% if event.club %}
+                      <small class="mb-1"><i class="bi bi-people text-primary me-2"></i>{{ event.club.name }}</small>
+                      {% endif %}
+                    </div>
+
+                    <div class="countdown" data-start-time="{{ event.start_time|date:'c' }}">
+                      <span class="badge bg-primary">即将开始</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="col-12 text-center">
+              <div class="p-5 bg-light rounded">
+                <h4 class="text-muted">暂无活动</h4>
+                <p>请稍后再来查看最新活动</p>
+              </div>
+            </div>
+          {% endif %}
       </div>
-    </div>
   </div>
 </section>
 
-<!-- 新社团来袭 -->
 <section class="py-4">
   <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2 class="mb-0">新社团来袭</h2>
       <a href="{% url 'clubs' %}" class="btn btn-outline-primary btn-sm">查看全部</a>
     </div>
-    
+
     {% if new_clubs %}
     <div class="row g-4" id="clubs-container">
       {% for club in new_clubs %}
-        <div class="col-md-3 mb-4">
-          <div class="card h-100 border-0 shadow-sm d-flex flex-column" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 border-0 shadow-sm d-flex flex-column" onclick="window.location.href='{% url 'club_detail' club_id=club.club_id %}'" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
             {% if club.first_image_url %}
               <img src="{{ club.first_image_url }}" class="card-img-top" alt="{{ club.name }}">
             {% endif %}
@@ -154,27 +180,24 @@
   </div>
 </section>
 
-<!-- 最近新闻 -->
 <section class="py-4">
   <div class="container">
-    <h2 class="text-center mb-4">最近新闻</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">最近新闻</h2>
+      <a href="{% url 'news_system:news_list' %}" class="btn btn-outline-primary btn-sm">查看全部</a>
+    </div>
     <div class="row g-4">
       {% for news in recent_news %}
         <div class="col-md-4">
-          <div class="card h-100 border-0 shadow-sm d-flex flex-column" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-            <div class="card-body d-flex flex-column">
-
-              {% if news.first_image_url %}
-                <div class="ratio ratio-16x9 mb-3">
-                  <img src="{{ news.first_image_url }}" class="card-img-top object-fit-cover" alt="{{ news.title }}">
-                </div>
-                {% endif %}
-
-                <h5 class="card-title">
-                  <a class="link-secondary" href="{{ news.url }}">{{ news.title }}</a>
-                </h5>
-
-                <div class="d-flex flex-column align-items-start mt-auto">
+          <div class="card h-100 border-0 shadow-sm d-flex flex-column" onclick="window.location.href='{{ news.url }}'" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            {% if news.first_image_url %}
+              <img src="{{ news.first_image_url }}" class="card-img-top" alt="{{ news.title }}" style="aspect-ratio: 4/3; object-fit: cover;">
+            {% endif %}
+            <div class="card-body p-4 d-flex flex-column">
+              <h5 class="card-title">
+                <a class="link-secondary" href="{{ news.url }}">{{ news.title }}</a>
+              </h5>
+              <div class="d-flex flex-column align-items-start mt-auto">
                 <small class="text-muted mb-1">作者：{{ news.author.get_full_name }}</small>
                 {% if news.club %}
                   <small class="text-muted mb-1">社团：{{ news.club.name }}</small>
@@ -183,7 +206,7 @@
                   <small class="text-muted mb-1">活动：{{ news.event.name }}</small>
                 {% endif %}
                 <small class="text-muted">{{ news.created_at|date:"Y-m-d" }}</small>
-                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -199,43 +222,4 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-function loadEvents(page) {
-    // 添加加载指示器
-    const eventsContainer = document.getElementById('events-container');
-    if (eventsContainer) {
-        eventsContainer.style.opacity = '0.5';
-
-        fetch(`?page=${page}&ajax=1`)
-            .then(response => response.json())
-            .then(data => {
-                // 更新事件列表
-                eventsContainer.innerHTML = data.events_html;
-                eventsContainer.style.opacity = '1';
-                
-                // 更新分页控件
-                const paginationContainer = document.getElementById('pagination-container');
-                if (paginationContainer) {
-                    paginationContainer.innerHTML = data.pagination_html;
-                }
-            })
-            .catch(error => {
-                console.error('Error loading events:', error);
-                eventsContainer.style.opacity = '1';
-            });
-    }
-}
-
-// 使用事件委托处理分页点击
-document.addEventListener('click', function(e) {
-    const target = e.target.closest('.pagination-btn');
-    if (target) {
-        e.preventDefault();
-        const page = target.dataset.page;
-        loadEvents(page);
-    }
-});
-</script>
 {% endblock %}
-
-

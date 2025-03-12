@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
 {% block body %}
-<div class="container my-4">
+<div class="container-fluid my-4">
   <!-- 移除白色背景颜色，仅保留边框和内边距 -->
   <div class="mb-3 p-4 border rounded">
     <h2 class="mb-2">
-      <div class="d-flex justify-content-between align-items-center">
-        <span>{{ post.title }}</span>
+      <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <span style="word-break: break-word; overflow-wrap: break-word;">{{ post.title }}</span>
         {% if user == post.author or user.is_admin %}
-          <a href="{% url 'news_system:news_delete' post.pk %}" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit;">
-            <i class="bi bi-trash" style="color: inherit;"></i>
+          <a href="#" onclick="confirmNewsDelete('{% url 'news_system:news_delete' post.pk %}', '{{ post.title }}')" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit;">
+            <i class="bi bi-trash" style="color: inherit; font-size: 1rem;"></i>
           </a>
         {% endif %}
       </div>
@@ -46,10 +46,69 @@
     {% include "comment_list.html" %}
   </div>
 
-  {% include "comment_form.html" %}
+  <!-- 只有登录用户才能看到评论表单 -->
+  {% if user.is_authenticated %}
+    {% include "comment_form.html" %}
+  {% else %}
+    <div class="alert alert-info">
+      请<a href="{% url 'login' %}">登录</a>后发表评论
+    </div>
+  {% endif %}
   
   <div class="mt-3">
     <a href="{% url 'news_system:news_list' %}" class="btn btn-primary">返回列表</a>
   </div>
 </div>
+
+<!-- 移除原有的 Bootstrap 模态框 -->
+
+<!-- 添加 JavaScript 处理代码 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    // 设置 CSRF 令牌
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+          xhr.setRequestHeader("X-CSRFToken", $("input[name='csrfmiddlewaretoken']").val());
+        }
+      }
+    });
+  });
+  
+  // 新闻删除确认
+  function confirmNewsDelete(url, title) {
+    if (confirm(`确定要删除 "${title}" 吗？`)) {
+      $.ajax({
+        url: url,
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function(data) {
+          window.location.href = '{% url "news_system:news_list" %}';
+        },
+        error: function(xhr, status, error) {
+          alert('删除失败: ' + error);
+        }
+      });
+    }
+  }
+  
+  // 评论删除确认
+  function confirmCommentDelete(url) {
+    if (confirm("确定要删除这条评论吗？")) {
+      $.ajax({
+        url: url,
+        type: 'POST',
+        success: function(data) {
+          location.reload();
+        },
+        error: function(xhr, status, error) {
+          alert('删除失败: ' + error);
+        }
+      });
+    }
+  }
+</script>
 {% endblock %}

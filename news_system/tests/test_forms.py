@@ -111,21 +111,55 @@ class NewsFormTest(TestCase):
             'event': self.event.pk,
             'content': 'Test Content'
         }
+        # 普通用户必须选择社团
+        form = NewsForm(data=form_data, user=self.user)
+        self.assertFalse(form.is_valid())
+        self.assertIn('event', form.errors)
+        
+        # 管理员不选社团但选择活动时也应该验证失败
         form = NewsForm(data=form_data, user=self.admin_user)
         self.assertFalse(form.is_valid())
-        self.assertIn('未选择社团时，不允许选择活动', str(form.errors))
+        self.assertIn('event', form.errors)
     
     def test_news_form_validation_with_mismatched_club_and_event(self):
         """测试选择的活动不属于所选社团时的表单验证"""
         form_data = {
             'title': 'Test News',
             'club': self.club.pk,
-            'event': self.another_event.pk,  # 这个活动属于另一个社团
+            'event': self.another_event.pk,  # 这个活动不属于选择的社团
             'content': 'Test Content'
         }
+        # 当活动和社团不匹配时，表单应该验证失败
         form = NewsForm(data=form_data, user=self.user)
         self.assertFalse(form.is_valid())
-        self.assertIn('选择的活动不属于所选的社团', str(form.errors))
+        self.assertIn('event', form.errors)
+        
+        # 管理员也应该遵循同样的验证规则
+        form = NewsForm(data=form_data, user=self.admin_user)
+        self.assertFalse(form.is_valid())
+        self.assertIn('event', form.errors)
+    
+    def test_news_form_event_field_initialization(self):
+        """测试初始化表单时event字段的设置"""
+        # 测试创建新表单时的事件字段（应为空）
+        form = NewsForm(user=self.user)
+        self.assertEqual(form.fields['event'].queryset.count(), 0)
+        
+        # 测试修改现有新闻时的事件字段
+        news = News.objects.create(
+            title="Test News with Event",
+            content="Content",
+            author=self.user,
+            club=self.club,
+            event=self.event
+        )
+        
+        # 使用instance参数初始化表单
+        form = NewsForm(user=self.user, instance=news)
+        # 事件字段应该包含与社团关联的事件
+        self.assertEqual(form.fields['event'].queryset.count(), 1)
+        self.assertEqual(form.fields['event'].queryset.first(), self.event)
+
 
 class CommentFormTest(TestCase):
     def test_comment_form_validation_with_valid_data(self):

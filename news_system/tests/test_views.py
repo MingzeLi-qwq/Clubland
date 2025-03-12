@@ -147,12 +147,40 @@ class NewsViewsTest(TestCase):
         """测试登录用户可以看到评论表单"""
         # 未登录用户不应该看到评论表单
         response = self.client.get(reverse('news_system:news_detail', kwargs={'pk': self.news.pk}))
+        self.assertEqual(response.status_code, 200)
         self.assertNotIn('form', response.context)
         
         # 登录用户应该看到评论表单
         self.client.login(username='@testuser', password='testpassword')
         response = self.client.get(reverse('news_system:news_detail', kwargs={'pk': self.news.pk}))
+        self.assertEqual(response.status_code, 200)
         self.assertIn('form', response.context)
+    
+    def test_news_detail_post_comment(self):
+        """测试在新闻详情页发表评论"""
+        self.client.login(username='@testuser', password='testpassword')
+        form_data = {
+            'text': 'New Comment from Detail View'
+        }
+        response = self.client.post(
+            reverse('news_system:news_detail', kwargs={'pk': self.news.pk}),
+            form_data
+        )
+        self.assertEqual(response.status_code, 302)  # 应该重定向回详情页
+        self.assertTrue(Comment.objects.filter(text='New Comment from Detail View').exists())
+    
+    def test_news_detail_post_invalid_comment(self):
+        """测试在新闻详情页提交无效评论"""
+        self.client.login(username='@testuser', password='testpassword')
+        form_data = {
+            'text': ''  # 空评论，应该验证失败
+        }
+        response = self.client.post(
+            reverse('news_system:news_detail', kwargs={'pk': self.news.pk}),
+            form_data
+        )
+        self.assertEqual(response.status_code, 200)  # 应该返回表单页面
+        self.assertFalse(Comment.objects.filter(text='').exists())
     
     def test_news_create_view_get(self):
         """测试新闻创建视图的GET请求"""
@@ -196,17 +224,22 @@ class NewsViewsTest(TestCase):
         
         # 未登录用户应该被重定向到登录页面
         response = self.client.get(reverse('news_system:news_delete', kwargs={'pk': news_to_delete.pk}))
+        self.assertEqual(response.status_code, 302)  # 应该重定向
+        
+        # 登录用户（作者）应该能够执行删除
+        self.client.login(username='@testuser', password='testpassword')
+        
+        # GET请求应该重定向
+        response = self.client.get(reverse('news_system:news_delete', kwargs={'pk': news_to_delete.pk}))
         self.assertEqual(response.status_code, 302)
         
-        # 登录用户（作者）应该能够访问删除页面
-        self.client.login(username='@testuser', password='testpassword')
-        response = self.client.get(reverse('news_system:news_delete', kwargs={'pk': news_to_delete.pk}))
+        # 模拟AJAX请求执行删除
+        response = self.client.post(
+            reverse('news_system:news_delete', kwargs={'pk': news_to_delete.pk}),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'news_confirm_delete.html')
-        
-        # 执行删除
-        response = self.client.post(reverse('news_system:news_delete', kwargs={'pk': news_to_delete.pk}))
-        self.assertEqual(response.status_code, 302)  # 应该重定向到新闻列表页面
+        self.assertEqual(response.json(), {'status': 'success'})
         
         # 验证新闻是否已删除
         self.assertFalse(News.objects.filter(pk=news_to_delete.pk).exists())
@@ -238,15 +271,20 @@ class NewsViewsTest(TestCase):
         response = self.client.get(reverse('news_system:comment_delete', kwargs={'pk': comment_to_delete.pk}))
         self.assertEqual(response.status_code, 302)
         
-        # 登录用户（作者）应该能够访问删除页面
+        # 登录用户（作者）执行删除
         self.client.login(username='@testuser', password='testpassword')
-        response = self.client.get(reverse('news_system:comment_delete', kwargs={'pk': comment_to_delete.pk}))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'comment_confirm_delete.html')
         
-        # 执行删除
-        response = self.client.post(reverse('news_system:comment_delete', kwargs={'pk': comment_to_delete.pk}))
-        self.assertEqual(response.status_code, 302)  # 应该重定向到新闻详情页面
+        # GET请求应该重定向
+        response = self.client.get(reverse('news_system:comment_delete', kwargs={'pk': comment_to_delete.pk}))
+        self.assertEqual(response.status_code, 302)
+        
+        # 模拟AJAX请求执行删除
+        response = self.client.post(
+            reverse('news_system:comment_delete', kwargs={'pk': comment_to_delete.pk}),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {'status': 'success'})
         
         # 验证评论是否已删除
         self.assertFalse(Comment.objects.filter(pk=comment_to_delete.pk).exists())
@@ -273,6 +311,54 @@ class NewsViewsTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertFalse(Comment.objects.filter(pk=self.another_comment.pk).exists())
     
+    def test_admin_can_delete_any_comment(self):
+        """测试管理员用户可以删除任何人的评论"""
+        # 创建管理员用户
+        admin_user = User.objects.create_user(
+            username="@adminuser",
+            email="admin@example.com",
+            first_name="Admin",
+            last_name="User",
+            account_type="Admin",
+            password="adminpassword"
+        )
+        
+        # 登录管理员用户
+        self.client.login(username='@adminuser', password='adminpassword')
+        
+        # 管理员应该能够删除其他用户的评论
+        response = self.client.post(
+            reverse('news_system:comment_delete', kwargs={'pk': self.comment.pk}),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {'status': 'success'})
+        self.assertFalse(Comment.objects.filter(pk=self.comment.pk).exists())
+    
+    def test_admin_can_delete_any_news(self):
+        """测试管理员用户可以删除任何人的新闻文章"""
+        # 创建管理员用户，确保用户名一致
+        admin_user = User.objects.create_user(
+            username="@adminuser",  # 修改为与login使用的用户名一致
+            email="admin@example.com",
+            first_name="Admin",
+            last_name="User",
+            account_type="Admin",
+            password="adminpassword"
+        )
+        
+        # 登录管理员用户
+        self.client.login(username='@adminuser', password='adminpassword')
+        
+        # 管理员应该能够删除其他用户的新闻
+        response = self.client.post(
+            reverse('news_system:news_delete', kwargs={'pk': self.news.pk}),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {'status': 'success'})
+        self.assertFalse(News.objects.filter(pk=self.news.pk).exists())
+    
     def test_load_events_ajax_view(self):
         """测试加载活动的AJAX视图"""
         response = self.client.get(reverse('news_system:ajax_load_events') + f'?club={self.club.pk}')
@@ -282,4 +368,10 @@ class NewsViewsTest(TestCase):
         # 验证返回的JSON数据
         data = response.json()
         self.assertEqual(len(data), 1)
-        self
+    
+    def test_load_events_ajax_view_no_club(self):
+        """测试未提供社团ID时的AJAX视图行为"""
+        response = self.client.get(reverse('news_system:ajax_load_events'))
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data), 0)  # 应该返回空列表
