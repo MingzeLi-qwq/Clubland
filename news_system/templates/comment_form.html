@@ -1,9 +1,9 @@
 {% if user.is_authenticated %}
   <h4>添加评论</h4>
-  <form method="post">
+  <form method="post" id="comment-form">
     {% csrf_token %}
     <div class="mb-3">
-      {{ form.text.label_tag }}
+      <!-- {{ form.text.label_tag }} -->
       {{ form.text }}
     </div>
     <button type="submit" class="btn btn-secondary">提交评论</button>
@@ -11,3 +11,40 @@
 {% else %}
   <p>请<a href="{% url 'login' %}">登录</a>后评论</p>
 {% endif %}
+
+<!-- 添加CSRF令牌刷新功能 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    // 更新CSRF令牌函数
+    function updateCsrfToken() {
+      $.get(window.location.href, function(data) {
+        const newDoc = new DOMParser().parseFromString(data, 'text/html');
+        const newToken = newDoc.querySelector('input[name=csrfmiddlewaretoken]').value;
+        document.querySelectorAll('input[name=csrfmiddlewaretoken]').forEach(function(input) {
+          input.value = newToken;
+        });
+      });
+    }
+    
+    // 定期刷新CSRF令牌（每5分钟）
+    setInterval(updateCsrfToken, 5 * 60 * 1000);
+    
+    // 表单提交前处理
+    $("#comment-form").submit(function() {
+      // 如果使用了富文本编辑器，确保内容已同步
+      if (typeof $('#id_text').summernote === 'function') {
+        $('#id_text').summernote('update');
+      }
+    });
+    
+    // 添加AJAX全局设置
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", $("input[name='csrfmiddlewaretoken']").val());
+        }
+      }
+    });
+  });
+</script>

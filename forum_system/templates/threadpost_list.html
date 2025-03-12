@@ -44,8 +44,10 @@
                 <small class="text-muted">{{ threadpost.created_at|date:"Y-m-d H:i" }}</small>
               </div>
               <div>
-                {% if user == threadpost.author %}
-                  <a href="{% url 'forum_system:threadpost_delete' threadpost.pk %}" class="btn btn-danger btn-sm">删除讨论</a>
+                {% if user == threadpost.author or user.is_admin %}
+                  <a href="{% url 'forum_system:threadpost_delete' threadpost.pk %}" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit;">
+                    <i class="bi bi-trash" style="color: inherit;"></i>
+                  </a>
                 {% endif %}
               </div>
             </div>

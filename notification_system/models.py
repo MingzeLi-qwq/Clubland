@@ -19,4 +19,16 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"[{self.get_notification_type_display()}] Notification for {self.user.username}: {self.message}"
+    
+    def save(self, *args, **kwargs):
+        # 先保存新通知
+        super().save(*args, **kwargs)
+        
+        # 檢查該用戶的通知總數
+        user_notifications = Notification.objects.filter(user=self.user)
+        if user_notifications.count() > 2000:
+            # 找到最舊的通知並刪除
+            oldest = user_notifications.order_by('created_at').first()
+            if oldest:
+                oldest.delete()
 

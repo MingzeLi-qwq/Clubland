@@ -5,6 +5,7 @@
   <p>你确定要删除 "{{ object.title }}" 吗？</p>
   <form method="post">
     {% csrf_token %}
+    <!-- 恢复删除按钮样式 -->
     <button type="submit" class="btn btn-danger">删除</button>
     <a href="{% url 'forum_system:blog_detail' object.pk %}" class="btn btn-secondary">取消</a>
   </form>
