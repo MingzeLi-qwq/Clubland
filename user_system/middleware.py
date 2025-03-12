@@ -7,8 +7,7 @@ class CSRFRefreshMiddleware(MiddlewareMixin):
     """
     
     def process_response(self, request, response):
-        # 为所有GET请求刷新CSRF令牌
-        if request.method == 'GET':
-            # 只是获取令牌，不需要做任何事情，因为Django会自动设置它
+        # 所有GET请求和提交表单后的重定向请求刷新CSRF令牌
+        if request.method == 'GET' or (request.method == 'POST' and response.status_code == 302):
             get_token(request)
         return response

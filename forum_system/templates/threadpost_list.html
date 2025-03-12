@@ -112,7 +112,7 @@ function confirmThreadDelete(url) {
     let csrfToken = document.createElement('input');
     csrfToken.type = 'hidden';
     csrfToken.name = 'csrfmiddlewaretoken';
-    csrfToken.value = '{{ csrf_token }}';
+    csrfToken.value = getCsrfToken(); // 使用全局工具函数获取最新令牌
     
     form.appendChild(csrfToken);
     document.body.appendChild(form);
