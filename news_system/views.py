@@ -118,7 +118,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
 class NewsDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = News
-    template_name = 'news_confirm_delete.html'
+    # 移除模板引用，我们不再使用确认删除页面
     success_url = reverse_lazy('news_system:news_list')
 
     def test_func(self):
@@ -126,25 +126,56 @@ class NewsDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == self.get_object().author or self.request.user.is_admin
 
     def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        RTEUploadUtils.delete_associated_images(instance)
-        return super().delete(request, *args, **kwargs)
+        self.object = self.get_object()  # 确保设置 self.object
+        RTEUploadUtils.delete_associated_images(self.object)
+        success_url = self.get_success_url()
+        self.object.delete()
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'success'})
+        return HttpResponseRedirect(success_url)
+    
+    def post(self, request, *args, **kwargs):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return self.delete(request, *args, **kwargs)
+        self.object = self.get_object()  # 确保设置 self.object
+        return super().post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        # 如果是直接访问删除URL，重定向到列表页
+        return HttpResponseRedirect(self.get_success_url())
 
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
-    template_name = 'comment_confirm_delete.html'
+    # 移除模板引用，我们不再使用确认删除页面
 
     def get_success_url(self):
-        return reverse('news_system:news_detail', kwargs={'pk': self.get_object().news.pk})
+        # 需要确保先设置 self.object
+        if not hasattr(self, 'object') or not self.object:
+            self.object = self.get_object()
+        return reverse('news_system:news_detail', kwargs={'pk': self.object.news.pk})
 
     def test_func(self):
         # 允许作者或管理员删除
         return self.request.user == self.get_object().author or self.request.user.is_admin
 
     def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        RTEUploadUtils.delete_associated_images(instance)
-        return super().delete(request, *args, **kwargs)
+        self.object = self.get_object()  # 确保设置 self.object
+        RTEUploadUtils.delete_associated_images(self.object)
+        success_url = self.get_success_url()
+        self.object.delete()
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'success'})
+        return HttpResponseRedirect(success_url)
+    
+    def post(self, request, *args, **kwargs):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return self.delete(request, *args, **kwargs)
+        self.object = self.get_object()  # 确保设置 self.object
+        return super().post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        # 如果是直接访问删除URL，重定向到新闻详情页
+        return HttpResponseRedirect(self.get_success_url())
 
 def load_events(request):
     club_id = request.GET.get('club')

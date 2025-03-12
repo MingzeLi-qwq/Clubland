@@ -145,5 +145,70 @@
   </ul>
 </nav>
 {% endif %}
+
+<!-- 添加删除确认模态框 -->
+<div class="modal fade" id="deleteNewsModal" tabindex="-1" aria-labelledby="deleteNewsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteNewsModalLabel">确认删除新闻文章</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>你确定要删除 "<span id="newsTitle"></span>" 吗？</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteNews">删除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 添加 JavaScript 处理删除操作 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    // 如果列表页有删除按钮，添加事件处理
+    $('.delete-news').click(function(e) {
+      e.preventDefault();
+      var newsId = $(this).data('id');
+      var newsTitle = $(this).data('title');
+      $('#newsTitle').text(newsTitle);
+      
+      var modal = new bootstrap.Modal(document.getElementById('deleteNewsModal'));
+      modal.show();
+      
+      $('#confirmDeleteNews').data('id', newsId);
+    });
+    
+    $('#confirmDeleteNews').click(function() {
+      var newsId = $(this).data('id');
+      $.ajax({
+        url: '{% url "news_system:news_delete" 999 %}'.replace('999', newsId),
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function(data) {
+          // 重新加载页面显示更新后的列表
+          window.location.reload();
+        },
+        error: function(xhr, status, error) {
+          alert('删除失败: ' + error);
+        }
+      });
+    });
+    
+    // 设置 CSRF 令牌
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+          xhr.setRequestHeader("X-CSRFToken", $("input[name='csrfmiddlewaretoken']").val());
+        }
+      }
+    });
+  });
+</script>
 </div>
 {% endblock %}

@@ -16,8 +16,8 @@
             <small class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</small>
           </div>
           <div>
-            {% if user == comment.author %}
-              <a href="{% url 'news_system:comment_delete' comment.pk %}" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit;">
+            {% if user == comment.author or user.is_admin %}
+              <a href="#" class="delete-comment" data-id="{{ comment.pk }}" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit;">
                 <i class="bi bi-trash" style="color: inherit;"></i>
               </a>
             {% endif %}
