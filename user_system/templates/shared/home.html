@@ -111,7 +111,7 @@
               <div class="col-md-4">
                 <div class="card h-100 border-0 shadow-sm hover-shadow event-card" onclick="window.location.href='{% url 'event_detail' event.id %}'" style="cursor: pointer;">
                   <div class="card-body">
-                    <h5 class="card-title">{{ event.name }}</h5>
+                    <h5 class="card-title"><a class="link-secondary" href="{% url 'event_detail' event.id %}">{{ event.name }}</a></h5>
                     <p class="card-text text-muted mb-2">{{ event.content|striptags|truncatechars:100 }}</p>
                     
                     <div class="d-flex align-items-center mb-2">
@@ -162,7 +162,7 @@
     <div class="row g-4" id="clubs-container">
       {% for club in new_clubs %}
         <div class="col-md-3 mb-4">
-          <div class="card h-100 border-0 shadow-sm d-flex flex-column" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <div class="card h-100 border-0 shadow-sm d-flex flex-column" onclick="window.location.href='{% url 'club_detail' club_id=club.club_id %}'" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
             {% if club.first_image_url %}
               <img src="{{ club.first_image_url }}" class="card-img-top" alt="{{ club.name }}">
             {% endif %}
@@ -196,7 +196,7 @@
     <div class="row g-4">
       {% for news in recent_news %}
         <div class="col-md-4">
-          <div class="card h-100 border-0 shadow-sm d-flex flex-column" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <div class="card h-100 border-0 shadow-sm d-flex flex-column" onclick="window.location.href='{{ news.url }}'" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
             {% if news.first_image_url %}
               <img src="{{ news.first_image_url }}" class="card-img-top" alt="{{ news.title }}" style="aspect-ratio: 4/3; object-fit: cover;">
             {% endif %}
