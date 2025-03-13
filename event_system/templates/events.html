@@ -2,6 +2,92 @@
 {% load param_replace %}
 {% load static %}
 
+{% block extra_css %}
+<style>
+  /* 事件卡片 */
+  .event-card {
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  .event-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .event-card .card-header {
+    background: #0071e3;
+    color: white;
+  }
+
+  /* 分页 */
+  .pagination {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .pagination a, .current-page {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 14px;
+    text-decoration: none;
+  }
+
+  .pagination a {
+    background: #f0f0f0;
+    color: #333;
+  }
+
+  .pagination a:hover {
+    background: #0071e3;
+    color: white;
+  }
+
+  .current-page {
+    background: #0071e3;
+    color: white;
+    font-weight: bold;
+  }
+
+  /* 搜索框 */
+  .form-control {
+    border-radius: 12px;
+    border: 1px solid #d1d1d6;
+    padding: 10px 15px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: #0071e3;
+    box-shadow: 0 0 8px rgba(0, 113, 227, 0.3);
+    outline: none;
+  }
+  
+  /* hover效果 */
+  .hover-scale {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-scale:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15)!important;
+  }
+
+  /* 适配移动端 */
+  @media (max-width: 768px) {
+    .event-card {
+      border-radius: 12px;
+      box-shadow: none;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block body %}
 <div class="card shadow-sm mb-4">
   <div class="card-body">
