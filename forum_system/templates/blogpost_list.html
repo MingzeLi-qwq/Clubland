@@ -77,11 +77,11 @@
       {% for post in posts %}
         <a href="{% url 'forum_system:blog_detail' post.pk %}" class="list-group-item list-group-item-action">
           <div class="d-flex w-100 justify-content-between flex-column flex-sm-row">
-            <h5 class="mb-1">{{ post.title }}</h5>
-            <small>{{ post.created_at|date:"Y-m-d H:i" }}</small>
+            <h5 class="mb-1 text-break">{{ post.title }}</h5>
+            <small class="ms-0 ms-sm-2">{{ post.created_at|date:"Y-m-d H:i" }}</small>
           </div>
-          <!-- 预览正文，限制2行显示 -->
-          <p class="mb-1" style="display: -webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient: vertical; overflow: hidden;">
+          <!-- 预览正文，限制2行显示，添加断词确保不溢出 -->
+          <p class="mb-1 text-break" style="display: -webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word; max-width: 100%;">
             {{ post.content|striptags }}
           </p>
           <!-- 显示作者和所属社团 -->

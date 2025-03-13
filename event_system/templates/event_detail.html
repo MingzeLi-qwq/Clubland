@@ -93,6 +93,11 @@
                         <i class="bi-check-circle me-2"></i>RSVP Now
                     {% endif %}
                 </button>
+                {% if user_rsvp and user_rsvp.status %}
+                <button class="btn btn-lg btn-outline-warning add-to-calendar-btn">
+                    <i class="bi-calendar-week me-2"></i>添加到日历
+                </button>
+                {% endif %}
             {% endif %}
         {% else %}
             <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-lg btn-primary btn-lg">
@@ -138,6 +143,22 @@
   
                       this.classList.toggle("btn-primary", !data.new_status);
                       this.classList.toggle("btn-outline-danger", data.new_status);
+                      
+                      // 添加或移除日历按钮
+                      let calendarBtn = document.querySelector('.add-to-calendar-btn');
+                      if (data.new_status) {
+                          // 如果没有日历按钮，添加一个
+                          if (!calendarBtn) {
+                              calendarBtn = document.createElement('button');
+                              calendarBtn.className = 'btn btn-lg btn-outline-warning add-to-calendar-btn';
+                              calendarBtn.innerHTML = '<i class="bi bi-calendar-week me-2"></i>添加到日历';
+                              this.parentNode.insertBefore(calendarBtn, this.nextSibling);
+                              addCalendarEventListener(calendarBtn);
+                          }
+                      } else if (calendarBtn) {
+                          // 如果取消RSVP，移除日历按钮
+                          calendarBtn.remove();
+                      }
                   } else {
                       alert("Error: " + data.message);
                   }
@@ -146,6 +167,52 @@
               }
           });
       });
+      
+      // 为日历按钮添加事件监听
+      addCalendarEventListeners();
   });
+  
+  function addCalendarEventListeners() {
+      document.querySelectorAll('.add-to-calendar-btn').forEach(btn => {
+          addCalendarEventListener(btn);
+      });
+  }
+  
+  function addCalendarEventListener(btn) {
+      btn.addEventListener('click', function() {
+          // 活动信息
+          const eventName = "{{ event.name }}";
+          const startTime = "{{ event.start_time|date:'Ymd\\THis' }}";
+          const endTime = "{{ event.end_time|date:'Ymd\\THis' }}";
+          const location = "{{ event.location }}";
+          const clubName = "{{ club.name }}";
+          const description = "{{ event.description|linebreaks|striptags }}";
+          
+          // 生成iCalendar (.ics) 文件内容
+          const icsContent = [
+              'BEGIN:VCALENDAR',
+              'VERSION:2.0',
+              'PRODID:-//miHoyo Events//CN',
+              'CALSCALE:GREGORIAN',
+              'BEGIN:VEVENT',
+              `SUMMARY:${eventName}`,
+              `DTSTART:${startTime}`,
+              `DTEND:${endTime}`,
+              `LOCATION:${location}`,
+              `DESCRIPTION:Club: ${clubName}\\n\\n${description}`,
+              'END:VEVENT',
+              'END:VCALENDAR'
+          ].join('\r\n');
+          
+          // 创建Blob并触发下载
+          const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = `${eventName}.ics`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+      });
+  }
 </script>
 {% endblock %}
