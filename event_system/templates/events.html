@@ -75,15 +75,19 @@
             {% endfor %}
         </select>
       </div>
-
+      
+      <div class="col-lg-12 text-end mt-0">      </div>
+      
       <!-- 自定义日期范围 -->
       <div class="col-lg-3">
-        <input type="date" name="start_date" class="form-control" 
-               value="{{ start_date }}" placeholder="From date">
+        <input type="text" id="start_date" name="start_date" class="form-control" 
+               placeholder="Date from" onfocus="this.type='date'" 
+               value="{{ start_date }}">
       </div>
       <div class="col-lg-3">
-        <input type="date" name="end_date" class="form-control"
-               value="{{ end_date }}" placeholder="To date">
+        <input type="text" id="end_date" name="end_date" class="form-control"
+               placeholder="Date to" onfocus="this.type='date'" 
+               value="{{ end_date }}">
       </div>
 
       <!-- Action buttons -->
