@@ -3,11 +3,6 @@
 
 {% block extra_css %}
 <style>
-  /* 只保留必要的自定义样式 */
-  .add-to-calendar-btn:hover {
-    background-color: #ffc107;
-    color: white;
-  }
 </style>
 {% endblock %}
 
@@ -95,8 +90,10 @@
       <div class="d-flex flex-wrap gap-2 border-top pt-4">
         {% if user.is_authenticated %}
             {% if user.account_type != "Admin" %}
-                <button class="btn btn-lg mb-2 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center rsvp-btn {% if user_rsvp and user_rsvp.status %}btn-outline-danger{% else %}btn-primary{% endif %}"
-                        data-event-id="{{ event.pk }}" style="min-width: 160px; height: 48px;">
+                <button class="btn btn-lg mb-2 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center"
+                        data-event-id="{{ event.pk }}" style="border: 2px solid red; background-color: transparent; color: red; min-width: 160px; height: 48px;"
+                        onmouseover="this.style.backgroundColor='red';this.style.color='white';"
+                        onmouseout="this.style.backgroundColor='transparent';this.style.color='red';">
                     {% if user_rsvp and user_rsvp.status %}
                         <i class="bi-x-circle me-2"></i>Cancel RSVP
                     {% else %}
@@ -104,8 +101,10 @@
                     {% endif %}
                 </button>
                 {% if user_rsvp and user_rsvp.status %}
-                <button class="btn btn-lg mb-2 btn-outline-warning rounded-3 fw-semibold add-to-calendar-btn d-inline-flex align-items-center justify-content-center" 
-                        style="min-width: 160px; height: 48px;">
+                <button class="btn btn-lg mb-2 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center" 
+                        style="border: 2px solid yellow; background-color: transparent; color: yellow; min-width: 160px; height: 48px;"
+                        onmouseover="this.style.backgroundColor='yellow';this.style.color='black';"
+                        onmouseout="this.style.backgroundColor='transparent';this.style.color='yellow';">
                     <i class="bi-calendar-week me-2"></i>Add to Calendar
                 </button>
                 {% endif %}
@@ -116,9 +115,12 @@
                 <i class="bi-arrow-left me-2"></i>Login to RSVP
             </a>
         {% endif %}
-        <a href="{% url 'events' %}" class="btn mb-2 btn-outline-primary rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center" 
-           style="min-width: 160px; height: 48px;">
-            <i class="bi-arrow-left me-2"></i>Back to Events
+        <a href="{% url 'events' %}"
+           class="btn mb-2 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center"
+           style="border: 2px solid blue; background-color: transparent; color: blue; min-width: 160px; height: 48px;"
+           onmouseover="this.style.backgroundColor='blue'; this.style.color='white';"
+           onmouseout="this.style.backgroundColor='transparent'; this.style.color='blue';">
+          <i class="bi-arrow-left me-2"></i>Back to Events
         </a>
       </div>
     </div>
