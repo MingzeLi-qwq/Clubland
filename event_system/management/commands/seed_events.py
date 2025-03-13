@@ -11,42 +11,42 @@ from event_system.models import Event, Category
 
 fake = Faker()
 
-# 预定义活动分类
+
 event_categories = [
     "Workshop", "Sports", "Social", "Tech", "Arts",
     "Academic", "Music", "Outdoor", "Career", "Cultural"
 ]
 
-# 预定义活动地点关键词
+
 locations = [
     "Main Hall", "Room 302", "Sports Complex", "Campus Lawn",
     "Auditorium", "Online", "Conference Room", "Student Center"
 ]
 
 class Command(BaseCommand):
-    help = '为每个社团创建10个随机活动 / Create 10 random events for each club'
+    help = 'Create 10 random events for each club'
 
     def handle(self, *args, **options):
         self.create_categories()
         self.create_events_for_each_club()
         
     def create_categories(self):
-        """创建分类数据（如果不存在）"""
+        """Create categorized data (if it doesn't exist)"""
         for name in event_categories:
             Category.objects.get_or_create(name=name)
-        self.stdout.write(self.style.SUCCESS("✅ 成功创建/验证分类数据"))
+        self.stdout.write(self.style.SUCCESS("✅ Successful creation/validation of categorized data"))
 
     def create_events_for_each_club(self):
-        """为每个社团创建活动数据"""
+        """Create activity data for each club"""
         clubs = Club.objects.all()
         users = User.objects.all()
         categories = Category.objects.all()
 
         if not users.exists():
-            self.stdout.write(self.style.ERROR("❌ 错误：没有可用用户，请先创建用户"))
+            self.stdout.write(self.style.ERROR("❌ Error: No user available, please create a user first"))
             return
         if not clubs.exists():
-            self.stdout.write(self.style.ERROR("❌ 错误：没有可用社团，请先创建社团"))
+            self.stdout.write(self.style.ERROR("❌ Error: There are no available clubs, please create a club first!"))
             return
         
         start_time = timezone.now() + timedelta(days=random.randint(5, 30)),

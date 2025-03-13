@@ -40,18 +40,15 @@ class EventListView(ListView):
         queryset = super().get_queryset()
         params = self.request.GET
         
-        # Combine search conditions
         filters = Q()
 
-        # Keyword search (name, location, description)
         if search := params.get('search'):
             filters &= Q(
                 Q(name__icontains=search) |
                 Q(location__icontains=search) |
                 Q(description__icontains=search)
             )
-        
-        # Time filter
+    
         now = timezone.now()
         if date_filter := params.get('date'):
             if date_filter == 'upcoming':
@@ -59,17 +56,16 @@ class EventListView(ListView):
             elif date_filter == 'past':
                 filters &= Q(end_time__lt=now)
 
-       # Custom time range
         if start_date := params.get('start_date'):
             filters &= Q(start_time__gte=start_date)
         if end_date := params.get('end_date'):
             filters &= Q(start_time__lte=end_date)  
 
-        # Category filter
+
         if (category := params.get('category')) and category != 'all':
             filters &= Q(categories__name=category)    
 
-        # 俱乐部过滤
+  
         if (club_id := params.get('club')) and club_id != 'all':
             filters &= Q(club__club_id=club_id)
 
@@ -87,7 +83,7 @@ class EventListView(ListView):
             'end_date': params.get('end_date', ''),
             'current_club': params.get('club', 'all'),
             'categories': Category.objects.all(),
-            'all_clubs': Club.objects.all(),  # 添加所有俱乐部到上下文
+            'all_clubs': Club.objects.all(),  
         })
         return context
 
@@ -115,7 +111,6 @@ def rsvp_toggle(request, pk):
     event = get_object_or_404(Event, pk=pk)
     rsvp, created = RSVP.objects.get_or_create(user=request.user, event=event)
 
-    # Toggle status
     rsvp.status = not rsvp.status if not created else True
     rsvp.save()
 
@@ -156,24 +151,24 @@ class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRe
         club = get_object_or_404(Club, pk=club_id)
         name = request.POST.get('name', '').strip()
         description = request.POST.get('description', '').strip()
-        start_time = request.POST.get('start_time', '').strip()  # 注意时间格式校验
-        end_time = request.POST.get('end_time', '').strip()  # 注意时间格式校验
+        start_time = request.POST.get('start_time', '').strip()  
+        end_time = request.POST.get('end_time', '').strip()  
         location = request.POST.get('location', '').strip()
 
-        # 获取选择的 category PKs
+        
         category_pks = request.POST.getlist('categories')
 
-        # 简单校验
+        
         if not name or not start_time or not end_time or not location:
             messages.error(request, "Title, time and place are required")
             return redirect('create_event', club_id=club_id)
 
-        # 检查事件名称是否重复
+      
         if isSameEventNameExist(name):
             messages.error(request, "Event with the same name already exists")
             return redirect('create_event', club_id=club_id)
 
-        # 创建新的活动
+      
         event = Event.objects.create(
             club=club,
             name=name,
@@ -183,7 +178,7 @@ class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRe
             location=location,
         )
 
-        # 添加选择的 categories
+       
         if category_pks:
             categories = Category.objects.filter(pk__in=category_pks)
             event.categories.add(*categories)
@@ -197,7 +192,6 @@ class CreateEventView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRe
 
 class DeleteEvent(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, event_id, club_id):
-        # 如果访问此view的请求是来自admin panel的, 重定向url就是admin panel
         if request.user.account_type == 'Admin':
             redirect_url = 'admin_panel_club_events'
         else:
@@ -214,7 +208,6 @@ class DeleteEvent(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequir
             return redirect('verify_admin_password')
 
     def post(self, request, event_id, club_id):
-        # 如果访问此view的请求是来自admin panel的, 重定向url就是admin panel
         if request.user.account_type == 'Admin':
             redirect_url = 'admin_panel_club_event_general'
         else:
@@ -237,7 +230,6 @@ class UpdateEventName(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         event = get_object_or_404(Event, id=event_id, club=club)
         new_name = request.POST.get('event_name', '').strip()
 
-        # 如果访问此view的请求是来自admin panel的, 重定向url就是admin panel
         if request.user.account_type == 'Admin':
             redirect_url = 'admin_panel_club_event_general'
         else:
@@ -270,18 +262,16 @@ class UpdateEventDescription(LoginRequiredMixin, ClubManagerRequiredMixin, View)
         event = get_object_or_404(Event, id=event_id, club=club)
         new_description = request.POST.get('event_description', '').strip()
 
-        # 如果访问此view的请求是来自admin panel的, 重定向url就是admin panel
         if request.user.account_type == 'Admin':
             redirect_url = 'admin_panel_club_event_general'
         else:
             redirect_url = 'club_manager_event_general'
 
-        # Check if the new description is the same as the old one
         if new_description == event.description:
             messages.error(request, "The new description cannot be the same as the old one.")
             return redirect(redirect_url, club_id=club_id, event_id=event_id)
 
-        # Handling of empty descriptions
+ 
         if not new_description:
             messages.error(request, "Event Description cannot be empty.")
             return redirect(redirect_url, club_id=club_id, event_id=event_id)
@@ -302,7 +292,7 @@ class UpdateEventTime(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         start_time = request.POST.get('event_start_time')
         end_time = request.POST.get('event_end_time')
 
-        # 如果访问此view的请求是来自admin panel的, 重定向url就是admin panel
+        
         if request.user.account_type == 'Admin':
             redirect_url = 'admin_panel_club_event_general'
         else:
@@ -338,7 +328,6 @@ class UpdateEventLocation(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         event = get_object_or_404(Event, id=event_id, club=club)
         new_location = request.POST.get('event_location', '').strip()
 
-        # 如果访问此view的请求是来自admin panel的, 重定向url就是admin panel
         if request.user.account_type == 'Admin':
             redirect_url = 'admin_panel_club_event_general'
         else:
@@ -365,13 +354,11 @@ class UpdateEventCategory(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         selected_categories = request.POST.getlist('categories')
         new_category_name = request.POST.get('new_category', '').strip()
 
-        # 如果访问此view的请求是来自admin panel的, 重定向url就是admin panel
         if request.user.account_type == 'Admin':
             redirect_url = 'admin_panel_club_event_general'
         else:
             redirect_url = 'club_manager_event_general'
 
-        # 恢复新分类创建逻辑
         if new_category_name:
             if Category.objects.filter(name__iexact=new_category_name).exists():
                 messages.warning(request, f"Category '{new_category_name}' already exists")
@@ -383,17 +370,15 @@ class UpdateEventCategory(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         messages.success(request, "Event categories updated successfully")
         return redirect(redirect_url, club_id=club_id, event_id=event_id)
 
-"""--------------------------------------------------以上部分负责针对单个event的相关操作-------------------------------------------------"""
+"""--------------------------------------------------The above section is responsible for the operations related to a single event.-------------------------------------------------"""
 
 class SearchRSVPCandidatesView(View):
-    """搜索可添加为RSVP的用户"""
+    """Search for users who can be added as RSVPs"""
     def get(self, request, *args, **kwargs):
         club_id = request.GET.get('club_id')
         event_id = request.GET.get('event_id')
         query = request.GET.get('q', '')
         
-
-        # Get users who haven't registered yet
         existing_rsvps = RSVP.objects.filter(event_id=event_id).values_list('user_id', flat=True)
         
         candidates = User.objects.filter(
