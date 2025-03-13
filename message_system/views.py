@@ -1,45 +1,44 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from .models import Message
-import json
+from .models import Message  # 导入 Message 模型
+from django.contrib.auth import get_user_model  # 使用 get_user_model 获取当前配置的用户模型
 
+# 示例视图函数
 def message_dashboard(request):
-    return render(request, 'messages/message_dashboard.html')
+    # 处理请求并返回渲染的模板
+    return render(request, 'messages/message_dashboard.html')  # 假设您有一个模板 'dashboard.html'
 
-@login_required
-def get_user_messages(request):
-    user = request.user
-    messages = Message.objects.filter(receiver=user).order_by('timestamp')
-    
-    data = [
-        {
-            "sender": msg.sender.username,
-            "text": msg.text,
-            "timestamp": msg.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-        }
-        for msg in messages
-    ]
-    return JsonResponse({"messages": data})
+# 获取所有消息
+def get_messages(request):
+    messages = Message.objects.all()
+    messages_data = [{
+        'sender': message.sender.username,
+        'text': message.text,
+    } for message in messages]
+    return JsonResponse({'messages': messages_data})
 
-@login_required
-def send_message(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        sender = request.user
-        receiver_username = data.get("receiver")
-        text = data.get("text")
-
-        try:
-            receiver = User.objects.get(username=receiver_username)
-        except User.DoesNotExist:
-            return JsonResponse({"error": "User not found"}, status=404)
-
-        message = Message.objects.create(sender=sender, receiver=receiver, text=text)
-        return JsonResponse({"message": "Message sent", "id": message.id})
-    
+# 搜索用户
 def search_users(request):
-    query = request.GET.get('q', '').strip()
-    users = User.objects.filter(username__icontains=query).values('username') if query else []
-    return JsonResponse({"users": list(users)})
+    query = request.GET.get('q', '')
+    # 获取当前用户模型
+    User = get_user_model()
+    users = User.objects.filter(username__icontains=query)
+    users_data = [{'username': user.username} for user in users]
+    return JsonResponse({'users': users_data})
+
+# 发送消息
+def send_message(request):
+    if request.method == 'POST':
+        receiver_username = request.POST.get('receiver')
+        text = request.POST.get('text')
+        # 获取当前用户作为发送者
+        sender = request.user
+        try:
+            # 查找接收者用户
+            receiver = get_user_model().objects.get(username=receiver_username)
+        except get_user_model().DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Receiver not found'})
+
+        # 创建并保存消息
+        Message.objects.create(sender=sender, receiver=receiver, text=text)
+        return JsonResponse({'status': 'success'})

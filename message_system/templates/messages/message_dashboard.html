@@ -2,275 +2,129 @@
 {% load static %}
 
 {% block body %}
-<div id="app">
-    <div class="chat-container">
-        <!-- 左侧消息列表 -->
-        <div class="sidebar">
-            <h5>Messages</h5>
+<div class="chat-container">
+    <!-- 左侧消息列表 -->
+    <div class="sidebar">
+        <h5>Messages</h5>
 
-            <!-- 搜索栏 -->
-            <input type="text" v-model="searchQuery" placeholder="Search users..." class="search-input">
-
-            <ul class="chat-list">
-                <li v-for="(chat, index) in filteredChatList" :key="index" @click="selectChat(index)" :class="{ active: currentChatIndex === index }">
-                    <div class="icon-wrapper">
-                        <i :class="chat.icon"></i>
-                    </div>
-                    <div>
-                        <strong>{{ chat.name }}</strong>
-                        <p style="margin:0; font-size: 12px; color: gray;">{{ chat.lastMessage }}</p>
-                    </div>
-                </li>
-            </ul>
+        <!-- 搜索栏和搜索按钮 -->
+        <div style="display: flex; gap: 5px;">
+            <input type="text" id="searchQuery" placeholder="Search users..." class="search-input">
+            <button onclick="searchUsers()" class="search-btn">
+                <i class="fas fa-search"></i>
+            </button>
         </div>
 
-        <!-- 右侧聊天框 -->
-        <div class="chat-content">
-            <div class="chat-header">
-                <strong>{{ currentChat.name }}</strong>
-                <button class="btn btn-outline-secondary btn-sm">Setting</button>
-            </div>
+        <ul class="chat-list" id="chatList">
+            <!-- 动态填充聊天列表 -->
+        </ul>
+    </div>
 
-            <div class="chat-box">
-                <div v-for="(msg, index) in currentChat.messages" :key="index" :class="['chat-message', msg.sender]">
-                    <p>{{ msg.text }}</p>
-                </div>
-            </div>
+    <!-- 右侧聊天框 -->
+    <div class="chat-content">
+        <div class="chat-header">
+            <strong id="chatName">Select a chat</strong>
+            <button class="btn btn-outline-secondary btn-sm">Setting</button>
+        </div>
 
-            <!-- 输入框 -->
-            <div class="chat-footer">
-                <textarea v-model="newMessage" 
-                          @keydown="handleKeyPress"
-                          placeholder="Input Message..." 
-                          class="message-input"></textarea>
-                <button @click="sendMessage" class="send-btn">Send</button>
-            </div>
+        <div class="chat-box" id="chatBox">
+            <!-- 消息列表 -->
+        </div>
+
+        <!-- 输入框 -->
+        <div class="chat-footer">
+            <textarea id="newMessage" placeholder="Input Message..." class="message-input"></textarea>
+            <button onclick="sendMessage()" class="send-btn">Send</button>
         </div>
     </div>
 </div>
 
-<!-- Vue 逻辑 -->
 {% block extra_js %}
 <script>
-    function getCSRFToken() {
-        return document.cookie.split('; ')
-            .find(row => row.startsWith('csrftoken='))
-            ?.split('=')[1];
+    const chatListElement = document.getElementById('chatList');
+    const chatBoxElement = document.getElementById('chatBox');
+    const chatNameElement = document.getElementById('chatName');
+    const newMessageElement = document.getElementById('newMessage');
+    let currentChat = null;
+
+    // 获取所有消息
+    function fetchMessages() {
+        fetch('/api/messages/')
+            .then(response => response.json())
+            .then(data => {
+                const messages = data.messages;
+                renderChatList(messages);
+            });
     }
-    
-    const app = Vue.createApp({
-        data() {
-            return {
-                chatList: [],
-                searchQuery: "",
-                currentChatIndex: 0,
-                newMessage: "",
-            };
-        },
-        computed: {
-            filteredChatList() {
-                if (!this.searchQuery.trim()) return this.chatList;
-                return this.chatList.filter(chat => 
-                    chat.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-                );
+
+    // 渲染聊天列表
+    function renderChatList(messages) {
+        chatListElement.innerHTML = '';
+        messages.forEach((msg, index) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = msg.sender;
+            listItem.onclick = () => selectChat(index);
+            chatListElement.appendChild(listItem);
+        });
+    }
+
+    // 搜索用户
+    function searchUsers() {
+        const query = document.getElementById('searchQuery').value;
+        fetch(`/api/search_users/?q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                const users = data.users;
+                renderChatList(users);
+            });
+    }
+
+    // 选择对话
+    function selectChat(index) {
+        currentChat = index;
+        chatNameElement.textContent = `Chat with ${index}`;
+        loadChatMessages(index);
+    }
+
+    // 加载聊天消息
+    function loadChatMessages(index) {
+        // 假设我们根据聊天索引来加载消息
+        // 这里应该通过 API 获取聊天内容
+        chatBoxElement.innerHTML = ''; // 清空当前消息
+        // 在此处可以添加代码从后端加载当前聊天的历史消息
+    }
+
+    // 发送消息
+    function sendMessage() {
+        const text = newMessageElement.value;
+        if (!text || !currentChat) return;
+
+        fetch('/api/send/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.cookie.split(';').find(item => item.trim().startsWith('csrftoken=')).split('=')[1]
             },
-            currentChat() {
-                return this.chatList[this.currentChatIndex] || { name: "", messages: [] };
-            }
-        },
-        methods: {
-            fetchMessages() {
-                fetch('/api/messages/')
-                    .then(response => response.json())
-                    .then(data => {
-                        this.chatList = data.messages.map(msg => ({
-                            name: msg.sender,
-                            avatar: "https://via.placeholder.com/40",
-                            lastMessage: msg.text,
-                            messages: [{ text: msg.text, sender: "other" }]
-                        }));
-                    })
-                    .catch(error => console.error("Failed to load messages:", error));
-            },
-            searchUsers() {
-                if (!this.searchQuery.trim()) return;
-                fetch(`/api/search_users/?q=${this.searchQuery}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        this.chatList = data.users.map(user => ({
-                            name: user.username,
-                            avatar: "https://via.placeholder.com/40",
-                            lastMessage: "",
-                            messages: []
-                        }));
-                    })
-                    .catch(error => console.error("Failed to search users:", error));
-            },
-            sendMessage() {
-                if (this.newMessage.trim() && this.currentChat) {
-                    fetch('/api/send/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCSRFToken()
-                        },
-                        body: JSON.stringify({
-                            receiver: this.currentChat.name,
-                            text: this.newMessage
-                        })
-                    }).then(response => response.json())
-                      .then(() => {
-                          this.currentChat.messages.push({ text: this.newMessage, sender: "me" });
-                          this.newMessage = "";
-                      })
-                      .catch(error => console.error("Failed to send message:", error));
-                }
-            },
-            selectChat(index) {
-                this.currentChatIndex = index;
-            }
-        },
-        watch: {
-            searchQuery() {
-                this.searchUsers();
-            }
-        },
-        mounted() {
-            this.fetchMessages();
-        }
-    }).mount("#app");
+            body: `receiver=${currentChat}&text=${text}`
+        }).then(response => response.json())
+          .then(data => {
+              if (data.status === 'success') {
+                  loadChatMessages(currentChat);  // 重新加载聊天
+              }
+          });
+    }
+
+    // 初始化加载消息
+    fetchMessages();
 </script>
 {% endblock %}
 
 <!-- 引入 FontAwesome 图标库 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-<!-- CSS 样式优化 -->
+<!-- CSS 样式 -->
 <style>
-.chat-container {
-    display: flex;
-    height: 90vh;
-}
-
-.sidebar {
-    width: 30%;
-    background: #f4f4f4;
-    padding: 10px;
-    border-right: 1px solid #ddd;
-}
-
-.chat-list {
-    list-style: none;
-    padding: 0;
-}
-
-.chat-list li {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.chat-list li:hover, .chat-list li.active {
-    background: #ddd;
-}
-
-.icon-wrapper {
-    width: 40px;
-    height: 40px;
-    background: #007bff;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    margin-right: 10px;
-    font-size: 18px;
-}
-
-.chat-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.chat-header {
-    padding: 10px;
-    background: #007bff;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.chat-box {
-    flex-grow: 1;
-    padding: 15px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-.chat-message {
-    max-width: 60%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-}
-
-.chat-message.other {
-    background: #eaeaea;
-    align-self: flex-start;
-}
-
-.chat-message.me {
-    background: #007bff;
-    color: white;
-    align-self: flex-end;
-}
-
-.chat-footer {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-top: 1px solid #ddd;
-}
-
-.message-input {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    resize: none;
-    height: 40px;
-    overflow-y: auto;
-}
-
-.send-btn {
-    margin-left: 10px;
-    padding: 10px 15px;
-    border: none;
-    background: #007bff;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.send-btn:hover {
-    background: #0056b3;
-}
-
-.search-input {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-}
+    /* 这里的 CSS 代码与 Vue.js 示例相同 */
 </style>
 
 {% endblock %}
