@@ -4,6 +4,7 @@ from club_system.models import Club, Membership, NewClubRequest
 from user_system.models import User
 from event_system.models import Event
 from django.utils import timezone
+from datetime import timedelta
 from club_system.views import isSameClubNameExist, isSameClubNameExistInRequest
 
 class ClubSystemViewsTest(TestCase):
@@ -75,6 +76,25 @@ class ClubSystemViewsTest(TestCase):
             description="New Test Description",
             status=NewClubRequest.STATUS_PENDING
         )
+
+        # 创建两个测试用的event
+        self.event1 = Event.objects.create(
+            name="Test Event 1",
+            description="Test Event Description 1",
+            club=self.club,
+            start_time=timezone.now() + timedelta(days=1),
+            end_time=timezone.now() + timedelta(days=1, hours=2),
+            location="Test Location 1"
+        )
+        
+        self.event2 = Event.objects.create(
+            name="Special Workshop",
+            description="Test Event Description 2",
+            club=self.club,
+            start_time=timezone.now() + timedelta(days=2),
+            end_time=timezone.now() + timedelta(days=2, hours=3),
+            location="Test Location 2"
+        )      
         
 
     def test_clubs_list_view(self):
@@ -187,6 +207,63 @@ class ClubSystemViewsTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'test2@example.com')
+
+
+    def test_club_manager_events_view(self):
+        """测试俱乐部管理员事件页面视图"""
+        # 登录管理员用户
+        self.client.login(username='@manageruser', password='managerpass123')
+        
+        # 访问事件管理页面
+        response = self.client.get(reverse('club_manager_events', args=[self.club.pk]))
+        
+        # 检查响应状态码
+        self.assertEqual(response.status_code, 200)
+        
+        # 检查使用的模板
+        self.assertTemplateUsed(response, 'club_manager/events.html')
+        
+        # 检查上下文数据
+        self.assertEqual(response.context['club_id'], self.club.pk)
+        self.assertEqual(response.context['club'], self.club)
+        
+        # 检查事件列表是否包含两个测试事件
+        self.assertEqual(len(response.context['events']), 2)
+        self.assertContains(response, 'Test Event 1')
+        self.assertContains(response, 'Special Workshop')
+        
+    def test_club_manager_events_search(self):
+        """测试俱乐部管理员事件页面的搜索功能"""
+        # 登录管理员用户
+        self.client.login(username='@manageruser', password='managerpass123')
+
+        # 测试事件名称搜索
+        response = self.client.get(
+            reverse('club_manager_events', args=[self.club.pk]),
+            {'search': 'Special'}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Special Workshop')
+        self.assertNotContains(response, 'Test Event 1')
+        
+        # 测试日期搜索
+        tomorrow = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+        response = self.client.get(
+            reverse('club_manager_events', args=[self.club.pk]),
+            {'search': tomorrow}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Event 1')
+        self.assertNotContains(response, 'Special Workshop')
+        
+        # 测试无结果搜索
+        response = self.client.get(
+            reverse('club_manager_events', args=[self.club.pk]),
+            {'search': 'NonExistent'}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Test Event 1')
+        self.assertNotContains(response, 'Special Workshop')
         
     
     @classmethod
@@ -197,3 +274,4 @@ class ClubSystemViewsTest(TestCase):
         Club.objects.all().delete()
         Membership.objects.all().delete()
         NewClubRequest.objects.all().delete()
+        Event.objects.all().delete()
