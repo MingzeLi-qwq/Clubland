@@ -94,8 +94,8 @@
                     {% endif %}
                 </button>
                 {% if user_rsvp and user_rsvp.status %}
-                <button class="btn btn-lg btn-success add-to-calendar-btn">
-                    <i class="bi-calendar-plus me-2"></i>添加到日历
+                <button class="btn btn-lg btn-outline-warning add-to-calendar-btn">
+                    <i class="bi-calendar-week me-2"></i>添加到日历
                 </button>
                 {% endif %}
             {% endif %}
@@ -150,8 +150,8 @@
                           // 如果没有日历按钮，添加一个
                           if (!calendarBtn) {
                               calendarBtn = document.createElement('button');
-                              calendarBtn.className = 'btn btn-lg btn-success add-to-calendar-btn';
-                              calendarBtn.innerHTML = '<i class="bi-calendar-plus me-2"></i>添加到日历';
+                              calendarBtn.className = 'btn btn-lg btn-outline-warning add-to-calendar-btn';
+                              calendarBtn.innerHTML = '<i class="bi bi-calendar-week me-2"></i>添加到日历';
                               this.parentNode.insertBefore(calendarBtn, this.nextSibling);
                               addCalendarEventListener(calendarBtn);
                           }
@@ -185,6 +185,7 @@
           const startTime = "{{ event.start_time|date:'Ymd\\THis' }}";
           const endTime = "{{ event.end_time|date:'Ymd\\THis' }}";
           const location = "{{ event.location }}";
+          const clubName = "{{ club.name }}";
           const description = "{{ event.description|linebreaks|striptags }}";
           
           // 生成iCalendar (.ics) 文件内容
@@ -198,7 +199,7 @@
               `DTSTART:${startTime}`,
               `DTEND:${endTime}`,
               `LOCATION:${location}`,
-              `DESCRIPTION:${description}`,
+              `DESCRIPTION:Club: ${clubName}\\n\\n${description}`,
               'END:VEVENT',
               'END:VCALENDAR'
           ].join('\r\n');
