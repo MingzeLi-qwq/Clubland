@@ -20,11 +20,14 @@ def get_messages(request):
 # 搜索用户
 def search_users(request):
     query = request.GET.get('q', '')
-    # 获取当前用户模型
     User = get_user_model()
     users = User.objects.filter(username__icontains=query)
-    users_data = [{'username': user.username} for user in users]
+    
+    # 使用 pk 作为唯一标识符
+    users_data = [{'id': user.pk, 'username': user.username} for user in users]
+    
     return JsonResponse({'users': users_data})
+
 
 # 发送消息
 def send_message(request):
