@@ -108,19 +108,43 @@
             .then(response => response.json())
             .then(data => {
                 chatBoxElement.innerHTML = '';
+                const currentUser = "{{ request.user.username }}"; // 获取当前用户
+
                 data.messages.forEach(msg => {
                     const messageElement = document.createElement('div');
-                    messageElement.classList.add(
-                        msg.sender === currentChat ? 'sent' : 'received'
-                    );
+
+                    // 比较 sender 和当前用户，决定消息位置
+                    if (msg.sender === currentUser) {
+                        messageElement.classList.add('sent'); // 右侧显示
+                    } else {
+                        messageElement.classList.add('received'); // 左侧显示
+                    }
+
                     messageElement.textContent = msg.text;
                     chatBoxElement.appendChild(messageElement);
                 });
+
                 // 滚动到底部
                 chatBoxElement.scrollTop = chatBoxElement.scrollHeight;
             });
     }
-    
+
+    // 初始化加载消息
+    function initializeChat() {
+        fetch('/api/messages/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.messages.length > 0) {
+                    const firstChat = data.messages[0].sender !== "{{ request.user.username }}"
+                        ? data.messages[0].sender
+                        : data.messages[0].receiver;
+                    selectChat(firstChat);
+                }
+            });
+    }
+
+    initializeChat();
+
     // start a new chat
     function startNewChat(username) {
         currentChat = username;
@@ -146,10 +170,12 @@
         .then(data => {
             if (data.status === 'success') {
                 newMessageElement.value = '';
+                // 重新加载消息，确保新消息和旧消息一起显示
                 loadChatMessages(currentChat);
             }
         });
     }
+
 
     // 初始化加载消息
     fetchMessages();

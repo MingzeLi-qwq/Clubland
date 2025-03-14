@@ -10,12 +10,25 @@ def message_dashboard(request):
 
 # 获取所有消息
 def get_messages(request):
-    messages = Message.objects.all()
-    messages_data = [{
-        'sender': message.sender.username,
-        'text': message.text,
-    } for message in messages]
-    return JsonResponse({'messages': messages_data})
+    receiver = request.GET.get('receiver')
+    if receiver:
+        messages = Message.objects.filter(
+            receiver__username=receiver
+        ).order_by('timestamp')
+    else:
+        messages = Message.objects.all().order_by('timestamp')
+
+    data = {
+        'messages': [
+            {
+                'sender': msg.sender.username,
+                'receiver': msg.receiver.username,
+                'text': msg.text
+            }
+            for msg in messages
+        ]
+    }
+    return JsonResponse(data)
 
 # 搜索用户
 def search_users(request):
