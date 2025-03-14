@@ -90,7 +90,7 @@
       <div class="d-flex flex-wrap gap-2 border-top pt-4">
         {% if user.is_authenticated %}
             {% if user.account_type != "Admin" %}
-                <button class="btn btn-lg mb-2 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center"
+                <button class="btn btn-lg mb-2 rsvp-btn rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center"
                         data-event-id="{{ event.pk }}" style="border: 2px solid red; background-color: transparent; color: red; min-width: 160px; height: 48px;"
                         onmouseover="this.style.backgroundColor='red';this.style.color='white';"
                         onmouseout="this.style.backgroundColor='transparent';this.style.color='red';">
@@ -101,10 +101,10 @@
                     {% endif %}
                 </button>
                 {% if user_rsvp and user_rsvp.status %}
-                <button class="btn btn-lg mb-2 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center" 
-                        style="border: 2px solid yellow; background-color: transparent; color: yellow; min-width: 160px; height: 48px;"
-                        onmouseover="this.style.backgroundColor='yellow';this.style.color='black';"
-                        onmouseout="this.style.backgroundColor='transparent';this.style.color='yellow';">
+                <button class="btn btn-lg mb-2 add-to-calendar-btn rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center" 
+                        style="border: 2px solid rgb(255, 190, 0); background-color: transparent; color: rgb(255, 190, 0); min-width: 160px; height: 48px;"
+                        onmouseover="this.style.backgroundColor='rgb(255, 190, 0)';this.style.color='black';"
+                        onmouseout="this.style.backgroundColor='transparent';this.style.color='rgb(255, 190, 0)';">
                     <i class="bi-calendar-week me-2"></i>Add to Calendar
                 </button>
                 {% endif %}
@@ -116,10 +116,10 @@
             </a>
         {% endif %}
         <a href="{% url 'events' %}"
-           class="btn mb-2 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center"
-           style="border: 2px solid blue; background-color: transparent; color: blue; min-width: 160px; height: 48px;"
-           onmouseover="this.style.backgroundColor='blue'; this.style.color='white';"
-           onmouseout="this.style.backgroundColor='transparent'; this.style.color='blue';">
+           class="btn btn-lg mb-2 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center"
+           style="border: 2px solid rgb(13, 110, 253); background-color: transparent; color: rgb(13, 110, 253); min-width: 160px; height: 48px;"
+           onmouseover="this.style.backgroundColor='rgb(13, 110, 253)'; this.style.color='white';"
+           onmouseout="this.style.backgroundColor='transparent'; this.style.color='rgb(13, 110, 253)';">
           <i class="bi-arrow-left me-2"></i>Back to Events
         </a>
       </div>
@@ -167,7 +167,7 @@
                               calendarBtn.className = 'btn btn-lg mb-2 btn-outline-warning rounded-3 fw-semibold add-to-calendar-btn d-inline-flex align-items-center justify-content-center';
                               calendarBtn.style.minWidth = '160px';
                               calendarBtn.style.height = '48px';
-                              calendarBtn.innerHTML = '<i class="bi bi-calendar-week me-2"></i>Add to Calendar';
+                              calendarBtn.innerHTML = '<i class="bi-calendar-week me-2"></i>Add to Calendar';
                               this.parentNode.insertBefore(calendarBtn, this.nextSibling);
                               addCalendarEventListener(calendarBtn);
                           }
@@ -231,10 +231,5 @@
       });
   }
 
-  // 移除 addWalletEventListener 函数
-  
-  // 移除 downloadJSONAsFile 函数
-  
-  // 移除 Wallet 按钮初始化代码
 </script>
 {% endblock %}
