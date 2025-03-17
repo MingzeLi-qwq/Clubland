@@ -8,8 +8,6 @@
     </div>
     <button type="submit" class="btn btn-secondary">提交评论</button>
   </form>
-{% else %}
-  <p>请<a href="{% url 'login' %}">登录</a>后评论</p>
 {% endif %}
 
 <!-- 添加CSRF令牌刷新功能 -->
