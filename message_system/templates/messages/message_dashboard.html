@@ -81,14 +81,15 @@
 
         users.forEach(user => {
             const listItem = document.createElement('li');
-            listItem.textContent = user;
+            listItem.textContent = typeof user === 'string' ? user : user.username;
 
-            // 如果是搜索结果，设置点击后选择为新聊天
+            // 直接使用 user 或 user.username
             listItem.onclick = () => {
+                const username = typeof user === 'string' ? user : user.username;
                 if (isSearchResult) {
-                    startNewChat(user); // 使用用户名开始新聊天
+                    startNewChat(username);
                 } else {
-                    selectChat(user);
+                    selectChat(username);
                 }
             };
 
@@ -103,9 +104,7 @@
         fetch(`/api/search_users/?q=${query}`)
             .then(response => response.json())
             .then(data => {
-                const users = data.users;
-
-                fetchMessages(); 
+                const users = data.users.map(user => user.username || user);
 
                 renderChatList(users, true);
             });

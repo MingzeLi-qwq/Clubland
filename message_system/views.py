@@ -4,12 +4,15 @@ from .models import Message
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 import json
+from django.contrib.auth.decorators import login_required
 
 # Message dashboard view
+@login_required
 def message_dashboard(request):
     return render(request, 'messages/message_dashboard.html')
 
 # Get messages
+@login_required
 def get_messages(request):
     receiver = request.GET.get('receiver')
     user = request.user
@@ -37,6 +40,7 @@ def get_messages(request):
     return JsonResponse(data)
 
 # Search users
+@login_required
 def search_users(request):
     query = request.GET.get('q', '')
     User = get_user_model()
@@ -46,6 +50,7 @@ def search_users(request):
     return JsonResponse({'users': users_data})
 
 # Send message
+@login_required
 def send_message(request):
     if request.method == 'POST':
         receiver_username = request.POST.get('receiver')
@@ -63,6 +68,7 @@ def send_message(request):
         return JsonResponse({'status': 'success'})
 
 # Clear chat
+@login_required
 def clear_chat(request):
     if request.method == 'POST':
         try:
