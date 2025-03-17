@@ -8,8 +8,9 @@
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    <!-- 响应式设置：手机上垂直排列且左对齐，桌面上水平排列左右对齐 -->
+    <div class="collapse navbar-collapse d-flex flex-column flex-lg-row align-items-start align-items-lg-center" id="navbarSupportedContent">
+      <ul class="navbar-nav mb-0 flex-column flex-lg-row me-lg-auto">
         <li class="nav-item">
           <a class="nav-link rounded px-2 py-1" href="{% url 'clubs' %}">Clubs</a>
         </li>
@@ -52,13 +53,14 @@
           {% endif %}
         {% endif %}
       </ul>
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+      <ul class="navbar-nav mb-0 flex-column flex-lg-row ms-lg-auto">
         {% if user.is_authenticated %}
-          <!-- 通知按钮 -->
+          <!-- Notifications -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle rounded px-2 py-1" href="#" id="notificationDropdown" role="button" 
+            <a class="nav-link dropdown-toggle rounded px-2 py-1 d-flex align-items-center" href="#" id="notificationDropdown" role="button" 
                data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fas fa-bell text-white fs-5"></i>
+              <span class="d-lg-none ms-2">Notifications</span>
               {% if unread_notifications_count > 0 %}
                 <span class="badge bg-danger">{{ unread_notifications_count }}</span>
               {% endif %}
@@ -83,10 +85,11 @@
               </li>
             </ul>
           </li>
-          <!-- 消息按钮 -->
+          <!-- Messages -->
           <li class="nav-item">
-            <a class="nav-link position-relative rounded px-2 py-1" href="{% url 'message_dashboard' %}">
-              <i class="fas fa-envelope text-white fs-5"></i>
+            <a class="nav-link position-relative rounded px-2 py-1 d-flex align-items-center" href="{% url 'message_dashboard' %}">
+              <i class="fas fa-envelope text-white fs-5" style="position: relative; top: 2px;"></i>
+              <span class="d-lg-none ms-2">Messages</span>
               {% if unread_messages_count > 0 %}
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                   {{ unread_messages_count }}
@@ -94,9 +97,9 @@
               {% endif %}
             </a>
           </li>
-          <!-- 用户头像及下拉菜单 -->
+          <!-- Account -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle rounded px-2 py-1" href="#" id="navbarDropdown" role="button" 
+            <a class="nav-link dropdown-toggle rounded px-2 py-1 d-flex align-items-center" href="#" id="navbarDropdown" role="button" 
                data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fas fa-user-circle text-secondary fs-4"></i>
               <span class="ms-2 align-middle">{{ user.username }}</span>
@@ -111,17 +114,19 @@
             </ul>
           </li>
         {% else %}
-          <!-- 未登录：邮件图标 -->
+          <!-- 未登录状态：Messages -->
           <li class="nav-item">
-            <a class="nav-link rounded px-2 py-1" href="{% url 'login' %}">
-              <i class="fas fa-envelope text-white fs-5"></i>
+            <a class="nav-link d-flex align-items-center rounded px-2 py-1" href="{% url 'login' %}">
+              <i class="fas fa-envelope text-white fs-5" style="position: relative; top: 2px;"></i>
+              <span class="d-lg-none ms-2">Messages</span>
             </a>
           </li>
-          <!-- 未登录：用户图标 -->
+          <!-- 未登录状态：Account -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle rounded px-2 py-1" href="#" id="navbarDropdown" role="button" 
+            <a class="nav-link dropdown-toggle rounded px-2 py-1 d-flex align-items-center" href="#" id="navbarDropdown" role="button" 
                data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fas fa-user-circle text-secondary fs-4"></i>
+              <span class="d-lg-none ms-2">Account</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
               <li>
