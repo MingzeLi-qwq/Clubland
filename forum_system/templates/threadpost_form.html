@@ -1,16 +1,22 @@
-{% if user.is_authenticated %}
-  <h4>添加讨论</h4>
-  <form method="post" id="threadpost-form">
-    {% csrf_token %}
-    <div class="mb-3">
-      <!-- {{ form.content.label_tag }} -->
-      {{ form.content }}
-    </div>
-    <button type="submit" class="btn btn-secondary">提交讨论</button>
-  </form>
-{% else %}
-  <p>请<a href="{% url 'login' %}">登录</a>后参与讨论</p>
-{% endif %}
+<div class="container-fluid my-4">
+  <div class="mb-3 p-4 border rounded">
+    {% if user.is_authenticated %}
+      <h4>添加讨论</h4>
+      <form method="post" id="threadpost-form">
+        {% csrf_token %}
+        <div class="mb-3">
+          <!-- {{ form.content.label_tag }} -->
+          {{ form.content }}
+        </div>
+        <button type="submit" class="btn btn-secondary">提交讨论</button>
+      </form>
+    {% else %}
+      <div class="alert alert-info">
+        Please <button onclick="location.href='{% url 'login' %}'" class="btn btn-primary btn-sm">Log in</button> to participate in the discussion.
+      </div>
+    {% endif %}
+  </div>
+</div>
 
 <!-- 添加CSRF令牌刷新功能 -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

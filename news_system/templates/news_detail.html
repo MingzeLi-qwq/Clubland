@@ -51,7 +51,7 @@
     {% include "comment_form.html" %}
   {% else %}
     <div class="alert alert-info">
-      请<a href="{% url 'login' %}">登录</a>后发表评论
+      Please <button onclick="location.href='{% url 'login' %}'" class="btn btn-primary btn-sm">Log in</button> to comment.
     </div>
   {% endif %}
   
