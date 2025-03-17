@@ -34,7 +34,7 @@
                  data-bs-toggle="dropdown" aria-expanded="false">
                 My Club
               </a>
-              <ul class="dropdown-menu" aria-labelledby="clubDropdown" id="clubMenu">
+              <ul class="dropdown-menu mobile-dropdown-drawer" aria-labelledby="clubDropdown" id="clubMenu">
                 {% for membership in request.user.membership_set.all %}
                   <li>
                     <a class="dropdown-item" href="{% url 'club_dashboard' club_id=membership.club.club_id %}">
@@ -65,7 +65,7 @@
                 <span class="badge bg-danger">{{ unread_notifications_count }}</span>
               {% endif %}
             </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+            <ul class="dropdown-menu dropdown-menu-end mobile-dropdown-drawer" aria-labelledby="notificationDropdown">
               {% for notification in notifications %}
                 <li>
                   <a class="dropdown-item" href="{% url 'notification_detail' notification.id %}">
@@ -104,7 +104,7 @@
               <i class="fas fa-user-circle text-secondary fs-4"></i>
               <span class="ms-2 align-middle">{{ user.username }}</span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <ul class="dropdown-menu dropdown-menu-end mobile-dropdown-drawer" aria-labelledby="navbarDropdown">
               <li>
                 <a class="dropdown-item" href="{% url 'dashboard_personal_information' %}">Dashboard</a>
               </li>
@@ -142,3 +142,21 @@
     </div>
   </div>
 </nav>
+
+<style>
+@media (max-width: 991.98px) {
+  .mobile-dropdown-drawer {
+    position: static !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    background-color: #343a40 !important;
+    border-top: 1px solid rgba(255,255,255,.1) !important;
+    border-bottom: 1px solid rgba(255,255,255,.1) !important;
+  }
+  .mobile-dropdown-drawer .dropdown-item {
+    color: #adb5bd !important;
+  }
+}
+</style>
