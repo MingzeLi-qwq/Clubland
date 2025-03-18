@@ -10,6 +10,45 @@ from club_system.models import Club  # 新增导入以获取所有社团
 from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request  # 修改：导入通用函数
 from CMS_mixins.CMS_utils import RTEUploadUtils  # 新增导入
 from django.db.models import Q
+from bs4 import BeautifulSoup  # 确保导入BeautifulSoup
+
+def get_first_image_url(content):
+    """从内容中提取第一张图片的URL
+    
+    Args:
+        content (str): HTML格式的内容
+        
+    Returns:
+        str: 图片URL或None
+    """
+    first_image_url = None
+    if content:
+        # 使用BeautifulSoup解析HTML内容
+        soup = BeautifulSoup(content, 'html.parser')
+        img_tag = soup.find('img')
+        if img_tag and img_tag.has_attr('src'):
+            first_image_url = img_tag['src']
+    return first_image_url
+
+def enhance_news_with_image(news_item):
+    """增强新闻数据，添加图片URL
+    
+    Args:
+        news_item (News): 新闻对象
+        
+    Returns:
+        dict: 增强后的新闻数据
+    """
+    return {
+        'id': news_item.id,
+        'title': news_item.title,
+        'author': news_item.author,
+        'club': news_item.club,
+        'event': news_item.event,
+        'first_image_url': get_first_image_url(news_item.content),
+        'created_at': news_item.created_at,
+        'url': f'/news/{news_item.id}/'
+    }
 
 # 新闻列表页：显示所有新闻文章
 class NewsListView(ListView):

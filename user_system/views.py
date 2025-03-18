@@ -14,13 +14,13 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from club_system.models import Membership, NewClubRequest, Club
 from event_system.models import Event
-from news_system.models import News  # 添加导入News模型
+from news_system.models import News
+from news_system.views import get_first_image_url, enhance_news_with_image
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.template.loader import render_to_string
 from django.db.models import Q
 import re
-from bs4 import BeautifulSoup
 from django.utils.html import strip_tags
 
 
@@ -43,29 +43,8 @@ def home(request):
     # 查询最新的新闻 - 按照创建时间倒序排列，取最新的3条
     news_items = News.objects.order_by('-created_at')[:3]
     
-    # 增强新闻数据，添加摘要和图片URL
-    enhanced_news = []
-    for news in news_items:
-        # 从内容中提取第一张图片的URL
-        first_image_url = None
-        if news.content:
-            # 使用BeautifulSoup解析HTML内容
-            soup = BeautifulSoup(news.content, 'html.parser')
-            img_tag = soup.find('img')
-            if img_tag and img_tag.has_attr('src'):
-                first_image_url = img_tag['src']
-
-        
-        enhanced_news.append({
-            'id': news.id,
-            'title': news.title,
-            'author': news.author,
-            'club': news.club,
-            'event': news.event,
-            'first_image_url': first_image_url,
-            'created_at': news.created_at,
-            'url': f'/news/{news.id}/' 
-        })
+    # 使用news_system中的函数增强新闻数据
+    enhanced_news = [enhance_news_with_image(news) for news in news_items]
     
     paginator = Paginator(upcoming_events_list, events_per_page)
     try:
