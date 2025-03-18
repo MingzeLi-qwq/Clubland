@@ -71,38 +71,50 @@
     </form>
   </div>
   
-  <!-- News 文章列表，使用 Bootstrap 的 list-group 美化 -->
+  <!-- News 文章列表，修改为带图片的布局 -->
   <div class="list-group">
     {% for post in posts %}
-      <a href="{% url 'news_system:news_detail' post.pk %}" class="list-group-item list-group-item-action">
-        <div class="d-flex w-100 justify-content-between flex-column flex-sm-row">
-          <h5 class="mb-1 text-break">{{ post.title }}</h5>
-          <small class="ms-0 ms-sm-2">{{ post.created_at|date:"Y-m-d H:i" }}</small>
+      <a href="{% url 'news_system:news_detail' post.pk %}" class="list-group-item list-group-item-action p-3">
+        <div class="d-flex">
+          <!-- 左侧内容区 -->
+          <div class="flex-grow-1 me-3">
+            <div class="d-flex w-100 justify-content-between flex-column flex-sm-row">
+              <h5 class="mb-1 text-break">{{ post.title }}</h5>
+              <small class="ms-0 ms-sm-2">{{ post.created_at|date:"Y-m-d H:i" }}</small>
+            </div>
+            <!-- 预览正文，限制2行显示，添加断词确保不溢出 -->
+            <p class="mb-1 text-break" style="display: -webkit-box; -webkit-line-clamp:2; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word; max-width: 100%;">
+              {{ post.content|striptags }}
+            </p>
+            <!-- 显示作者、所属社团、所属活动，同一行显示 -->
+            <p class="mb-0">
+              {% if post.author %}
+                {{ post.author.first_name }} {{ post.author.last_name }}
+              {% else %}
+                未知作者
+              {% endif %}
+              &nbsp;&nbsp;|&nbsp;&nbsp;
+              {% if post.club %}
+                {{ post.club.name }}
+              {% else %}
+                未指定社团
+              {% endif %}
+              &nbsp;&nbsp;|&nbsp;&nbsp;
+              {% if post.event %}
+                {{ post.event.name }}
+              {% else %}
+                未指定活动
+              {% endif %}
+            </p>
+          </div>
+          
+          <!-- 右侧图片区 -->
+          {% if post.first_image_url %}
+            <div class="d-none d-sm-block" style="min-width: 120px; max-width: 120px; height: 90px;">
+              <img src="{{ post.first_image_url }}" alt="{{ post.title }}" class="img-fluid rounded" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+          {% endif %}
         </div>
-        <!-- 预览正文，限制2行显示，添加断词确保不溢出 -->
-        <p class="mb-1 text-break" style="display: -webkit-box; -webkit-line-clamp:2; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word; max-width: 100%;">
-          {{ post.content|striptags }}
-        </p>
-        <!-- 显示作者、所属社团、所属活动，同一行显示 -->
-        <p class="mb-0">
-          {% if post.author %}
-            {{ post.author.first_name }} {{ post.author.last_name }}
-          {% else %}
-            未知作者
-          {% endif %}
-          &nbsp;&nbsp;|&nbsp;&nbsp;
-          {% if post.club %}
-            {{ post.club.name }}
-          {% else %}
-            未指定社团
-          {% endif %}
-          &nbsp;&nbsp;|&nbsp;&nbsp;
-          {% if post.event %}
-            {{ post.event.name }}
-          {% else %}
-            未指定活动
-          {% endif %}
-        </p>
       </a>
     {% endfor %}
   </div>

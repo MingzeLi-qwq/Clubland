@@ -78,6 +78,11 @@ class NewsListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['clubs'] = Club.objects.all()  # 增加 clubs 上下文变量
+        
+        # 为每个新闻添加first_image_url属性
+        for post in context['posts']:
+            post.first_image_url = get_first_image_url(post.content)
+            
         return context
 
 
