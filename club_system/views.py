@@ -527,11 +527,6 @@ class ApplyNewClubView(LoginRequiredMixin, UserTypeRequiredMixin, View):
                 messages.error(request, "A club with this name already exists.")
                 return render(request, self.template_name, {'form': form})
             
-            # 检查是否与待审核的请求重名
-            if isSameClubNameExistInRequest(club_name):
-                messages.error(request, "A request for a club with this name is already pending.")
-                return render(request, self.template_name, {'form': form})
-            
             # 创建新的请求
             new_request = form.save(commit=False)
             new_request.creator = request.user
