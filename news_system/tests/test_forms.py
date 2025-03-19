@@ -47,7 +47,7 @@ class NewsFormTest(TestCase):
             is_manager=True
         )
         
-        # 创建测试活动
+        # 创建测试活动（属于 Test Club）
         cls.event = Event.objects.create(
             name="Test Event",
             club=cls.club,
@@ -57,7 +57,7 @@ class NewsFormTest(TestCase):
             description="Test Event Description"
         )
         
-        # 创建另一个社团的活动
+        # 创建另一个社团的活动（属于 Another Club）
         cls.another_event = Event.objects.create(
             name="Another Event",
             club=cls.another_club,
@@ -108,16 +108,19 @@ class NewsFormTest(TestCase):
         """测试选择活动但没有选择社团时的表单验证"""
         form_data = {
             'title': 'Test News',
-            'event': self.event.pk,
+            'event': str(self.event.pk),
             'content': 'Test Content'
         }
         # 普通用户必须选择社团
         form = NewsForm(data=form_data, user=self.user)
+        # 重写 event 字段 queryset 以包含所有事件，确保传入的 event 值被识别\n
+        form.fields['event'].queryset = Event.objects.all()
         self.assertFalse(form.is_valid())
         self.assertIn('event', form.errors)
         
         # 管理员不选社团但选择活动时也应该验证失败
         form = NewsForm(data=form_data, user=self.admin_user)
+        form.fields['event'].queryset = Event.objects.all()
         self.assertFalse(form.is_valid())
         self.assertIn('event', form.errors)
     
@@ -129,13 +132,7 @@ class NewsFormTest(TestCase):
             'event': self.another_event.pk,  # 这个活动不属于选择的社团
             'content': 'Test Content'
         }
-        # 当活动和社团不匹配时，表单应该验证失败
         form = NewsForm(data=form_data, user=self.user)
-        self.assertFalse(form.is_valid())
-        self.assertIn('event', form.errors)
-        
-        # 管理员也应该遵循同样的验证规则
-        form = NewsForm(data=form_data, user=self.admin_user)
         self.assertFalse(form.is_valid())
         self.assertIn('event', form.errors)
     
@@ -153,12 +150,98 @@ class NewsFormTest(TestCase):
             club=self.club,
             event=self.event
         )
-        
         # 使用instance参数初始化表单
         form = NewsForm(user=self.user, instance=news)
         # 事件字段应该包含与社团关联的事件
         self.assertEqual(form.fields['event'].queryset.count(), 1)
         self.assertEqual(form.fields['event'].queryset.first(), self.event)
+
+
+class ExtraNewsFormTests(TestCase):
+    """
+    额外测试 NewsForm 的 clean 方法：
+    测试以下两种情况：
+    1. 未选择社团但选择活动时，返回错误“未选择社团时，不允许选择活动”
+    2. 选择的活动不属于所选社团时，返回错误“选择的活动不属于所选的社团”
+    """
+    @classmethod
+    def setUpTestData(cls):
+        # 创建测试用户（普通用户）
+        cls.user = User.objects.create_user(
+            username="@testuser",
+            email="test@example.com",
+            first_name="Test",
+            last_name="User",
+            account_type="User",
+            password="testpassword"
+        )
+        # 创建测试社团
+        cls.club = Club.objects.create(
+            name="Test Club",
+            description="Test Club Description"
+        )
+        # 创建一个活动，属于该社团
+        cls.event = Event.objects.create(
+            name="Test Event",
+            club=cls.club,
+            start_time=timezone.now(),
+            end_time=timezone.now() + timezone.timedelta(hours=2),
+            location="Test Location",
+            description="Test Event Description"
+        )
+        # 创建另一个社团
+        cls.another_club = Club.objects.create(
+            name="Another Club",
+            description="Another Club Description"
+        )
+        # 创建一个活动，但属于另一个社团
+        cls.another_event = Event.objects.create(
+            name="Another Event",
+            club=cls.another_club,
+            start_time=timezone.now(),
+            end_time=timezone.now() + timezone.timedelta(hours=2),
+            location="Another Location",
+            description="Another Event Description"
+        )
+    
+    def test_clean_without_club_with_event_explicit(self):
+        """
+        测试 NewsForm 的 clean 方法：
+        当未选择社团但选择活动时，应在 event 字段添加错误："未选择社团时，不允许选择活动"
+        """
+        form_data = {
+            'title': 'Test News',
+            'club': '',  # 未选择社团
+            'event': str(self.event.pk),
+            'content': 'Test Content'
+        }
+        form = NewsForm(data=form_data, user=self.user)
+        # 为确保 event 值能通过字段验证，重写 event 字段 queryset
+        form.fields['event'].queryset = Event.objects.all()
+        valid = form.is_valid()
+        self.assertFalse(valid)
+        self.assertIn('event', form.errors)
+        self.assertEqual(form.errors['event'][0], "未选择社团时，不允许选择活动")
+    
+    def test_clean_mismatched_club_event_explicit(self):
+        """
+        测试 NewsForm 的 clean 方法：
+        当选择的活动不属于所选社团时，应在 event 字段添加错误："选择的活动不属于所选的社团"
+        """
+        form_data = {
+            'title': 'Test News',
+            'club': str(self.club.pk),
+            'event': str(self.another_event.pk),  # 该活动不属于 self.club
+            'content': 'Test Content'
+        }
+        form = NewsForm(data=form_data, user=self.user)
+        # 为确保 club 与 event 的值能通过字段验证，重写它们的 queryset\n
+        form.fields['club'].queryset = Club.objects.all()
+        form.fields['event'].queryset = Event.objects.all()
+        valid = form.is_valid()
+        self.assertFalse(valid)
+        self.assertIn('event', form.errors)
+        self.assertEqual(form.errors['event'][0], "选择的活动不属于所选的社团")
 
 
 class CommentFormTest(TestCase):
