@@ -135,13 +135,11 @@ class NewsCreateView(LoginRequiredMixin, UserFormMixin, CreateView):
     def form_valid(self, form):
         # 确保正确保存作者信息
         form.instance.author = self.request.user
-        # 记录表单校验成功，可以帮助调试
-        print("表单验证成功，准备保存...")
+        # print("表单验证成功，准备保存...")
         return super().form_valid(form)
     
     def form_invalid(self, form):
-        # 记录表单验证错误信息，便于调试
-        print(f"表单验证失败: {form.errors}")
+        # print(f"表单验证失败: {form.errors}")
         return super().form_invalid(form)
 
 
