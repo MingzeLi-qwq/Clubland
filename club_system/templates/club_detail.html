@@ -13,6 +13,23 @@
             <!-- Club 描述 -->
             <p>{{ club.description }}</p >
 
+            <!-- Club hub card -->
+            {% if user.is_authenticated and is_member or user.account_type == 'Admin' %}
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-flag"></i> Club hub    
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <a href="{% url 'club_dashboard' club_id=club.club_id %}" 
+                           class="btn btn-outline-success btn-lg rounded-pill w-100 hover-effect">
+                            Access {{ club.name }} Hub →
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+
             <!-- 最近事件卡片 -->
             <div class="card mb-4 shadow-sm border-0">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
@@ -116,13 +133,12 @@
                 </div>
             </div>
 
-            <!-- Join Us 卡片 -->
+            <!-- Membership card -->
             <div class="card bg-light mb-3">
-                <div class="card-header">Join us</div>
+                <div class="card-header">Membership</div>
                 <div class="card-body">
                     <h5>We welcome different people to join us!!!!</h5>
 
-                    <!-- 动态按钮 -->
                     <div class="d-flex justify-content-center mt-5">
                         {% if user.is_authenticated %}
                             <!-- 当前用户登录时 -->

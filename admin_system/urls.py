@@ -7,6 +7,7 @@ urlpatterns = [
     #Admin Panel
     path('clubs/', views.AdminPanelClubs.as_view(), name='admin_panel_clubs'),
     path('users/', views.AdminPanelUsers.as_view(), name='admin_panel_users'),
+    path('admin_users/', views.AdminPanelAdminUsers.as_view(), name='admin_panel_admin_users'),
     path('requests/', views.AdminPanelRequests.as_view(), name='admin_panel_requests'),
 
     #Admin Panel Club
@@ -14,6 +15,7 @@ urlpatterns = [
     path('clubs/members/<int:club_id>', views.AdminPanelClubsMembers.as_view(), name='admin_panel_club_members'),
     path('clubs/news/<int:club_id>', views.AdminPanelClubsNews.as_view(), name='admin_panel_club_news'),
     path('clubs/events/<int:club_id>', views.AdminPanelClubsEvents.as_view(), name='admin_panel_club_events'),
+    path('clubs/dashboard/<int:club_id>', views.AdminPanelClubsDashboard.as_view(), name='admin_panel_club_dashboard'),
     path('clubs/general/delete/<int:club_id>', views.AdminDeleteClub.as_view(), name='admin_delete_club'),
     #Admin Panel Club event
     path('clubs/event/general/<int:club_id>/<int:event_id>', views.AdminPanelClubsEventGeneral.as_view(), name='admin_panel_club_event_general'),
@@ -21,9 +23,10 @@ urlpatterns = [
     path('clubs/event/search_rsvp_candidates/', event_views.SearchRSVPCandidatesView.as_view(), name='search_rsvp_candidates'),
     path('clubs/event/add_rsvp/<int:club_id>/<int:event_id>/<str:username>/', event_views.AddRSVPView.as_view(), name='add_rsvp'),
 
-    #Admin Panel User
+#Admin Panel User
     path('user/information/<str:username>/', views.AdminPanelUserInformation.as_view(), name='admin_panel_user_information'),
     path('user/memberships/<str:username>/', views.AdminPanelUserMemberships.as_view(), name='admin_panel_user_memberships'),
+    path('user/memberships/remove/<str:username>/<int:club_id>/', views.AdminPanelRemoveMemberships.as_view(), name='admin_panel_remove_memberships'),
 
     #Admin Panel Request
     path('requests/new_club/', views.AdminPanelNewClubRequests.as_view(), name='admin_panel_new_club_requests'),

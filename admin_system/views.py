@@ -72,6 +72,27 @@ class AdminPanelUsers(LoginRequiredMixin, UserTypeRequiredMixin, View):
             'search_query': search_query,
         })
     
+class AdminPanelAdminUsers(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+    def get(self, request, *args, **kwargs):
+        search_query = request.GET.get('search', '')
+        if search_query:
+            admin_users = User.objects.filter(
+                Q(first_name__icontains=search_query) | 
+                Q(last_name__icontains=search_query) | 
+                Q(email__icontains=search_query),
+                account_type=User.ACCOUNT_TYPE_ADMIN
+            )
+        else:
+            admin_users = User.objects.filter(account_type=User.ACCOUNT_TYPE_ADMIN)
+        
+        user_count = User.objects.filter(account_type=User.ACCOUNT_TYPE_ADMIN).count()
+        return render(request, 'admin_panel/admin_users.html', {
+            'admin_users': admin_users,
+            'admin_user_count': user_count,
+            'search_query': search_query,
+        })
+    
 class AdminPanelRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
 
@@ -142,6 +163,16 @@ class AdminPanelClubsNews(LoginRequiredMixin, UserTypeRequiredMixin, View):
             'club_id':club_id,
         })
     
+class AdminPanelClubsDashboard(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+    def get(self, request, club_id, *args, **kwargs):
+        club = Club.objects.get(pk=club_id)
+        return render(request, "admin_panel/admin_panel_club/dashboard.html", {
+            'club':club,
+            'club_id':club_id,
+        })
+
+
 class AdminPanelClubsEvents(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
 
@@ -266,12 +297,43 @@ class AdminPanelUserInformation(LoginRequiredMixin, UserTypeRequiredMixin, View)
 
 class AdminPanelUserMemberships(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
+    
     def get(self, request, username, *args, **kwargs):
         panel_user = get_object_or_404(User, username=username)
+        search_query = request.GET.get('search', '')
+        
+        # 分离管理者和普通成员查询集
+        memberships = Membership.objects.filter(user=panel_user)
+        if search_query:
+            memberships = memberships.filter(
+                Q(club__name__icontains=search_query)
+            )
+        
+        managers = memberships.filter(is_manager=True).order_by('-date_joined')
+        regulars = memberships.filter(is_manager=False).order_by('-date_joined')
+        
         return render(request, "admin_panel/admin_panel_user/memberships.html", {
-            'panel_user':panel_user,
-            'panel_username':username,
+            'panel_user': panel_user,
+            'panel_username': username,
+            'managers': managers,
+            'regulars': regulars,
+            'manager_count': managers.count(),
+            'regular_count': regulars.count(),
+            'search_query': search_query,
         })
+
+class AdminPanelRemoveMemberships(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+    
+    def post(self, request, username, club_id):
+        
+        # 执行删除
+        membership = get_object_or_404(Membership, user__username=username, club__club_id=club_id)
+        club_name = membership.club.name
+        membership.delete()
+        
+        messages.success(request, f"Removed membership from {club_name}")
+        return redirect('admin_panel_user_memberships', username=username)
 
 """-----------------------------------------以上内容负责渲染Admin Panel User---------------------------------------------------"""
 
