@@ -383,6 +383,25 @@ class UpdateEventCategory(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         messages.success(request, "Event categories updated successfully")
         return redirect(redirect_url, club_id=club_id, event_id=event_id)
 
+
+class DeleteCategoryView(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+
+    def get(self, request, category_id):
+        category = get_object_or_404(Category, id=category_id)
+        category_name = category.name
+        
+        category.delete()
+        
+        messages.success(request, f"Category '{category_name}' has been deleted")
+        
+        # get HTTP_REFERER to go back to the previous page
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        else:
+            return redirect('admin_panel')
+
 """--------------------------------------------------以上部分负责针对单个event的相关操作-------------------------------------------------"""
 
 class SearchRSVPCandidatesView(View):
