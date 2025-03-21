@@ -72,6 +72,27 @@ class AdminPanelUsers(LoginRequiredMixin, UserTypeRequiredMixin, View):
             'search_query': search_query,
         })
     
+class AdminPanelAdminUsers(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+    def get(self, request, *args, **kwargs):
+        search_query = request.GET.get('search', '')
+        if search_query:
+            admin_users = User.objects.filter(
+                Q(first_name__icontains=search_query) | 
+                Q(last_name__icontains=search_query) | 
+                Q(email__icontains=search_query),
+                account_type=User.ACCOUNT_TYPE_ADMIN
+            )
+        else:
+            admin_users = User.objects.filter(account_type=User.ACCOUNT_TYPE_ADMIN)
+        
+        user_count = User.objects.filter(account_type=User.ACCOUNT_TYPE_ADMIN).count()
+        return render(request, 'admin_panel/admin_users.html', {
+            'admin_users': admin_users,
+            'admin_user_count': user_count,
+            'search_query': search_query,
+        })
+    
 class AdminPanelRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
 

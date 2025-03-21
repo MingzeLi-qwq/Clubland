@@ -7,6 +7,7 @@ urlpatterns = [
     #Admin Panel
     path('clubs/', views.AdminPanelClubs.as_view(), name='admin_panel_clubs'),
     path('users/', views.AdminPanelUsers.as_view(), name='admin_panel_users'),
+    path('admin_users/', views.AdminPanelAdminUsers.as_view(), name='admin_panel_admin_users'),
     path('requests/', views.AdminPanelRequests.as_view(), name='admin_panel_requests'),
 
     #Admin Panel Club
