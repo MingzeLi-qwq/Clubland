@@ -67,31 +67,3 @@ def send_message(request):
 
         return JsonResponse({'status': 'success'})
 
-# Clear chat
-@login_required
-def clear_chat(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            receiver_username = data.get('receiver')
-
-            if not receiver_username:
-                return JsonResponse({'status': 'error', 'message': 'Receiver not specified.'})
-
-            try:
-                receiver = get_user_model().objects.get(username=receiver_username)
-            except get_user_model().DoesNotExist:
-                return JsonResponse({'status': 'error', 'message': 'Receiver not found.'})
-
-            # Delete messages between the current user and the receiver
-            Message.objects.filter(sender=request.user, receiver=receiver).delete()
-            Message.objects.filter(sender=receiver, receiver=request.user).delete()
-
-            return JsonResponse({'status': 'success', 'message': f'Chat with {receiver_username} cleared.'})
-        
-        except json.JSONDecodeError:
-            return JsonResponse({'status': 'error', 'message': 'Invalid JSON format.'})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
-
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})

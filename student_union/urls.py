@@ -98,7 +98,6 @@ urlpatterns = [
     path('api/messages/', message_system.views.get_messages, name='get_messages'),
     path('api/send/', message_system.views.send_message, name='send_message'),
     path("api/search_users/", message_system.views.search_users, name="search_users"),
-    path('api/clear_chat/', message_system.views.clear_chat, name='clear_chat'),
     #---------------------------------------------------- Event related / Event相关页面 -----------------------------------------------------------------------
     path('events/', include('event_system.urls')),
     #-------------------------------------------------------- Event related END ----------------------------------------------------------------------------

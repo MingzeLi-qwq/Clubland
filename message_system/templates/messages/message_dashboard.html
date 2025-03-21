@@ -24,7 +24,6 @@
     <div class="chat-content">
         <div class="chat-header">
             <strong id="chatName">Select a chat</strong>
-            <button class="btn btn-outline-secondary btn-sm" onclick="clearChat()">Clear Chat</button>
         </div>
 
         <div class="chat-box" id="chatBox">
@@ -193,26 +192,7 @@
             }
         });
     }
-    function clearChat() {
-        if (!currentChat) return;
 
-        if (confirm(`Are you sure you want to clear chat with ${currentChat}?`)) {
-            fetch(`/api/clear_chat/?receiver=${currentChat}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.cookie.split(';').find(item => item.trim().startsWith('csrftoken=')).split('=')[1]
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    chatBoxElement.innerHTML = ''; // Clear chat box content
-                    alert(`Chat with ${currentChat} has been cleared.`);
-                }
-            });
-        }
-    }
 
 
     // 初始化加载消息
