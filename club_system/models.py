@@ -11,6 +11,7 @@ class Club(models.Model):
         through='Membership',
         related_name='clubs_joined'
     )
+    
 
     """This section is used to implement the logic for incrementing association IDs"""
     """此部分用来实现社团ID递增的逻辑"""

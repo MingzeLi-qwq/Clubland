@@ -2,6 +2,8 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Widget
 from .serializers import WidgetSerializer
 from club_system.helpers.mixins import ClubMemberRequiredMixin
@@ -9,6 +11,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
+from django.core.files.storage import default_storage
 
 
 def get_csrf_token(request):
@@ -49,7 +52,17 @@ class WidgetViewSet(viewsets.ModelViewSet):
                 updated_widgets.append(widget.id)
 
         return Response({"updated": updated_widgets}, status=status.HTTP_200_OK)
+class ImageUploadView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
 
+    def post(self, request, *args, **kwargs):
+        if "file" not in request.FILES:
+            return Response({"error": "No file uploaded"}, status=400)
+
+        file = request.FILES["file"]
+        file_path = default_storage.save(f"uploads/{file.name}", file)
+
+        return Response({"message": "Upload successful", "file_url": default_storage.url(file_path)}, status=201)
 
 @login_required
 def club_dashboard(request, club_id):
