@@ -111,16 +111,26 @@
             </p>
           </div>
           
-          <!-- 右侧图片展示区：去除自身的 margin/padding，aspect-ratio: 4/3 -->
-          {% if post.first_image_url %}
-            <div class="d-none d-sm-block"
-                 style="margin: 0; padding: 0; aspect-ratio: 4/3; width: 150px;">
+          <!-- 右侧图片展示区：小屏设备 (手机) -->
+          <div class="d-block d-sm-none flex-shrink-0" 
+               style="margin: 0; padding: 0; aspect-ratio: 4/3; width: 80px;">
+            {% if post.first_image_url %}
               <img src="{{ post.first_image_url }}"
                    alt="{{ post.title }}"
                    class="img-fluid rounded"
                    style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-          {% endif %}
+            {% endif %}
+          </div>
+          <!-- 右侧图片展示区：大屏设备 (平板和桌面) -->
+          <div class="d-none d-sm-block flex-shrink-0" 
+               style="margin: 0; padding: 0; aspect-ratio: 4/3; width: 150px;">
+            {% if post.first_image_url %}
+              <img src="{{ post.first_image_url }}"
+                   alt="{{ post.title }}"
+                   class="img-fluid rounded"
+                   style="width: 100%; height: 100%; object-fit: cover;">
+            {% endif %}
+          </div>
           
         </div>
       </a>
