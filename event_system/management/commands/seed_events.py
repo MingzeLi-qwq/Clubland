@@ -11,49 +11,53 @@ from event_system.models import Event, Category
 
 fake = Faker()
 
-# 预定义活动分类
+# event categorys
 event_categories = [
     "Workshop", "Sports", "Social", "Tech", "Arts",
     "Academic", "Music", "Outdoor", "Career", "Cultural"
 ]
 
-# 预定义活动地点关键词
+# event location key words
 locations = [
     "Main Hall", "Room 302", "Sports Complex", "Campus Lawn",
     "Auditorium", "Online", "Conference Room", "Student Center"
 ]
 
 class Command(BaseCommand):
-    help = '为每个社团创建10个随机活动 / Create 10 random events for each club'
+    help = 'creat events for each club'
 
     def handle(self, *args, **options):
+        # Remove all events
+        Event.objects.all().delete()
+        Category.objects.all().delete()
+
         self.create_categories()
         self.create_events_for_each_club()
         
     def create_categories(self):
-        """创建分类数据（如果不存在）"""
+        """create categories"""
         for name in event_categories:
             Category.objects.get_or_create(name=name)
-        self.stdout.write(self.style.SUCCESS("✅ 成功创建/验证分类数据"))
+        self.stdout.write(self.style.SUCCESS("successfully create event categories"))
 
     def create_events_for_each_club(self):
-        """为每个社团创建活动数据"""
+        """create events for each club"""
         clubs = Club.objects.all()
         users = User.objects.all()
         categories = Category.objects.all()
 
         if not users.exists():
-            self.stdout.write(self.style.ERROR("❌ 错误：没有可用用户，请先创建用户"))
+            self.stdout.write(self.style.ERROR("Pleace create users first"))
             return
         if not clubs.exists():
-            self.stdout.write(self.style.ERROR("❌ 错误：没有可用社团，请先创建社团"))
+            self.stdout.write(self.style.ERROR("Pleace create clubs first"))
             return
         
-        start_time = timezone.now() + timedelta(days=random.randint(5, 30)),
+        start_time = timezone.now() + timedelta(days=random.randint(120, 150)),
 
         for club in clubs:
             if club.name == "AI Club":
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 6))
                 event = Event.objects.create(
                     name="AI Hackathon",
@@ -70,7 +74,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Create Event:{event.name}  For Club: {club.name}")
 
                 
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 6))
                 event = Event.objects.create(
                     name="AI Ethics & Future Panel Discussion",
@@ -86,7 +90,7 @@ class Command(BaseCommand):
 
 
             elif club.name == "Photography Club":
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 6))
                 event = Event.objects.create(
                     name="Urban Exploration Photography Tour",
@@ -100,7 +104,7 @@ class Command(BaseCommand):
                 event.categories.add(tech_category)
                 self.stdout.write(f"Create Event:{event.name}  For Club: {club.name}")
 
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 6))
                 event= Event.objects.create(
                     name="Light & Composition Workshop",
@@ -116,7 +120,7 @@ class Command(BaseCommand):
 
             elif club.name == "Music Club":
                 # Event 1: Concert
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 3))
                 event1 = Event.objects.create(
                     name="Spring Musical Showcase",
@@ -132,7 +136,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Create Event:{event1.name}  For Club: {club.name}")
 
                 # Event 2: Workshop
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 3))
                 event2 = Event.objects.create(
                     name="Music Production Workshop",
@@ -149,7 +153,7 @@ class Command(BaseCommand):
 
             elif club.name == "Chess Club":
                 # Event 1: Tournament
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(4, 6))
                 event1 = Event.objects.create(
                     name="Annual Chess Championship",
@@ -164,7 +168,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Create Event:{event1.name}  For Club: {club.name}")
 
                 # Event 2: Training
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 3))
                 event2 = Event.objects.create(
                     name="Chess Strategy Masterclass",
@@ -181,7 +185,7 @@ class Command(BaseCommand):
 
             elif club.name == "Drama Club":
                 # Event 1: Performance
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 3))
                 event1 = Event.objects.create(
                     name="Spring Theater Production",
@@ -197,7 +201,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Create Event:{event1.name}  For Club: {club.name}")
 
                 # Event 2: Workshop
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 3))
                 event2 = Event.objects.create(
                     name="Acting Workshop Series",
@@ -214,7 +218,7 @@ class Command(BaseCommand):
 
             elif club.name == "Sports Club":
                 # Event 1: Tournament
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(4, 6))
                 event1 = Event.objects.create(
                     name="Inter-College Sports Tournament",
@@ -229,7 +233,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Create Event:{event1.name}  For Club: {club.name}")
 
                 # Event 2: Fitness Workshop
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 3))
                 event2 = Event.objects.create(
                     name="Fitness and Nutrition Workshop",
@@ -247,7 +251,7 @@ class Command(BaseCommand):
             elif club.name == "Coding Club":
                 # Event 1: Hackathon
                 
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(8, 12))
                 event1 = Event.objects.create(
                     name="24-Hour Code Challenge",
@@ -262,7 +266,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Create Event:{event1.name}  For Club: {club.name}")
 
                 # Event 2: Workshop
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 3))
                 event2 = Event.objects.create(
                     name="Web Development Bootcamp",
@@ -279,7 +283,7 @@ class Command(BaseCommand):
 
             elif club.name == "Astronomy Club":
                 # Event 1: Star Gazing
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(3, 4))
                 event1 = Event.objects.create(
                     name="Night Sky Observation Event",
@@ -295,7 +299,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Create Event:{event1.name}  For Club: {club.name}")
 
                 # Event 2: Lecture
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 3))
                 event2 = Event.objects.create(
                     name="Introduction to Astrophysics",
@@ -311,7 +315,7 @@ class Command(BaseCommand):
 
             elif club.name == "Gaming Club":
                 # Event 1: Tournament
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(6, 8))
                 event1 = Event.objects.create(
                     name="E-Sports Championship",
@@ -327,7 +331,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Create Event:{event1.name}  For Club: {club.name}")
 
                 # Event 2: Social Gaming
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(3, 4))
                 event2 = Event.objects.create(
                     name="Board Game Night",
@@ -343,7 +347,7 @@ class Command(BaseCommand):
 
             elif club.name == "Book Club":
                 # Event 1: Book Discussion
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 3))
                 event1 = Event.objects.create(
                     name="Monthly Book Discussion",
@@ -359,7 +363,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Create Event:{event1.name}  For Club: {club.name}")
 
                 # Event 2: Writing Workshop
-                start_time = timezone.now() + timedelta(days=random.randint(5, 30))
+                start_time = timezone.now() + timedelta(days=random.randint(120, 150))
                 end_time = start_time + timedelta(hours=random.randint(2, 3))
                 event2 = Event.objects.create(
                     name="Creative Writing Workshop",
