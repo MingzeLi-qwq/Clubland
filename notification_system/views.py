@@ -50,13 +50,9 @@ def delete_notification(request, notification_id):
 
 @login_required
 def delete_all_notifications(request):
+    """手動刪除所有通知"""
     if request.method == 'POST':
-        # 添加自動清理邏輯
-        user_notifications = Notification.objects.filter(user=request.user)
-        if user_notifications.count() > 2000:
-            oldest = user_notifications.order_by('created_at').first()
-            oldest.delete()
-            
         Notification.objects.filter(user=request.user).delete()
         return JsonResponse({'status': 'success'})
+
     return JsonResponse({'status': 'error'}, status=400)
