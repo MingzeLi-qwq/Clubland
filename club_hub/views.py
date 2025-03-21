@@ -7,11 +7,12 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Widget
 from .serializers import WidgetSerializer
 from club_system.helpers.mixins import ClubMemberRequiredMixin
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.core.files.storage import default_storage
+from club_system.models import Club
 
 
 def get_csrf_token(request):
@@ -62,7 +63,30 @@ class ImageUploadView(APIView):
         file = request.FILES["file"]
         file_path = default_storage.save(f"uploads/{file.name}", file)
 
-        return Response({"message": "Upload successful", "file_url": default_storage.url(file_path)}, status=201)
+        return Response({"message": "Upload successful", "file_url": file_path}, status=201)
+
+class ClubBackgroundUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, club_id):
+        club = get_object_or_404(Club, pk=club_id)
+
+        background_image = request.data.get("background_image")
+        if not background_image:
+            return Response({"error": "Missing background_image"}, status=400)
+        
+        club.background_image = background_image
+        club.save()
+        return Response({"message": "Background updated successfully!"}, status=200)
+class ClubInfoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, club_id):
+        club = get_object_or_404(Club, pk=club_id)
+        return Response({
+            "name": club.name,
+            "background_image": club.background_image.url if club.background_image else None
+        })
 
 @login_required
 def club_dashboard(request, club_id):

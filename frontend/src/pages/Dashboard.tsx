@@ -6,15 +6,16 @@ import "react-resizable/css/styles.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+
 const Dashboard = () => {
     const { club_id } = useParams();
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
-    // 在现有状态声明下方添加useEffect
+    const [clubName, setClubName] = useState<string | null>(null);
+
     useEffect(() => {
         if (!club_id || isNaN(Number(club_id))) return;
-        const savedBg = localStorage.getItem(`dashboardBg-${club_id}`);
-        if (savedBg) setDashboardBg(savedBg);
-
+        
+        
         const loadData = async () => {
             try {
                 const response = await axios.get(
@@ -40,9 +41,21 @@ const Dashboard = () => {
                     w: w.width || 2,
                     h: w.height || 2
                 })));
+
+                const clubRes = await axios.get(
+                    `http://127.0.0.1:8000/api/clubs/${club_id}/info/`,
+                    { withCredentials: true }
+                );
+        
+                if (clubRes.data.background_image) {
+                    setDashboardBg(clubRes.data.background_image);
+                }
+                if (clubRes.data.name) {
+                    setClubName(clubRes.data.name); // 设置club名称
+                }
+
             } catch (error) {
                 console.error("加载失败:", error);
-                alert("组件加载失败，请检查控制台");
             }
         };
 
@@ -69,9 +82,7 @@ const Dashboard = () => {
         h: number 
     }[]>([]);
 
-    // 添加统一的 CSRF Token 获取方法
     const getCsrfToken = async () => {
-        // 同时支持两种获取方式确保可靠性
         const cookieToken = document.cookie
             .split('; ')
             .find(row => row.startsWith('csrftoken='))
@@ -79,14 +90,12 @@ const Dashboard = () => {
         
         if (cookieToken) return cookieToken;
         
-        // 如果 cookie 不存在则从 API 获取
         const response = await axios.get("http://127.0.0.1:8000/api/csrf/");
         return response.data.csrfToken;
     };
     
-    // 修改所有使用 CSRF Token 的方法（示例修改 addWidget）
     const addWidget = async () => {
-        const widgetType = prompt('选择组件类型：\n1. 文本\n2. 图表\n3. 公告\n4. 图片\n5. 倒计时');
+        const widgetType = prompt('Choose your widget type:\n1. text\n2. chart\n3. notice\n4. image\n5. countdown');
         if (!widgetType) return;
         
         const typeMap: {[key: string]: string} = {
@@ -97,12 +106,11 @@ const Dashboard = () => {
         '5': 'countdown'
         };
         
-        // 删除重复的 csrfToken 声明（第63行）
-        const csrfToken = await getCsrfToken(); // 统一使用封装方法
+        const csrfToken = await getCsrfToken();
         const newY = widgets.length > 0 ? Math.max(...widgets.map(w => w.y)) + 1 : 0;
         
         axios.post(`http://127.0.0.1:8000/api/clubs/${club_id}/widgets/`, {
-        name: `组件 ${widgets.length + 1}`,
+        name: `${widgets.length + 1}`,
         widget_type: typeMap[widgetType],
         x: 0, 
         y: newY, 
@@ -135,14 +143,12 @@ const Dashboard = () => {
         setLayout(layout.filter(l => l.i !== String(id)));
     };
     
-    // 同样修改其他方法中的 CSRF Token 获取方式（saveLayout, removeWidget, updateWidgetData）
     const saveLayout = async () => {
         const csrfToken = await getCsrfToken();
         
-        // 修改字段名从 widget_id 改为 i 以匹配后端要求
         const payload = {
             layout: layout.map(item => ({
-                i: parseInt(item.i),  // 字段名改为后端需要的i
+                i: parseInt(item.i),
                 x: item.x,
                 y: item.y,
                 w: item.w,
@@ -162,17 +168,17 @@ const Dashboard = () => {
                     } 
                 }
             );
-            alert('布局保存成功!');
+            alert('Saved Layout');
         } catch (error) {
-            console.error('保存失败:', error.response?.data || error.message);
-            alert(`保存失败: ${error.response?.data?.error || error.message}`);
+            console.error('Save failed:', error.response?.data || error.message);
+            alert(`Save failed: ${error.response?.data?.error || error.message}`);
         }
     };
 
     const uploadBackground = async (file: File) => {
         const formData = new FormData();
         formData.append('file', file);
-        
+    
         try {
             const csrfToken = await getCsrfToken();
             const response = await axios.post(
@@ -186,14 +192,41 @@ const Dashboard = () => {
                     withCredentials: true
                 }
             );
-            setDashboardBg(response.data.url);
+    
+            const imageUrl = response.data.file_url;
+            const fullUrl = `/media/${imageUrl}`;
+    
+            const img = new Image();
+            img.src = fullUrl;
+            img.onload = async () => {
+                setDashboardBg(fullUrl);
+    
+                await axios.patch(
+                    `http://127.0.0.1:8000/api/clubs/${club_id}/background/`,
+                    { background_image: imageUrl },
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": csrfToken
+                        },
+                        withCredentials: true
+                    }
+                );
+                alert("背景上传并保存成功！");
+            };
+    
+            img.onerror = () => {
+                console.error("图片加载失败");
+                alert("上传成功但图片加载失败");
+            };
+    
         } catch (error) {
             console.error('背景上传失败:', error);
             alert('背景图片上传失败');
         }
     };
+    
 
-    // 新增数据更新方法
     const updateWidgetData = async (id: number, key: string, value: any) => {
     const csrfToken = await getCsrfToken();
     const updatedWidgets = widgets.map(w => {
@@ -204,7 +237,6 @@ const Dashboard = () => {
     });
     setWidgets(updatedWidgets);
     
-    // 保存到后端
     await axios.patch(`http://127.0.0.1:8000/api/clubs/${club_id}/widgets/${id}/`, {
     data: updatedWidgets.find(w => w.id === id)?.data
     }, {
@@ -224,25 +256,36 @@ const Dashboard = () => {
                 backgroundRepeat: "no-repeat"
             }}
         >
-            <h2 style={{ textAlign: "center" }}>组件管理面板</h2>
-            
+            <h2 
+                style={{
+                    textAlign: "center",
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                    color: "#FFFFFF",
+                    textShadow: "2px 2px 8px rgba(0, 0, 0, 0.6)",
+                    backgroundColor: "rgba(0, 0, 0, 0.4)",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    marginBottom: "20px"
+                }}
+            >
+                {clubName ? `Welcome to ${clubName}` : "Loading..."}
+            </h2>
+
             <div style={{ display: "flex", justifyContent: "center", marginBottom: "10px" }}>
-                <button onClick={addWidget} style={{ marginRight: "10px", padding: "8px 16px", fontSize: "14px" }}>➕ 添加组件</button>
-                <button onClick={saveLayout} style={{ marginRight: "10px", padding: "8px 16px", fontSize: "14px" }}>💾 保存布局</button>
+                <button className="button" onClick={addWidget}>
+                    ➕ Add Widget
+                </button>
+                <button className="button" onClick={saveLayout}>
+                    💾 Save Layout
+                </button>
                 <Link to={`/club-view/${club_id}`}>
-                    <button style={{ padding: "8px 16px", fontSize: "14px", background: "#4CAF50", color: "white", border: "none", borderRadius: "5px" }}>
-                        👁️ 预览页面
+                    <button className="button">
+                        👁️ Preview Page
                     </button>
                 </Link>
-                <label style={{
-                    marginLeft: '10px',
-                    padding: '8px 16px',
-                    background: '#2196F3',
-                    color: 'white',
-                    borderRadius: '5px',
-                    cursor: 'pointer'
-                }}>
-                    🖼️ 上传背景
+                <label className="label-upload">
+                    🖼️ Background
                     <input
                         type="file"
                         accept="image/*"
@@ -283,7 +326,7 @@ const Dashboard = () => {
                             justifyContent: "space-between",
                             alignItems: "center"
                         }}>
-                            📌 {widget.name}
+                            {widget.name}
                             <button 
                                 onClick={() => removeWidget(widget.id)}
                                 style={{
@@ -304,7 +347,7 @@ const Dashboard = () => {
                                     right: "5px"
                                 }}
                             >
-                                ×
+                        ×
                             </button>
                         </div>
                         
@@ -324,27 +367,53 @@ const Dashboard = () => {
                           
                           {widget.widget_type === 'image' && (
                             <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                              <input
-                                type="text"
-                                placeholder="图片URL"
-                                value={widget.data.url || ''}
-                                onChange={(e) => updateWidgetData(widget.id, 'url', e.target.value)}
-                                style={{ marginBottom: '8px' }}
-                              />
-                              {widget.data.url && (
-                                <img 
-                                  src={widget.data.url} 
-                                  alt="自定义图片" 
-                                  style={{ 
-                                    width: '100%', 
-                                    height: '100%', 
+                                {!widget.data?.url ? (
+                                <>
+                                    <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+
+                                        const csrfToken = await getCsrfToken();
+                                        const formData = new FormData();
+                                        formData.append("file", file);
+
+                                        try {
+                                        const res = await axios.post("http://127.0.0.1:8000/api/upload-image/", formData, {
+                                            headers: {
+                                            "X-CSRFToken": csrfToken,
+                                            "Content-Type": "multipart/form-data"
+                                            },
+                                            withCredentials: true
+                                        });
+
+                                        const uploadedUrl = `/media/${res.data.file_url}`;
+                                        await updateWidgetData(widget.id, 'url', uploadedUrl);
+                                        } catch (err) {
+                                        alert("上传失败");
+                                        console.error(err);
+                                        }
+                                    }}
+                                    />
+                                </>
+                                ) : (
+                                <img
+                                    src={widget.data.url}
+                                    alt="上传图片"
+                                    style={{
+                                    width: '100%',
+                                    height: '100%',
                                     objectFit: 'cover',
                                     borderRadius: '8px'
-                                  }}
+                                    }}
                                 />
-                              )}
+                                )}
                             </div>
-                          )}
+                            )}
+
+
                           {widget.widget_type === 'countdown' && (
                                 <div style={{ 
                                     height: '100%',
