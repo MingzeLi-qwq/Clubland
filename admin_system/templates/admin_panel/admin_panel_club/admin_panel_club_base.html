@@ -2,6 +2,13 @@
 {% load static %}
 
 {% block body %}
+<style>
+    /* 为所有控件添加圆角样式 */
+    .card, .form-control, .list-group {
+      border-radius: 12px;
+    }
+</style>
+
 <div class="container mt-5 mb-4">
 
     <!-- 标题 -->
@@ -30,6 +37,9 @@
                 </a>
                 <a href="{% url 'admin_panel_club_events' club_id=club.club_id %}" class="list-group-item list-group-item-action">
                     Events
+                </a>
+                <a href="{% url 'admin_panel_club_dashboard' club_id=club.club_id %}" class="list-group-item list-group-item-action">
+                    Dashboard
                 </a>
             </div>
         </div>

@@ -40,6 +40,8 @@
                   {% csrf_token %}
                   <button type="submit" class="btn btn-outline-danger btn-sm">Remove Manager</button>
                 </form>
+              {% else %}
+                <span class="text-muted">You</span>
               {% endif %}
             </td>
           </tr>

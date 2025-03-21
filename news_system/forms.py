@@ -60,10 +60,10 @@ class NewsForm(forms.ModelForm):
         event = cleaned_data.get('event')
         # 修改: 未选择社团则不允许选择活动
         if not club and event:
-            raise forms.ValidationError("未选择社团时，不允许选择活动")
+            self.add_error('event', forms.ValidationError("未选择社团时，不允许选择活动"))
         # 如果同时选择了社团和活动，校验活动所属社团是否与所选一致
         if club and event and event.club != club:
-            raise forms.ValidationError("选择的活动不属于所选的社团")
+            self.add_error('event', forms.ValidationError("选择的活动不属于所选的社团"))
         return cleaned_data
 
 class CommentForm(forms.ModelForm):

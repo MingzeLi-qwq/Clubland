@@ -9,6 +9,8 @@ from .forms import BlogPostForm, ThreadPostForm
 from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request  # 修改：导入通用函数
 from club_system.models import Club
 from CMS_mixins.CMS_utils import RTEUploadUtils
+from django.db.models import Q
+from django.shortcuts import redirect
 
 # 博客列表页：显示所有博客文章
 class BlogPostListView(ListView):
@@ -18,6 +20,9 @@ class BlogPostListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        q = self.request.GET.get('q', '')
+        if q:
+            queryset = queryset.filter(Q(title__icontains=q) | Q(content__icontains=q))
         club_filter = self.request.GET.get('club', '')
         if club_filter:
             queryset = queryset.filter(club_id=club_filter)
@@ -52,7 +57,7 @@ class BlogPostDetailView(FormMixin, DetailView):
         # 新增讨论的排序和分页
         from django.core.paginator import Paginator
         threadposts_qs = self.object.thread_posts.all()
-        order_thread = self.request.GET.get('order_thread', 'desc')
+        order_thread = self.request.GET.get('order_thread', 'asc')  # 修改默认值为 'asc'
         if order_thread == 'asc':
             threadposts_qs = threadposts_qs.order_by('created_at')
         else:
@@ -115,32 +120,42 @@ class ThreadPostCreateView(LoginRequiredMixin, CreateView):
 
 class BlogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = BlogPost
-    template_name = 'blogpost_confirm_delete.html'
+    # 删除模板引用，因为我们不再使用确认页面
     success_url = reverse_lazy('forum_system:blog_list')
 
     def test_func(self):
-        return self.request.user == self.get_object().author
+        # 允许作者或管理员删除
+        return self.request.user == self.get_object().author or self.request.user.is_admin
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         RTEUploadUtils.delete_associated_images(instance)
         return super().delete(request, *args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        # 不再渲染确认页面，直接重定向到博客列表
+        return redirect(self.success_url)
 
 
 class ThreadPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = ThreadPost
-    template_name = 'comment_confirm_delete.html'
+    # 删除模板引用，因为我们不再使用确认页面
 
     def get_success_url(self):
         return reverse('forum_system:blog_detail', kwargs={'pk': self.get_object().blog_post.pk})
 
     def test_func(self):
-        return self.request.user == self.get_object().author
+        # 允许作者或管理员删除
+        return self.request.user == self.get_object().author or self.request.user.is_admin
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         RTEUploadUtils.delete_associated_images(instance)
         return super().delete(request, *args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        # 不再渲染确认页面，直接重定向回博客详情页
+        return redirect(self.get_success_url())
 
 
 

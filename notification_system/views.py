@@ -50,7 +50,9 @@ def delete_notification(request, notification_id):
 
 @login_required
 def delete_all_notifications(request):
+    """手動刪除所有通知"""
     if request.method == 'POST':
         Notification.objects.filter(user=request.user).delete()
         return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+
+    return JsonResponse({'status': 'error'}, status=400)

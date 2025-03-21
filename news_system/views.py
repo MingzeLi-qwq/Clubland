@@ -9,6 +9,46 @@ from event_system.models import Event
 from club_system.models import Club  # 新增导入以获取所有社团
 from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request  # 修改：导入通用函数
 from CMS_mixins.CMS_utils import RTEUploadUtils  # 新增导入
+from django.db.models import Q
+from bs4 import BeautifulSoup  # 确保导入BeautifulSoup
+
+def get_first_image_url(content):
+    """从内容中提取第一张图片的URL
+    
+    Args:
+        content (str): HTML格式的内容
+        
+    Returns:
+        str: 图片URL或None
+    """
+    first_image_url = None
+    if content:
+        # 使用BeautifulSoup解析HTML内容
+        soup = BeautifulSoup(content, 'html.parser')
+        img_tag = soup.find('img')
+        if img_tag and img_tag.has_attr('src'):
+            first_image_url = img_tag['src']
+    return first_image_url
+
+def enhance_news_with_image(news_item):
+    """增强新闻数据，添加图片URL
+    
+    Args:
+        news_item (News): 新闻对象
+        
+    Returns:
+        dict: 增强后的新闻数据
+    """
+    return {
+        'id': news_item.id,
+        'title': news_item.title,
+        'author': news_item.author,
+        'club': news_item.club,
+        'event': news_item.event,
+        'first_image_url': get_first_image_url(news_item.content),
+        'created_at': news_item.created_at,
+        'url': f'/news/{news_item.id}/'
+    }
 
 # 新闻列表页：显示所有新闻文章
 class NewsListView(ListView):
@@ -18,6 +58,9 @@ class NewsListView(ListView):
 
     def get_queryset(self):
         queryset = News.objects.all()
+        q = self.request.GET.get('q', '')
+        if q:
+            queryset = queryset.filter(Q(title__icontains=q) | Q(content__icontains=q))
         club_filter = self.request.GET.get('club', '')
         if club_filter:
             queryset = queryset.filter(club__pk=club_filter)
@@ -35,6 +78,11 @@ class NewsListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['clubs'] = Club.objects.all()  # 增加 clubs 上下文变量
+        
+        # 为每个新闻添加first_image_url属性
+        for post in context['posts']:
+            post.first_image_url = get_first_image_url(post.content)
+            
         return context
 
 
@@ -50,12 +98,19 @@ class NewsDetailView(FormMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Add the comment form only if user is authenticated
+        # 移除可能由父类FormMixin添加的表单
+        if 'form' in context:
+            del context['form']
+        # 只有登录用户才会获得评论表单
         if self.request.user.is_authenticated:
             context['form'] = self.get_form()
         return context
 
     def post(self, request, *args, **kwargs):
+        # 如果用户未登录，直接返回未授权错误或重定向到登录页
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect(reverse('login'))
+            
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
@@ -76,6 +131,16 @@ class NewsCreateView(LoginRequiredMixin, UserFormMixin, CreateView):
     form_class = NewsForm
     template_name = 'news_form.html'
     success_url = reverse_lazy('news_system:news_list')  # 提交成功后重定向到列表页
+    
+    def form_valid(self, form):
+        # 确保正确保存作者信息
+        form.instance.author = self.request.user
+        # print("表单验证成功，准备保存...")
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        # print(f"表单验证失败: {form.errors}")
+        return super().form_invalid(form)
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
@@ -95,31 +160,64 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
 class NewsDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = News
-    template_name = 'news_confirm_delete.html'
+    # 移除模板引用，我们不再使用确认删除页面
     success_url = reverse_lazy('news_system:news_list')
 
     def test_func(self):
-        return self.request.user == self.get_object().author
+        # 允许作者或管理员删除
+        return self.request.user == self.get_object().author or self.request.user.is_admin
 
     def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        RTEUploadUtils.delete_associated_images(instance)
-        return super().delete(request, *args, **kwargs)
+        self.object = self.get_object()  # 确保设置 self.object
+        RTEUploadUtils.delete_associated_images(self.object)
+        success_url = self.get_success_url()
+        self.object.delete()
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'success'})
+        return HttpResponseRedirect(success_url)
+    
+    def post(self, request, *args, **kwargs):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return self.delete(request, *args, **kwargs)
+        self.object = self.get_object()  # 确保设置 self.object
+        return super().post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        # 如果是直接访问删除URL，重定向到列表页
+        return HttpResponseRedirect(self.get_success_url())
 
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
-    template_name = 'comment_confirm_delete.html'
+    # 移除模板引用，我们不再使用确认删除页面
 
     def get_success_url(self):
-        return reverse('news_system:news_detail', kwargs={'pk': self.get_object().news.pk})
+        # 需要确保先设置 self.object
+        if not hasattr(self, 'object') or not self.object:
+            self.object = self.get_object()
+        return reverse('news_system:news_detail', kwargs={'pk': self.object.news.pk})
 
     def test_func(self):
-        return self.request.user == self.get_object().author
+        # 允许作者或管理员删除
+        return self.request.user == self.get_object().author or self.request.user.is_admin
 
     def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        RTEUploadUtils.delete_associated_images(instance)
-        return super().delete(request, *args, **kwargs)
+        self.object = self.get_object()  # 确保设置 self.object
+        RTEUploadUtils.delete_associated_images(self.object)
+        success_url = self.get_success_url()
+        self.object.delete()
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'success'})
+        return HttpResponseRedirect(success_url)
+    
+    def post(self, request, *args, **kwargs):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return self.delete(request, *args, **kwargs)
+        self.object = self.get_object()  # 确保设置 self.object
+        return super().post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        # 如果是直接访问删除URL，重定向到新闻详情页
+        return HttpResponseRedirect(self.get_success_url())
 
 def load_events(request):
     club_id = request.GET.get('club')

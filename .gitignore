@@ -358,5 +358,6 @@ $RECYCLE.BIN/
 *.lnk
 
 frontend/node_modules/
+design_draft/
 
 # End of https://www.toptal.com/developers/gitignore/api/python,django,venv,virtualenv,macos,windows,linux

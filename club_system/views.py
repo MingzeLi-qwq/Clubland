@@ -69,14 +69,17 @@ class ClubDetailView(ClubExistsRequiredMixin, View):
         events = Event.objects.filter(club=club)
         member_count = club.members.count()
         managers = club.membership_set.filter(is_manager=True)
-        is_manager = False
+        is_manager=False
+        is_member=False
         if request.user.is_authenticated:
             is_manager = managers.filter(user=request.user).exists()
+            is_member = Membership.objects.filter(user=request.user, club=club).exists()       
         return render(request, 'club_detail.html', {
             'club': club,
             'member_count': member_count,
             'managers': managers,
             'is_manager': is_manager,
+            'is_member': is_member,
             'events': events,
         })
     
@@ -87,11 +90,9 @@ class RegisterMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, UserTy
 
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
-        if request.user.is_authenticated:
-            Membership.objects.get_or_create(user=request.user, club=club)
-            return redirect('club_detail', club_id=club_id)
-        else:
-            return redirect('login')
+        Membership.objects.get_or_create(user=request.user, club=club)
+        return redirect('club_detail', club_id=club_id)
+
         
 """"This method is used to handle membership cancelation from user it self"""
 """此方法用来处理来自用户自己的取消会员"""
@@ -100,33 +101,30 @@ class CancelMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, UserType
 
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
-        if request.user.is_authenticated:
-            Membership.objects.filter(user=request.user, club=club).delete()
-            messages.success(request, f"You have successfully cancelled your membership in {club.name}.")
-            return redirect('dashboard_my_club')
-        else:
-            return redirect('login')
+        Membership.objects.filter(user=request.user, club=club).delete()
+        messages.success(request, f"You have successfully cancelled your membership in {club.name}.")
+        return redirect('dashboard_my_club')
 """------------------------------------------------------------------------End-------------------------------------------------------------------------------"""
 
 
-class ClubWebView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMemberRequiredMixin, View):
-    template_name = 'club_website/club_dashboard.html'
+# class ClubWebView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMemberRequiredMixin, View):
+#     template_name = 'club_website/club_dashboard.html'
 
-    def get(self, request, club_id):
-        club = get_object_or_404(Club, club_id=club_id)
+#     def get(self, request, club_id):
+#         club = get_object_or_404(Club, club_id=club_id)
         
-        # 验证用户是否是该 club 的成员
-        if not Membership.objects.filter(club=club, user=request.user, club__isnull=False).exists():
-            return render(request, '403.html', status=403)
+#         # 验证用户是否是该 club 的成员
+#         if not Membership.objects.filter(club=club, user=request.user, club__isnull=False).exists():
+#             return render(request, '403.html', status=403)
 
-        membership = Membership.objects.get(club=club, user=request.user)
+#         membership = Membership.objects.get(club=club, user=request.user)
 
-        return render(request, self.template_name, {
-            'club': club,
-            'widgets': club.widgets.all(),
-            'customization': club.customization,
-            'membership': membership
-        })
+#         return render(request, self.template_name, {
+#             'club': club,
+#             'widgets': club.widgets.all(),
+#             'customization': club.customization,
+#             'membership': membership
+#         })
         
 
 
@@ -208,6 +206,17 @@ class ClubManagerEvents(LoginRequiredMixin, ClubManagerRequiredMixin, View):
             'search_query': search_query,
         }
         return render(request, 'club_manager/events.html', context)
+
+class ClubManagerDashboard(LoginRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, *args, **kwargs):
+        club = get_object_or_404(Club, club_id=club_id)
+
+        return render(request, 'club_manager/dashboard.html', {
+            'club_id': club_id,
+            'club': club,
+        })
+        
+
 """------------------------------------------------------------End--------------------------------------------------------------"""
 
 
@@ -516,11 +525,6 @@ class ApplyNewClubView(LoginRequiredMixin, UserTypeRequiredMixin, View):
             # 检查是否与现有Club重名
             if isSameClubNameExist(club_name):
                 messages.error(request, "A club with this name already exists.")
-                return render(request, self.template_name, {'form': form})
-            
-            # 检查是否与待审核的请求重名
-            if isSameClubNameExistInRequest(club_name):
-                messages.error(request, "A request for a club with this name is already pending.")
                 return render(request, self.template_name, {'form': form})
             
             # 创建新的请求
