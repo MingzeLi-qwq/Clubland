@@ -8,7 +8,7 @@ import axios from "axios";
 interface WidgetType {
     id: number;
     name: string;
-    widget_type: 'text' | 'image' | 'notice' | 'countdown';
+    widget_type: 'text' | 'image' | 'notice' | 'countdown' | 'clock';
     x: number;
     y: number;
     width?: number;
@@ -26,6 +26,23 @@ const PublicView = () => {
     const [layout, setLayout] = useState<{ i: string; x: number; y: number; w: number; h: number }[]>([]);
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
     const [clubName, setClubName] = useState<string | null>(null);
+    const [time, setTime] = useState({
+        hours: 0,
+        minutes: 0,
+        seconds: 0
+    });
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            const now = new Date();
+            setTime({
+                hours: now.getHours() % 12,
+                minutes: now.getMinutes(),
+                seconds: now.getSeconds()
+            });
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         if (!club_id || isNaN(Number(club_id))) return;
@@ -63,6 +80,7 @@ const PublicView = () => {
         fetchClubData();
     }, [club_id]);
 
+    // 在renderWidgetContent函数中添加时钟渲染逻辑
     const renderWidgetContent = (widget: WidgetType) => {
         switch (widget.widget_type) {
             case 'text':
@@ -108,6 +126,96 @@ const PublicView = () => {
                     {targetDate ? `${Math.ceil((targetDate.getTime() - Date.now()) / 86400000)} 天` : '未设置时间'}
                 </div>;
 
+            case 'clock':
+                return <div style={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative'
+                }}>
+                    <div style={{
+                        width: '100%',
+                        height: '100%',
+                        background: '#1a1a1a',
+                        borderRadius: '50%',
+                        margin: '0 auto',
+                        position: 'relative'
+                    }}>
+                        {/* 表盘刻度 */}
+                        <div style={{
+                            width: '80%',
+                            height: '80%',
+                            position: 'absolute',
+                            left: '10%',
+                            top: '10%',
+                            borderRadius: '50%',
+                            border: '2px solid #444'
+                        }}>
+                            {[...Array(12)].map((_, i) => (
+                                <div key={i} style={{
+                                    position: 'absolute',
+                                    width: '2px',
+                                    height: '10px',
+                                    background: '#666',
+                                    left: '50%',
+                                    top: '5%',
+                                    transform: `rotate(${i * 30}deg)`,
+                                    transformOrigin: 'bottom'
+                                }} />
+                            ))}
+                        </div>
+                        
+                        {/* 时钟指针 */}
+                        <div style={{
+                            position: 'absolute',
+                            left: '50%',
+                            bottom: '50%',
+                            width: '4px',
+                            height: '25%',
+                            background: '#fff',
+                            transform: `rotate(${time.hours * 30 + time.minutes * 0.5}deg)`,
+                            transformOrigin: 'bottom',
+                            transition: 'transform 0.3s cubic-bezier(0.4, 2.3, 0.6, 1)'
+                        }} />
+                        <div style={{
+                            position: 'absolute',
+                            left: '50%',
+                            bottom: '50%',
+                            width: '3px',
+                            height: '35%',
+                            background: '#fff',
+                            transform: `rotate(${time.minutes * 6}deg)`,
+                            transformOrigin: 'bottom',
+                            transition: 'transform 0.3s cubic-bezier(0.4, 2.3, 0.6, 1)'
+                        }} />
+                        <div style={{
+                            position: 'absolute',
+                            left: '50%',
+                            bottom: '50%',
+                            width: '2px',
+                            height: '40%',
+                            background: '#ff5555',
+                            transform: `rotate(${time.seconds * 6}deg)`,
+                            transformOrigin: 'bottom',
+                            transition: 'transform 0.3s cubic-bezier(0.4, 2.3, 0.6, 1)'
+                        }} />
+                        
+                        {/* 中心点 */}
+                        <div style={{
+                            position: 'absolute',
+                            left: '50%',
+                            top: '50%',
+                            width: '8px',
+                            height: '8px',
+                            background: '#fff',
+                            borderRadius: '50%',
+                            transform: 'translate(-50%, -50%)'
+                        }} />
+                    </div>
+                </div>;
+
             default:
                 return <div>未知组件类型</div>;
         }
@@ -139,7 +247,7 @@ const PublicView = () => {
             >
                 {clubName ? `Welcome to ${clubName}` : "Loading..."}
             </h2>
-
+            
             <GridLayout
                 className="layout"
                 layout={layout}
@@ -168,8 +276,30 @@ const PublicView = () => {
                         </div>
                     </div>
                 ))}
+                
+
             </GridLayout>
+            <button 
+                onClick={() => window.location.href = `/club-dashboard/${club_id}`}
+                style={{
+                    background: '#1890ff',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    height: '40px',
+                    transition: 'background 0.3s',
+                    ':hover': {
+                        background: '#40a9ff'
+                    }
+                }}
+            >
+                Edit
+            </button>
         </div>
+        
     );
 };
 

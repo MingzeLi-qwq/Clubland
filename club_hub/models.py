@@ -11,7 +11,8 @@ class Widget(models.Model):
         ('chart', '图表'),
         ('notice', '公告'),
         ('image', '图片'),
-        ('countdown', '倒计时')
+        ('countdown', '倒计时'),
+        ('clock', '时钟')
     ]
     
     widget_type = models.CharField(
