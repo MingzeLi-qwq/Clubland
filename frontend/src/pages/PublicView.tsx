@@ -8,7 +8,7 @@ import axios from "axios";
 interface WidgetType {
     id: number;
     name: string;
-    widget_type: 'text' | 'image' | 'notice' | 'countdown' | 'clock';
+    widget_type: 'text' | 'image' | 'notice' | 'countdown' | 'clock' | 'calendar';
     x: number;
     y: number;
     width?: number;
@@ -31,6 +31,11 @@ const PublicView = () => {
         minutes: 0,
         seconds: 0
     });
+    const widgetConfig = {
+        clock: { w: 2, h: 3, resizable: false },
+        calendar: { w: 3, h: 3, resizable: false },
+    };
+    
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -67,8 +72,8 @@ const PublicView = () => {
                     i: String(w.id),
                     x: w.x,
                     y: w.y,
-                    w: w.width || 2,
-                    h: w.height || 2
+                    w: widgetConfig[w.widget_type as keyof typeof widgetConfig]?.w || w.width,
+                    h: widgetConfig[w.widget_type as keyof typeof widgetConfig]?.h || w.height,
                 })));
                 setClubName(clubRes.data.name);
                 setDashboardBg(clubRes.data.background_image);

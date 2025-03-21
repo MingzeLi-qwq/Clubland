@@ -12,11 +12,17 @@ const Dashboard = () => {
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
     const [clubName, setClubName] = useState<string | null>(null);
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [isResizable, setIsResizable] = useState(true);
     const [time, setTime] = useState({
         hours: 0,
         minutes: 0,
         seconds: 0
     });
+    const widgetConfig = {
+        clock: { w: 2, h: 3, resizable: false },
+        calendar: { w: 3, h: 3, resizable: false },
+        default: { w: 2, h: 2, resizable: true }
+    };
     useEffect(() => {
         const updateClock = () => {
             const now = new Date();
@@ -148,8 +154,8 @@ const Dashboard = () => {
                 i: String(res.data.id), 
                 x: 0, 
                 y: newY, 
-                w: res.data.width, 
-                h: res.data.height 
+                w: widgetConfig[res.data.widget_type as keyof typeof widgetConfig]?.w || res.data.width,
+                h: widgetConfig[res.data.widget_type as keyof typeof widgetConfig]?.h || res.data.height,
             }]);
         });
     };
@@ -325,238 +331,261 @@ const Dashboard = () => {
                 width={1200}
                 onLayoutChange={(newLayout) => setLayout(newLayout)}
                 isDraggable={true}
-                isResizable={widgets.widget_type !== 'clock'}
             >
-                {widgets.map((widget) => (
-                    <div key={widget.id} data-grid={layout.find(l => l.i === String(widget.id))}
-                         style={{ 
-                             padding: "0px", 
-                             background: "#ffffff", 
-                             borderRadius: "12px", 
-                             border: "1px solid #ddd",
-                             boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-                             position: "relative"
-                         }}>
-                        <div style={{ 
-                            fontWeight: "bold", 
-                            fontSize: "14px", 
-                            padding: "5px", 
-                            background: "#f5f5f5", 
-                            borderTopLeftRadius: "12px", 
-                            borderTopRightRadius: "12px",
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center"
-                        }}>
-                            {widget.name}
-                            <button 
-                                onClick={() => removeWidget(widget.id)}
+                {widgets.map((widget) => {
+                    <div key={widget.id} data-grid={layout.find(l => l.i === String(widget.id))} />
+                        
+                    // 获取当前 widget 类型的配置，默认为 'default' 配置
+                    const widgetConfigItem = widgetConfig[widget.widget_type as keyof typeof widgetConfig] || widgetConfig.default;
+
+                    // 判断当前 widget 是否可以调整大小
+                    const isResizable = widgetConfigItem.resizable;
+
+                    // 设置 widget 的 layout 数据
+                    const widgetLayout = layout.find((l) => l.i === String(widget.id));
+                    
+                    return (
+                        <div
+                            key={widget.id}
+                            data-grid={{
+                                i: String(widget.id),
+                                x: widget.x,
+                                y: widget.y,
+                                w: widget.width,
+                                h: widget.height,
+                                isResizable: isResizable,
+                                isDraggable: true,
+                                ...widgetLayout
+                                }}
+                            
+                            style={{
+                                padding: "0px",
+                                background: "#ffffff",
+                                borderRadius: "12px",
+                                border: "1px solid #ddd",
+                                boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                                position: "relative"
+                            }}
+                        >
+                            <div
                                 style={{
-                                    background: "red",
-                                    color: "#fff",
-                                    border: "none",
-                                    borderRadius: "50%",
-                                    width: "24px",
-                                    height: "24px",
-                                    fontSize: "14px",
                                     fontWeight: "bold",
+                                    fontSize: "14px",
+                                    padding: "5px",
+                                    background: "#f5f5f5",
+                                    borderTopLeftRadius: "12px",
+                                    borderTopRightRadius: "12px",
                                     display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    cursor: "pointer",
-                                    position: "absolute",
-                                    top: "5px",
-                                    right: "5px"
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
                                 }}
                             >
-                        ×
-                            </button>
-                        </div>
-                        
-                        <div style={{ padding: "10px", height: 'calc(100% - 40px)' }}>
-                          {widget.widget_type === 'notice' && (
-                            <textarea 
-                              style={{ 
-                                width: '100%', 
-                                height: '90%',
-                                border: '0px solid #ddd',
-                              }}
-                              placeholder="输入公告内容..."
-                              value={widget.data.content || ''}
-                              onChange={(e) => updateWidgetData(widget.id, 'content', e.target.value)}
-                            />
-                          )}
-                          
-                        {widget.widget_type === 'image' && (
-                            <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                {!widget.data?.url ? (
-                                <>
-                                    <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={async (e) => {
-                                        const file = e.target.files?.[0];
-                                        if (!file) return;
-
-                                        const csrfToken = await getCsrfToken();
-                                        const formData = new FormData();
-                                        formData.append("file", file);
-
-                                        try {
-                                        const res = await axios.post("http://127.0.0.1:8000/api/upload-image/", formData, {
-                                            headers: {
-                                            "X-CSRFToken": csrfToken,
-                                            "Content-Type": "multipart/form-data"
-                                            },
-                                            withCredentials: true
-                                        });
-
-                                        const uploadedUrl = `/media/${res.data.file_url}`;
-                                        await updateWidgetData(widget.id, 'url', uploadedUrl);
-                                        } catch (err) {
-                                        alert("上传失败");
-                                        console.error(err);
-                                        }
-                                    }}
-                                    />
-                                </>
-                                ) : (
-                                <img
-                                    src={widget.data.url}
-                                    alt="上传图片"
+                                {widget.name}
+                                <button
+                                    onClick={() => removeWidget(widget.id)}
                                     style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover',
-                                    borderRadius: '8px'
+                                        background: "red",
+                                        color: "#fff",
+                                        border: "none",
+                                        borderRadius: "50%",
+                                        width: "24px",
+                                        height: "24px",
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        cursor: "pointer",
+                                        position: "absolute",
+                                        top: "5px",
+                                        right: "5px"
                                     }}
-                                />
-                                )}
+                                >
+                                    ×
+                                </button>
                             </div>
-                            )}
 
-
-                        {widget.widget_type === 'countdown' && (
-                                <div style={{ 
-                                    height: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    padding: '8px'
-                                }}>
-                                    <input
-                                        type="date"
-                                        value={widget.data.date?.split('T')[0] || ''}
-                                        onChange={(e) => updateWidgetData(widget.id, 'date', e.target.value + 'T00:00:00')}
-                                        style={{
-                                            marginBottom: '8px',
-                                            padding: '4px',
-                                            border: '1px solid #ddd',
-                                            borderRadius: '4px'
+                            <div style={{ padding: "10px", height: 'calc(100% - 40px)' }}>
+                                {widget.widget_type === 'notice' && (
+                                    <textarea 
+                                        style={{ 
+                                            width: '100%', 
+                                            height: '90%',
+                                            border: '0px solid #ddd',
                                         }}
+                                        placeholder="输入公告内容..."
+                                        value={widget.data.content || ''}
+                                        onChange={(e) => updateWidgetData(widget.id, 'content', e.target.value)}
                                     />
+                                )}
+
+                                {widget.widget_type === 'image' && (
+                                    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                        {!widget.data?.url ? (
+                                            <>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (!file) return;
+
+                                                        const csrfToken = await getCsrfToken();
+                                                        const formData = new FormData();
+                                                        formData.append("file", file);
+
+                                                        try {
+                                                            const res = await axios.post("http://127.0.0.1:8000/api/upload-image/", formData, {
+                                                                headers: {
+                                                                    "X-CSRFToken": csrfToken,
+                                                                    "Content-Type": "multipart/form-data"
+                                                                },
+                                                                withCredentials: true
+                                                            });
+
+                                                            const uploadedUrl = `/media/${res.data.file_url}`;
+                                                            await updateWidgetData(widget.id, 'url', uploadedUrl);
+                                                        } catch (err) {
+                                                            alert("上传失败");
+                                                            console.error(err);
+                                                        }
+                                                    }}
+                                                />
+                                            </>
+                                        ) : (
+                                            <img
+                                                src={widget.data.url}
+                                                alt="上传图片"
+                                                style={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    objectFit: 'cover',
+                                                    borderRadius: '8px'
+                                                }}
+                                            />
+                                        )}
+                                    </div>
+                                )}
+
+                                {widget.widget_type === 'countdown' && (
                                     <div style={{ 
-                                        flex: 1,
+                                        height: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        padding: '8px'
+                                    }}>
+                                        <input
+                                            type="date"
+                                            value={widget.data.date?.split('T')[0] || ''}
+                                            onChange={(e) => updateWidgetData(widget.id, 'date', e.target.value + 'T00:00:00')}
+                                            style={{
+                                                marginBottom: '8px',
+                                                padding: '4px',
+                                                border: '1px solid #ddd',
+                                                borderRadius: '4px'
+                                            }}
+                                        />
+                                        <div style={{ 
+                                            flex: 1,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '1.2em',
+                                            color: '#666'
+                                        }}>
+                                            {widget.data.date ? (
+                                                `剩余天数: ${Math.ceil(
+                                                    (new Date(widget.data.date).getTime() - Date.now()) / 
+                                                    (1000 * 60 * 60 * 24)
+                                                )}`
+                                            ) : '请设置目标日期'}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {widget.widget_type === 'clock' && (
+                                    <div style={{
+                                        height: '100%',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        fontSize: '1.2em',
-                                        color: '#666'
-                                    }}>
-                                        {widget.data.date ? (
-                                            `剩余天数: ${Math.ceil(
-                                                (new Date(widget.data.date).getTime() - Date.now()) / 
-                                                (1000 * 60 * 60 * 24)
-                                            )}`
-                                        ) : '请设置目标日期'}
-                                    </div>
-                                </div>
-                            )}
-                            {widget.widget_type === 'clock' && (
-                                <div style={{
-                                    height: '100%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    background: '#1a1a1a',
-                                    borderRadius: '50%',
-                                    position: 'relative',
-                                }}>
-                                    {/* 表盘内部代码保持不变 */}
-                                    <div style={{
-                                        width: '80%',
-                                        height: '80%',
+                                        background: '#1a1a1a',
+                                        borderRadius: '50%',
                                         position: 'relative',
-                                        borderRadius: '50%', 
-                                        border: '2px solid #444'
                                     }}>
-                                        {/* 时钟刻度 */}
-                                        {[...Array(12)].map((_, i) => (
-                                            <div key={i} style={{
-                                                position: 'absolute',
-                                                width: '2px',
-                                                height: '10px',
-                                                background: '#666',
-                                                left: '50%',
-                                                top: '5%',
-                                                transform: `rotate(${i * 30}deg)`,
-                                                transformOrigin: 'bottom'
-                                            }} />
-                                        ))}
-                                        
-                                        {/* 时钟指针 */}
                                         <div style={{
-                                            position: 'absolute',
-                                            left: '50%',
-                                            bottom: '50%',
-                                            width: '2px',
-                                            height: '40%',
-                                            background: '#ff5555',
-                                            transform: `rotate(${time.seconds * 6}deg)`,
-                                            transformOrigin: 'bottom',
-                                            transition: 'transform 0.3s cubic-bezier(0.4, 2.3, 0.6, 1)'
-                                        }} />
-                                        <div style={{
-                                            position: 'absolute',
-                                            left: '50%',
-                                            bottom: '50%',
-                                            width: '3px',
-                                            height: '35%',
-                                            background: '#fff',
-                                            transform: `rotate(${time.minutes * 6}deg)`,
-                                            transformOrigin: 'bottom',
-                                            transition: 'transform 0.3s cubic-bezier(0.4, 2.3, 0.6, 1)'
-                                        }} />
-                                        <div style={{
-                                            position: 'absolute',
-                                            left: '50%',
-                                            bottom: '50%',
-                                            width: '4px',
-                                            height: '25%',
-                                            background: '#fff',
-                                            transform: `rotate(${time.hours * 30 + time.minutes * 0.5}deg)`,
-                                            transformOrigin: 'bottom',
-                                            transition: 'transform 0.3s cubic-bezier(0.4, 2.3, 0.6, 1)'
-                                        }} />
-                                        
-                                        {/* 中心点 */}
-                                        <div style={{
-                                            position: 'absolute',
-                                            left: '50%',
-                                            top: '50%',
-                                            width: '8px',
-                                            height: '8px',
-                                            background: '#ff5555',
+                                            width: '80%',
+                                            height: '80%',
+                                            position: 'relative',
                                             borderRadius: '50%',
-                                            transform: 'translate(-50%, -50%)'
-                                        }} />
+                                            border: '2px solid #444'
+                                        }}>
+                                            {[...Array(12)].map((_, i) => (
+                                                <div key={i} style={{
+                                                    position: 'absolute',
+                                                    width: '2px',
+                                                    height: '10px',
+                                                    background: '#666',
+                                                    left: '50%',
+                                                    top: '5%',
+                                                    transform: `rotate(${i * 30}deg)`,
+                                                    transformOrigin: 'bottom'
+                                                }} />
+                                            ))}
+
+                                            <div style={{
+                                                position: 'absolute',
+                                                left: '50%',
+                                                bottom: '50%',
+                                                width: '2px',
+                                                height: '40%',
+                                                background: '#ff5555',
+                                                transform: `rotate(${time.seconds * 6}deg)`,
+                                                transformOrigin: 'bottom',
+                                                transition: 'transform 0.3s cubic-bezier(0.4, 2.3, 0.6, 1)'
+                                            }} />
+                                            <div style={{
+                                                position: 'absolute',
+                                                left: '50%',
+                                                bottom: '50%',
+                                                width: '3px',
+                                                height: '35%',
+                                                background: '#fff',
+                                                transform: `rotate(${time.minutes * 6}deg)`,
+                                                transformOrigin: 'bottom',
+                                                transition: 'transform 0.3s cubic-bezier(0.4, 2.3, 0.6, 1)'
+                                            }} />
+                                            <div style={{
+                                                position: 'absolute',
+                                                left: '50%',
+                                                bottom: '50%',
+                                                width: '4px',
+                                                height: '25%',
+                                                background: '#fff',
+                                                transform: `rotate(${time.hours * 30 + time.minutes * 0.5}deg)`,
+                                                transformOrigin: 'bottom',
+                                                transition: 'transform 0.3s cubic-bezier(0.4, 2.3, 0.6, 1)'
+                                            }} />
+
+                                            <div style={{
+                                                position: 'absolute',
+                                                left: '50%',
+                                                top: '50%',
+                                                width: '8px',
+                                                height: '8px',
+                                                background: '#ff5555',
+                                                borderRadius: '50%',
+                                                transform: 'translate(-50%, -50%)'
+                                            }} />
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                          {/* 其他类型渲染逻辑可继续扩展 */}
+                                )}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </GridLayout>
+
         </div>
     );
 };
