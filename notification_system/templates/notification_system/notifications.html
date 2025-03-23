@@ -6,17 +6,17 @@
     <h2>Notifications</h2>
 
     <div class="d-flex justify-content-between mb-3">
-        <!-- 批量標記為已讀按鈕 -->
+        <!-- mark as read button -->
         <form id="mark-all-read-form" method="post" action="{% url 'mark_all_as_read' %}">
             {% csrf_token %}
             <button type="submit" class="btn btn-secondary">Mark All as Read</button>
         </form>
 
-        <!-- 删除所有通知按钮 -->
+        <!-- delete all button -->
         <button id="delete-all-btn" class="btn btn-danger">Delete All Notifications</button>
     </div>
 
-    <!-- 通知列表 -->
+    <!-- Notification List -->
     <ul class="list-group" id="notification-list">
         {% for notification in notifications %}
             <li class="list-group-item {% if not notification.is_read %}list-group-item-warning{% endif %} d-flex justify-content-between align-items-center">
@@ -36,9 +36,8 @@
     </ul>
 </div>
 
-<!-- JavaScript 來發送 AJAX 請求 -->
+<!-- JavaScript to send AJAX requests -->
 <script>
-    // 獲取CSRF令牌
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -55,7 +54,7 @@
     }
     const csrftoken = getCookie('csrftoken');
 
-    // 標記所有為已讀的功能
+    // Mark all as read feature
     document.getElementById('mark-all-read-form').onsubmit = function(e) {
         e.preventDefault();
         fetch(this.action, {
@@ -75,7 +74,7 @@
         });
     };
 
-    // 刪除單個通知
+    // Delete a single notification
     document.querySelectorAll('.delete-notification').forEach(button => {
         button.addEventListener('click', function() {
             const notificationId = this.getAttribute('data-id');
@@ -101,7 +100,7 @@
         });
     });
 
-    // 刪除所有通知
+    // Delete all notifications
     document.getElementById('delete-all-btn').addEventListener('click', function() {
         if (confirm('Are you sure you want to delete all notifications?')) {
             fetch('/notifications/delete-all/', {
