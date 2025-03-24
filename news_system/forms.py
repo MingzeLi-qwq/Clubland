@@ -69,12 +69,12 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ['text']
         labels = {
-            'text': '评论内容',
+            'text': 'Comment',
         }
         widgets = {
             'text': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
-                'placeholder': '请输入评论内容...'
+                'placeholder': 'Please add your comment...'
             }),
         }

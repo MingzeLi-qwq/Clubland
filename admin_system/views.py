@@ -242,7 +242,7 @@ class AdminPanelClubsEventGeneral(LoginRequiredMixin, UserTypeRequiredMixin, Vie
     allowed_types = ['Admin']
     def get(self, request, club_id, event_id, *args, **kwargs):
         club = get_object_or_404(Club, pk=club_id)
-        event = get_object_or_404(Event, pk=event_id)  # 新增event对象获取
+        event = get_object_or_404(Event, pk=event_id)
         all_categories = Category.objects.all()
         return render(request, "admin_panel/admin_panel_club/admin_panel_club_event/general.html", {
             'club': club,

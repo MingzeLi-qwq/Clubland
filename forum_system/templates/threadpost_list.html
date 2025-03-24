@@ -40,7 +40,7 @@
                   {{ threadpost.author.first_name }} {{ threadpost.author.last_name }}&nbsp;&nbsp;
                   <small class="text-muted">{{ threadpost.author.username }}</small>
                 {% else %}
-                  用户不存在
+                  Unknown author
                 {% endif %}
                 &nbsp;
                 <small class="text-muted">{{ threadpost.created_at|date:"Y-m-d H:i" }}</small>

@@ -20,21 +20,21 @@
       {% if post.author %}
         {{ post.author.first_name }} {{ post.author.last_name }}&nbsp;&nbsp;<small class="text-muted">{{ post.author.username }}</small>
       {% else %}
-        用户不存在
+        Unknown author
       {% endif %}
     </div>
     <div class="mb-2">
       {% if post.club %}
-        <strong>所属社团：</strong>{{ post.club.name }}
+        <strong>Club: </strong>{{ post.club.name }}
       {% else %}
-        <strong>所属社团：</strong>未指定
+        <strong>Club: </strong>Unspecified
       {% endif %}
     </div>
     <div class="mb-2">
       {% if post.event %}
-        <strong>所属活动：</strong>{{ post.event.name }}
+        <strong>Event: </strong>{{ post.event.name }}
       {% else %}
-        <strong>所属活动：</strong>未指定
+        <strong>Event: </strong>Unspecified
       {% endif %}
     </div>
     <div>

@@ -87,7 +87,7 @@ class EventListView(ListView):
             'end_date': params.get('end_date', ''),
             'current_club': params.get('club', 'all'),
             'categories': Category.objects.all(),
-            'all_clubs': Club.objects.all(),  # 添加所有俱乐部到上下文
+            'all_clubs': Club.objects.all(),
         })
         return context
 

@@ -113,14 +113,13 @@ class LogInView(View):
             login(request, user)
             return redirect("home")
         else:
-            # 添加错误提示
             messages.error(request, "Invalid username or password.")
         return render(request, self.template_name, {"form": form})
 
 def LogOutView(request):
     logout(request)
     messages.success(request, "You have successfully logged out.")
-    # 直接重定向到登录页面，而不是首页
+    # 直接重定向到登录页面, 不是首页!
     return redirect('login')
 
 

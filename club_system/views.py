@@ -99,7 +99,7 @@ class ClubDetailView(ClubExistsRequiredMixin, View):
             'is_manager': is_manager,
             'is_member': is_member,
             'events': events,
-            'recent_news': recent_news,  # 添加recent_news到上下文
+            'recent_news': recent_news,
         })
     
 """This method is used to handle member registration from user itself"""
@@ -388,7 +388,7 @@ class SearchUsersView(LoginRequiredMixin, View):
             Q(first_name__icontains=query) |
             Q(last_name__icontains=query),
             account_type=User.ACCOUNT_TYPE_USER
-        ).exclude(membership__club_id=club_id)  # 添加排除现有成员的过滤
+        ).exclude(membership__club_id=club_id)
 
         results = [{
             'username': user.username,
