@@ -6,11 +6,12 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.core.files.storage import default_storage
 from .models import BlogPost, ThreadPost
 from .forms import BlogPostForm, ThreadPostForm
-from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request  # 修改：导入通用函数
+from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request
 from club_system.models import Club
 from CMS_mixins.CMS_utils import RTEUploadUtils
 from django.db.models import Q
 from django.shortcuts import redirect
+from news_system.views import get_first_image_url
 
 # 博客列表页：显示所有博客文章
 class BlogPostListView(ListView):
@@ -30,13 +31,13 @@ class BlogPostListView(ListView):
         if order == 'asc':
             return queryset.order_by('created_at')
         return queryset.order_by('-created_at')
-    
-    def get_paginate_by(self, queryset):
-        return get_paginate_by_request(self.request)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['clubs'] = Club.objects.all()
+        # 为每篇文章添加首图URL
+        for post in context['posts']:
+            post.first_image_url = get_first_image_url(post.content)
         return context
 
 
