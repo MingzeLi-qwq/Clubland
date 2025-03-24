@@ -170,8 +170,6 @@
                                 <a href="{% url 'register_membership' club_id=club.club_id %}" class="btn btn-primary btn-lg rounded-pill w-100">Register Membership</a>
                             {% endif %}
                         {% else %}
-                            <!-- 当前用户未登录时 -->
-                            <!-- 可点击的文字按钮 -->
                             <p>
                                 <a href="{% url 'login' %}" class="btn btn-link p-0">Login</a> or 
                                 <a href="{% url 'signup' %}" class="btn btn-link p-0">registration</a> is required before registering for membership.
