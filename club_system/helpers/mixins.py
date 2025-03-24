@@ -7,7 +7,6 @@ from django.utils.safestring import mark_safe
 
 class ClubMemberRequiredMixin(AccessMixin):
     """Access is limited to club members only"""
-    """只允许社团成员访问"""
     def dispatch(self, request, *args, **kwargs):
         club_id = kwargs.get('club_id')
         if not Membership.objects.filter(user=request.user, club_id=club_id).exists():
@@ -18,7 +17,7 @@ class ClubMemberRequiredMixin(AccessMixin):
                 <script>
                     setTimeout(function() {
                         window.location.href = '/';
-                    }, 3000);  // Jump in 3 seconds / 3秒后跳转
+                    }, 3000);  // Jump in 3 seconds / Jump in 3 seconds
                 </script>
             </head>
             <body>
@@ -27,21 +26,18 @@ class ClubMemberRequiredMixin(AccessMixin):
             </body>
             </html>
             """
-            # 添加 403 状态码
+            # Add 403 status code
             return HttpResponse(mark_safe(message), status=403)
         return super().dispatch(request, *args, **kwargs)
 
 class ClubManagerRequiredMixin(AccessMixin):
     """Only allow access to club managers"""
-    """只允许社团管理员访问"""
     def dispatch(self, request, *args, **kwargs):
         club_id = kwargs.get('club_id')
-        """给予@superuser越过club manager检查的权限"""
         """Give @superuser permission to override club manager checks (recommended to remove before going live)"""
         if request.user.username == "@superuser":
             return super().dispatch(request, *args, **kwargs)
         
-        """给予admin越过club manager检查的权限"""
         """Give admin permission to override club manager checks (recommended to remove before going live)"""
         if request.user.account_type == 'Admin':
             return super().dispatch(request, *args, **kwargs)
@@ -55,7 +51,7 @@ class ClubManagerRequiredMixin(AccessMixin):
                 <script>
                     setTimeout(function() {
                         window.location.href = '/';
-                    }, 3000);  // Jump in 3 seconds / 3秒后跳转
+                    }, 3000);  // Jump in 3 seconds / Jump in 3 seconds
                 </script>
             </head>
             <body>
@@ -64,8 +60,8 @@ class ClubManagerRequiredMixin(AccessMixin):
             </body>
             </html>
             """
-            # 添加 403 状态码
-            return HttpResponse(mark_safe(message), status=403)  # mark_safe 让 HTML 代码生效
+            # Add 403 status code
+            return HttpResponse(mark_safe(message), status=403) 
         return super().dispatch(request, *args, **kwargs)
     
 class NonClubManagerRequiredMixin(AccessMixin):
@@ -80,7 +76,7 @@ class NonClubManagerRequiredMixin(AccessMixin):
                 <script>
                     setTimeout(function() {
                         window.location.href = '/';
-                    }, 3000);  // 3秒后跳转
+                    }, 3000);  // Jump in 3 seconds
                 </script>
             </head>
             <body>
@@ -89,13 +85,12 @@ class NonClubManagerRequiredMixin(AccessMixin):
             </body>
             </html>
             """
-            # 添加 403 状态码
-            return HttpResponse(mark_safe(message), status=403)  # mark_safe 让 HTML 代码生效
+            # Add 403 status code
+            return HttpResponse(mark_safe(message), status=403)
         return super().dispatch(request, *args, **kwargs)
 
 class NonClubMemberRequiredMixin(AccessMixin):
     """Access is only allowed to non-members of the association"""
-    """只允许非社团成员访问"""
     def dispatch(self, request, *args, **kwargs):
         club_id = kwargs.get('club_id')
         if Membership.objects.filter(user=request.user, club_id=club_id).exists():
@@ -106,7 +101,7 @@ class NonClubMemberRequiredMixin(AccessMixin):
                 <script>
                     setTimeout(function() {
                         window.location.href = '/';
-                    }, 3000);  // Jump in 3 seconds / 3秒后跳转
+                    }, 3000);  // Jump in 3 seconds / Jump in 3 seconds
                 </script>
             </head>
             <body>
@@ -115,12 +110,12 @@ class NonClubMemberRequiredMixin(AccessMixin):
             </body>
             </html>
             """
-            # 添加 403 状态码
+            # Add 403 status code
             return HttpResponse(mark_safe(message), status=403)
         return super().dispatch(request, *args, **kwargs)
     
 class ClubExistsRequiredMixin(AccessMixin):
-    """检查 club 是否存在"""
+    """Check if club exists"""
     def dispatch(self, request, *args, **kwargs):
         club_id = kwargs.get('club_id')
         if not Club.objects.filter(pk=club_id).exists():
@@ -131,7 +126,7 @@ class ClubExistsRequiredMixin(AccessMixin):
                 <script>
                     setTimeout(function() {
                         window.location.href = '/';
-                    }, 3000);  // 3秒后跳转
+                    }, 3000);  // Jump in 3 seconds
                 </script>
             </head>
             <body>
@@ -140,6 +135,5 @@ class ClubExistsRequiredMixin(AccessMixin):
             </body>
             </html>
             """
-            # 使用 404 状态码更符合资源不存在的语义
             return HttpResponse(mark_safe(message), status=404)
         return super().dispatch(request, *args, **kwargs)

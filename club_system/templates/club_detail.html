@@ -4,13 +4,13 @@
 {% block body %}
 <div class="container">
     <div class="row">
-        <!-- 社团名称 -->
+        <!-- Club name -->
         <h1 class="my-4">{{ club.name }}</h1>
 
-        <!-- 左侧主要内容 -->
+        <!-- Left main content -->
         <div class="col-md-8">
             
-            <!-- Club 描述 -->
+            <!-- Club description -->
             <p>{{ club.description }}</p >
 
             <!-- Club hub card -->
@@ -30,7 +30,7 @@
                 </div>
             {% endif %}
 
-            <!-- 最近事件卡片 -->
+            <!-- recent event -->
             <div class="card mb-4 shadow-sm border-0">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
@@ -64,7 +64,7 @@
                 </div>
             </div>
 
-            <!-- 最近新闻卡片 -->
+            <!-- recent news -->
             <div class="card mb-4 shadow-sm border-0">
                 <div class="card-header bg-secondary text-white">
                     <h5 class="mb-0"><i class="bi bi-newspaper me-2"></i> Recent News</h5>
@@ -111,9 +111,9 @@
             </div>
         </div>
 
-        <!-- 右侧信息栏 -->
+        <!-- right message box -->
         <div class="col-md-4">
-            <!-- Club Information 卡片 -->
+            <!-- Club Information card -->
             <div class="card bg-light mb-3">
                 <div class="card-header">Club Information</div>
                 <div class="card-body">
@@ -141,13 +141,13 @@
 
                     <div class="d-flex justify-content-center mt-5">
                         {% if user.is_authenticated %}
-                            <!-- 当前用户登录时 -->
+                            <!-- When the current user is logged in -->
                             {% if user.account_type == 'Admin' %}
                                 <p>
                                     You are the administrator, you can manage this club in <a href="{% url 'admin_panel_club_general' club_id=club.club_id %}" class="btn btn-link p-0">admin panel page</a>.
                                 </p>
                             {% elif user in club.members.all %}
-                                <!-- 如果此用户是club成员 -->
+                                <!-- If this user is a club member -->
                                     {% if is_manager %}
                                     <p>
                                         You are the club manager, you can manage this club in <a href="{% url 'club_manager_general' club_id=club.club_id %}" class="btn btn-link p-0">club manager page</a>.
@@ -158,12 +158,12 @@
                                     </p>
                                     {% endif %}
                             {% else %}
-                                <!-- 如果此用户不是club成员 -->
+                                <!-- If this user is not a club member -->
                                 <a href="{% url 'register_membership' club_id=club.club_id %}" class="btn btn-primary btn-lg rounded-pill w-100">Register Membership</a>
                             {% endif %}
                         {% else %}
-                            <!-- 当前用户未登录时 -->
-                            <!-- 可点击的文字按钮 -->
+                            <!-- When the current user is not logged in -->
+                            <!-- Clickable text buttons -->
                             <p>
                                 <a href="{% url 'login' %}" class="btn btn-link p-0">Login</a> or 
                                 <a href="{% url 'signup' %}" class="btn btn-link p-0">registration</a> is required before registering for membership.

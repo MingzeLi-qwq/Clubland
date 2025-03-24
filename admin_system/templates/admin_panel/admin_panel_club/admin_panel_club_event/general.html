@@ -141,7 +141,7 @@
         var endTimeInput = document.getElementById('event_end_time');
         var form = document.getElementById('eventTimeForm');
     
-        // 设置最小日期为今天
+        // Set the minimum date to today
         var today = new Date();
         var todayString = today.toISOString().split('T')[0] + "T00:00";
         startTimeInput.min = todayString;
@@ -165,7 +165,7 @@
             }
         });
     
-        // 表单验证
+        // Form Validation
         form.addEventListener('submit', function(event) {
             var startTime = new Date(startTimeInput.value);
             var endTime = new Date(endTimeInput.value);
