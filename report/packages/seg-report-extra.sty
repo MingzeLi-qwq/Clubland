@@ -1,0 +1,45 @@
+\ProvidesPackage{seg-report-extra}[SEG report extra]
+
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{tikz, adjustbox}
+\RequirePackage{xcolor}
+
+\definecolor{background_color}{rgb}{0.95,0.95,0.95}
+\definecolor{green}{HTML}{46A247}
+\definecolor{blue}{HTML}{4654A2}
+\definecolor{red}{HTML}{D60909}
+
+\newtcolorbox{reusable-box}[3][]{%
+    enhanced,
+    before skip=2mm,after skip=2mm, 
+    boxrule=0.6pt,
+    colback=#3, colframe=#2, % Colors
+    attach boxed title to top left={xshift=0cm,yshift*=0mm-\tcboxedtitleheight},
+    varwidth boxed title*=-3cm,
+    boxed title style={frame code={%
+        \path[left color=#2,right color=#2, middle color=#2]
+        (frame.north west) [sharp corners] -- 
+        (frame.north east) [rounded corners=2mm] -- 
+        (frame.south east) [sharp corners] -- 
+        (frame.south west) [rounded corners=2mm] -- 
+        cycle;
+        },interior engine=empty,
+    },
+    width=\textwidth,
+    arc is curved,
+    arc = 1.5mm,
+    fonttitle=\bfseries, 
+    title={#1}
+}
+
+\newenvironment{instructions}
+{\begin{reusable-box}[Instructions!]{blue}{background_color}}
+{\end{reusable-box}}
+
+\newenvironment{expectations}
+{\begin{reusable-box}[Expectations]{green}{background_color}}
+{\end{reusable-box}}
+
+\newenvironment{length}
+{\begin{reusable-box}[Length requirements]{red}{background_color}}
+{\end{reusable-box}}
