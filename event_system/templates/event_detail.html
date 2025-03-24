@@ -63,7 +63,7 @@
 
       <!-- Event description -->
       <div class="mb-4">
-        <h4 class="mb-3">Event Details</h4>
+        <h4 class="mb-3">Event Details: </h4>
         <div class="event-description">
           {{ event.description|linebreaks }}
         </div>
@@ -71,7 +71,7 @@
       
       <!-- 本活动的新闻 -->
       <div class="mb-4">
-        <h4 class="mb-3">本活动的新闻</h4>
+        <h4 class="mb-3">News of This Event: </h4>
         {% if related_news %}
           <div class="list-group list-group-flush">
             {% for news in related_news %}
@@ -91,7 +91,7 @@
                       {% if news.author %}
                         {{ news.author.first_name }} {{ news.author.last_name }}
                       {% else %}
-                        未知作者
+                        Unknown author
                       {% endif %}
                       {% if news.club %}
                         &nbsp;&nbsp;|&nbsp;&nbsp;{{ news.club.name }}
@@ -109,7 +109,7 @@
             {% endfor %}
           </div>
         {% else %}
-          <p>暂无.</p>
+          <p>No news at the moment, please await the event to finish or club managers to compose news.</p>
         {% endif %}
       </div>
       

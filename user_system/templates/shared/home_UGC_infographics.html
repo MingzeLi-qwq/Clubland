@@ -2,10 +2,26 @@
 <link rel="stylesheet" href="{% static 'css/home_style.css' %}">
 <section class="py-4">
   <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- 桌面视图标题和按钮 -->
+    <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
       <h2 class="mb-0">新社团来袭</h2>
       <a href="{% url 'clubs' %}" class="btn btn-outline-primary btn-sm">View All</a>
     </div>
+    
+    <!-- 移动视图标题和折叠按钮 -->
+    <div class="d-md-none mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="mb-0">新社团来袭</h2>
+        <a href="{% url 'clubs' %}" class="btn btn-outline-primary btn-sm">View All</a>
+      </div>
+      <button id="toggleNewClubsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#newClubsCollapse" aria-expanded="true" aria-controls="newClubsCollapse">
+        <span class="toggle-text">Fold</span>
+        <i class="bi bi-chevron-down chevron"></i>
+      </button>
+    </div>
+    
+    <!-- 折叠内容区域 - 默认展开 -->
+    <div id="newClubsCollapse" class="collapse show d-md-block">
     {% if new_clubs %}
     <div class="row g-4" id="clubs-container">
       {% for club in new_clubs %}
@@ -28,18 +44,35 @@
     </div>
     {% else %}
     <div class="text-center p-4 bg-light rounded">
-      <p class="text-muted mb-0">暂无新社团</p>
+      <p class="text-muted mb-0">No new clubs</p>
     </div>
     {% endif %}
+    </div>
   </div>
 </section>
 
 <section class="py-4">
   <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- 桌面视图标题和按钮 -->
+    <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
       <h2 class="mb-0">最近新闻</h2>
       <a href="{% url 'news_system:news_list' %}" class="btn btn-outline-primary btn-sm">View All</a>
     </div>
+    
+    <!-- 移动视图标题和折叠按钮 -->
+    <div class="d-md-none mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="mb-0">最近新闻</h2>
+        <a href="{% url 'news_system:news_list' %}" class="btn btn-outline-primary btn-sm">View All</a>
+      </div>
+      <button id="toggleNewsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#recentNewsCollapse" aria-expanded="true" aria-controls="recentNewsCollapse">
+        <span class="toggle-text">Fold</span>
+        <i class="bi bi-chevron-down chevron"></i>
+      </button>
+    </div>
+    
+    <!-- 折叠内容区域 - 默认展开 -->
+    <div id="recentNewsCollapse" class="collapse show d-md-block">
     <div class="row g-4">
       {% for news in recent_news %}
         <div class="col-md-4">
@@ -66,9 +99,54 @@
         </div>
       {% empty %}
         <div class="col-12">
-          <p class="text-center">暂无新闻</p>
+          <p class="text-center">No news</p>
         </div>
       {% endfor %}
     </div>
+    </div>
   </div>
 </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 初始化各区域折叠功能
+    initCollapsible('toggleNewClubsBtn', 'newClubsCollapse');
+    initCollapsible('toggleNewsBtn', 'recentNewsCollapse');
+    
+    function initCollapsible(btnId, collapseId) {
+        const collapseButton = document.getElementById(btnId);
+        const collapseElement = document.getElementById(collapseId);
+        
+        if (collapseButton && collapseElement) {
+            const toggleText = collapseButton.querySelector('.toggle-text');
+            
+            // 检查初始状态
+            if (collapseElement.classList.contains('show')) {
+                toggleText.textContent = 'Fold';
+            } else {
+                toggleText.textContent = 'Expand';
+            }
+            
+            // 监听折叠状态变化
+            collapseElement.addEventListener('shown.bs.collapse', function () {
+                toggleText.textContent = 'Fold';
+            });
+            
+            collapseElement.addEventListener('hidden.bs.collapse', function () {
+                toggleText.textContent = 'Expand';
+            });
+            
+            // 额外添加按钮点击事件处理
+            collapseButton.addEventListener('click', function() {
+                setTimeout(function() {
+                    if (collapseElement.classList.contains('show')) {
+                        toggleText.textContent = 'Fold';
+                    } else {
+                        toggleText.textContent = 'Expand';
+                    }
+                }, 200);
+            });
+        }
+    }
+  });
+</script>
