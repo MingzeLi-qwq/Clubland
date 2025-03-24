@@ -92,13 +92,14 @@
                 <div class="text-center mb-2">
                     <h2 class="mb-0">My Clubs</h2>
                 </div>
-                <div class="d-flex justify-content-center align-items-center mb-2">
-                    <div class="d-flex justify-content-between align-items-center gap-3" style="width: 80%">
-                        <button id="toggleClubsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#clubsCollapse">
-                            <span class="toggle-text">Fold</span>
-                            <i class="bi bi-chevron-down chevron"></i>
-                        </button>
-                        <a href="{% url 'dashboard_my_club' %}" class="btn btn-outline-primary btn-sm">View All</a>
+                <div class="d-flex justify-content-between align-items-center mb-2" style="padding: 0 10px;">
+                    <div style="flex: 1;"></div>
+                    <button id="toggleClubsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#clubsCollapse" style="flex: 2; max-width: 200px;">
+                        <span class="toggle-text">Fold</span>
+                        <i class="bi bi-chevron-down chevron"></i>
+                    </button>
+                    <div style="flex: 1; text-align: right;">
+                        <a href="{% url 'dashboard_my_club' %}" class="btn btn-outline-primary btn-sm" style="white-space: nowrap;">View All</a>
                     </div>
                 </div>
             </div>
@@ -162,13 +163,14 @@
                 <div class="text-center mb-2">
                     <h2 class="mb-0">My Upcoming Events</h2>
                 </div>
-                <div class="d-flex justify-content-center align-items-center mb-2">
-                    <div class="d-flex justify-content-between align-items-center gap-3" style="width: 80%">
-                        <button id="toggleEventsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#eventsCollapse" aria-expanded="true" aria-controls="eventsCollapse">
-                            <span class="toggle-text">Fold</span>
-                            <i class="bi bi-chevron-down chevron"></i>
-                        </button>
-                        <a href="{% url 'events' %}" class="btn btn-outline-primary btn-sm">View All</a>
+                <div class="d-flex justify-content-between align-items-center mb-2" style="padding: 0 10px;">
+                    <div style="flex: 1;"></div>
+                    <button id="toggleEventsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#eventsCollapse" aria-expanded="true" aria-controls="eventsCollapse" style="flex: 2; max-width: 200px;">
+                        <span class="toggle-text">Fold</span>
+                        <i class="bi bi-chevron-down chevron"></i>
+                    </button>
+                    <div style="flex: 1; text-align: right;">
+                        <a href="{% url 'events' %}" class="btn btn-outline-primary btn-sm" style="white-space: nowrap;">View All</a>
                     </div>
                 </div>
             </div>
