@@ -1,14 +1,14 @@
 <div class="container-fluid my-4">
   <div class="mb-3 p-4 border rounded">
     {% if user.is_authenticated %}
-      <h4>添加讨论</h4>
+      <h4>Add a discussion</h4>
       <form method="post" id="threadpost-form">
         {% csrf_token %}
         <div class="mb-3">
           <!-- {{ form.content.label_tag }} -->
           {{ form.content }}
         </div>
-        <button type="submit" class="btn btn-secondary">提交讨论</button>
+        <button type="submit" class="btn btn-secondary">Submit</button>
       </form>
     {% else %}
       <div class="alert alert-info">

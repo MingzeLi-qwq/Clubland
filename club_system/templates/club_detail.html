@@ -71,44 +71,52 @@
                 </div>
                 <div class="card-body">
                     {% if recent_news %}
-                        <div class="row row-cols-1 g-4">
-                            {% for news_item in recent_news %}
-                                <!-- 单条新闻展示 -->
-                                <div class="card mb-3 border-0 shadow-sm">
-                                    <div class="row g-0">
-                                        <div class="col-md-4">
-                                            <!-- 如果有新闻缩略图，可替换成实际链接 -->
-                                            < img src="{% static 'images/news_placeholder.jpg' %}" 
-                                                 class="img-fluid rounded-start" 
-                                                 alt="News image">
+                        {% for news_item in recent_news|slice:":2" %}
+                            <!-- 单条新闻展示 -->
+                            <a href="{% url 'news_system:news_detail' news_item.id %}" 
+                               class="text-decoration-none text-dark">
+                                <div class="d-flex mb-3 pb-3 border-bottom">
+                                    <!-- 左侧内容区 -->
+                                    <div class="flex-grow-1 me-3">
+                                        <div class="d-flex w-100 justify-content-between flex-column flex-sm-row">
+                                            <h5 class="mb-1 text-break">{{ news_item.title }}</h5>
+                                            <small class="ms-0 ms-sm-2 text-muted">{{ news_item.created_at|date:"Y-m-d" }}</small>
                                         </div>
-                                        <div class="col-md-8">
-                                            <div class="card-body">
-                                                <h5 class="card-title">
-                                                    <i class="bi bi-file-text me-1"></i> {{ news_item.title }}
-                                                </h5>
-                                                <p class="card-text text-muted small mb-1">
-                                                    <i class="bi bi-calendar-check me-1"></i>
-                                                    {{ news_item.published_date|date:"Y-m-d" }}
-                                                </p >
-                                                <p class="card-text">
-                                                    {{ news_item.content|truncatewords:25 }}
-                                                </p >
-                                                <a href="{% url 'news_detail' news_item.id %}"
-                                                   class="btn btn-outline-secondary btn-sm">
-                                                   Read more
-                                                </a >
-                                            </div>
+                                        <p class="mb-1 text-break"
+                                           style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+                                                  overflow: hidden; word-wrap: break-word; max-width: 100%;">
+                                            {{ news_item.content|striptags }}
+                                        </p>
+                                        <div class="mt-2">
+                                            <a href="{% url 'news_system:news_detail' news_item.id %}" 
+                                               class="btn btn-outline-secondary btn-sm">Read more</a>
                                         </div>
                                     </div>
+                                    
+                                    <!-- 右侧图片展示区 -->
+                                    <div class="d-none d-sm-block flex-shrink-0" 
+                                         style="margin: 0; padding: 0; aspect-ratio: 4/3; width: 150px;">
+                                        {% if news_item.first_image_url %}
+                                            <img src="{{ news_item.first_image_url }}"
+                                                 alt="{{ news_item.title }}"
+                                                 class="img-fluid rounded"
+                                                 style="width: 100%; height: 100%; object-fit: cover;">
+                                        {% endif %}
+                                    </div>
                                 </div>
-                            {% endfor %}
-                        </div>
+                            </a>
+                        {% endfor %}
+                        {% if recent_news|length > 2 %}
+                            <p class="text-center mt-3">
+                                ---For more news, check <a href="{% url 'news_system:news_list' %}?club={{ club.club_id }}" class="btn btn-link p-0">news page</a>---
+                            </p>
+                        {% endif %}
                     {% else %}
-                        <p class="mb-0">No recent news.</p >
+                        <p class="mb-0">No recent news.</p>
                     {% endif %}
                 </div>
             </div>
+
         </div>
 
         <!-- right message box -->
