@@ -10,14 +10,16 @@
     
     <!-- 移动视图标题和折叠按钮 -->
     <div class="d-md-none mb-3">
-      <div class="d-flex justify-content-between align-items-center mb-2">
+      <div class="text-center mb-2">
         <h2 class="mb-0">新社团来袭</h2>
-        <a href="{% url 'clubs' %}" class="btn btn-outline-primary btn-sm">View All</a>
       </div>
-      <button id="toggleNewClubsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#newClubsCollapse" aria-expanded="true" aria-controls="newClubsCollapse">
-        <span class="toggle-text">Fold</span>
-        <i class="bi bi-chevron-down chevron"></i>
-      </button>
+      <div class="d-flex justify-content-center align-items-center gap-2">
+        <a href="{% url 'clubs' %}" class="btn btn-outline-primary btn-sm">View All</a>
+        <button id="toggleNewClubsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#newClubsCollapse">
+          <span class="toggle-text">Fold</span>
+          <i class="bi bi-chevron-down chevron"></i>
+        </button>
+      </div>
     </div>
     
     <!-- 折叠内容区域 - 默认展开 -->
@@ -61,14 +63,16 @@
     
     <!-- 移动视图标题和折叠按钮 -->
     <div class="d-md-none mb-3">
-      <div class="d-flex justify-content-between align-items-center mb-2">
+      <div class="text-center mb-2">
         <h2 class="mb-0">最近新闻</h2>
-        <a href="{% url 'news_system:news_list' %}" class="btn btn-outline-primary btn-sm">View All</a>
       </div>
-      <button id="toggleNewsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#recentNewsCollapse" aria-expanded="true" aria-controls="recentNewsCollapse">
-        <span class="toggle-text">Fold</span>
-        <i class="bi bi-chevron-down chevron"></i>
-      </button>
+      <div class="d-flex justify-content-center align-items-center gap-2">
+        <a href="{% url 'news_system:news_list' %}" class="btn btn-outline-primary btn-sm">View All</a>
+        <button id="toggleNewsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#recentNewsCollapse">
+          <span class="toggle-text">Fold</span>
+          <i class="bi bi-chevron-down chevron"></i>
+        </button>
+      </div>
     </div>
     
     <!-- 折叠内容区域 - 默认展开 -->
