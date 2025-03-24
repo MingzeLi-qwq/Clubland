@@ -81,11 +81,26 @@
     <!-- Clubs Section -->
     <section class="py-4">
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <!-- 标题和按钮行 - 桌面视图使用标准布局，移动视图使用可折叠布局 -->
+            <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">My Clubs</h2>
                 <a href="{% url 'dashboard_my_club' %}" class="btn btn-outline-primary btn-sm">View All</a>
             </div>
             
+            <!-- 移动视图标题和折叠按钮 -->
+            <div class="d-md-none mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h2 class="mb-0">My Clubs</h2>
+                    <a href="{% url 'dashboard_my_club' %}" class="btn btn-outline-primary btn-sm">View All</a>
+                </div>
+                <button id="toggleClubsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#clubsCollapse" aria-expanded="true" aria-controls="clubsCollapse">
+                    <span class="toggle-text">Fold</span>
+                    <i class="bi bi-chevron-down chevron"></i>
+                </button>
+            </div>
+            
+            <!-- 折叠内容区域 - 移动设备默认展开 -->
+            <div id="clubsCollapse" class="collapse show d-md-block">
             {% if clubs %}
             <!-- Clubs Grid -->
             <div class="row g-4" id="clubs-container">
@@ -125,17 +140,33 @@
                 <a href="{% url 'clubs' %}" class="btn btn-primary mt-3">Explore Clubs</a>
             </div>
             {% endif %}
+            </div>
         </div>
     </section>
 
     <!-- Events Section -->
     <section class="py-4">
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <!-- 标题和按钮行 - 桌面视图使用标准布局，移动视图使用可折叠布局 -->
+            <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">My Upcoming Events</h2>
                 <a href="{% url 'events' %}" class="btn btn-outline-primary btn-sm">View All</a>
             </div>
             
+            <!-- 移动视图标题和折叠按钮 -->
+            <div class="d-md-none mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h2 class="mb-0">My Upcoming Events</h2>
+                    <a href="{% url 'events' %}" class="btn btn-outline-primary btn-sm">View All</a>
+                </div>
+                <button id="toggleEventsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#eventsCollapse" aria-expanded="true" aria-controls="eventsCollapse">
+                    <span class="toggle-text">Fold</span>
+                    <i class="bi bi-chevron-down chevron"></i>
+                </button>
+            </div>
+            
+            <!-- 折叠内容区域 - 移动设备默认展开 -->
+            <div id="eventsCollapse" class="collapse show d-md-block">
             {% if events %}
             <!-- Events Grid -->
             <div class="row g-4" id="events-container">
@@ -188,6 +219,7 @@
                 <p class="text-muted mb-0">No upcoming events at the moment.</p>
             </div>
             {% endif %}
+            </div>
         </div>
     </section>
     {% endif %}
@@ -449,6 +481,49 @@
             // 初始化第一页
             showPage(1);
             console.log('初始化完成，显示第1页');
+
+            // 折叠按钮功能
+            document.addEventListener('DOMContentLoaded', function() {
+                // 初始化各区域折叠功能
+                initCollapsible('toggleClubsBtn', 'clubsCollapse');
+                initCollapsible('toggleEventsBtn', 'eventsCollapse');
+                
+                function initCollapsible(btnId, collapseId) {
+                    const collapseButton = document.getElementById(btnId);
+                    const collapseElement = document.getElementById(collapseId);
+                    
+                    if (collapseButton && collapseElement) {
+                        const toggleText = collapseButton.querySelector('.toggle-text');
+                        
+                        // 检查初始状态
+                        if (collapseElement.classList.contains('show')) {
+                            toggleText.textContent = 'Fold';
+                        } else {
+                            toggleText.textContent = 'Expand';
+                        }
+                        
+                        // 监听折叠状态变化
+                        collapseElement.addEventListener('shown.bs.collapse', function () {
+                            toggleText.textContent = 'Fold';
+                        });
+                        
+                        collapseElement.addEventListener('hidden.bs.collapse', function () {
+                            toggleText.textContent = 'Expand';
+                        });
+                        
+                        // 额外添加按钮点击事件处理
+                        collapseButton.addEventListener('click', function() {
+                            setTimeout(function() {
+                                if (collapseElement.classList.contains('show')) {
+                                    toggleText.textContent = 'Fold';
+                                } else {
+                                    toggleText.textContent = 'Expand';
+                                }
+                            }, 200);
+                        });
+                    }
+                }
+            });
         {% endif %}
     });
 </script>
