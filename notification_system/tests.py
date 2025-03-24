@@ -8,13 +8,13 @@ User = get_user_model()
 
 class NotificationTestCase(TestCase):
     def setUp(self):
-        """設置測試用戶與測試數據"""
+        """Set up test user and test data"""
         self.client = Client()
         self.user = User.objects.create_user(username='testuser', password='testpassword')
         self.client.login(username='testuser', password='testpassword')
         self.factory = RequestFactory()
 
-        # 創建測試通知
+        # Create test notifications
         self.notification1 = Notification.objects.create(
             user=self.user, title="Title1", message="Message1", is_read=False
         )
@@ -26,7 +26,7 @@ class NotificationTestCase(TestCase):
         )
 
     def test_notification_str(self):
-        """測試 Notification 的 __str__ 方法"""
+        """Test __str__ method of Notification"""
         notification = Notification.objects.create(
             user=self.user, title="Test Title", message="Test Message", notification_type='general'
         )
@@ -34,19 +34,19 @@ class NotificationTestCase(TestCase):
         self.assertEqual(str(notification), expected)
 
     def test_notification_auto_delete_oldest(self):
-        """測試超過 2000 條通知時，是否刪除最舊的通知"""
+        """Test whether the oldest notification is deleted when exceeding 2000 notifications"""
         for i in range(2001):
             Notification.objects.create(user=self.user, title=f"Title {i}", message=f"Message {i}")
 
         count = Notification.objects.filter(user=self.user).count()
         self.assertEqual(count, 2000)
 
-        # 確保第一條已被刪除
+        # Ensure the first message has been deleted
         messages = Notification.objects.filter(user=self.user).order_by('created_at').values_list('message', flat=True)
         self.assertNotIn("Message 0", list(messages))
 
     def test_notification_list_view(self):
-        """測試通知列表"""
+        """Test notification list view"""
         response = self.client.get(reverse('notifications'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'notification_system/notifications.html')
@@ -54,14 +54,14 @@ class NotificationTestCase(TestCase):
         self.assertEqual(len(response.context['notifications']), 3)
 
     def test_notification_detail_view_marks_as_read(self):
-        """測試通知詳情並標記為已讀"""
+        """Test notification detail view and mark as read"""
         response = self.client.get(reverse('notification_detail', args=[self.notification1.id]))
         self.assertEqual(response.status_code, 200)
         self.notification1.refresh_from_db()
         self.assertTrue(self.notification1.is_read)
 
     def test_mark_all_as_read_post(self):
-        """測試標記所有未讀通知為已讀"""
+        """Test marking all unread notifications as read"""
         response = self.client.post(reverse('mark_all_as_read'))
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'success', 'updated_count': 2})
@@ -71,13 +71,13 @@ class NotificationTestCase(TestCase):
         self.assertTrue(self.notification2.is_read)
 
     def test_mark_all_as_read_get(self):
-        """測試 GET 請求標記為已讀是否失敗"""
+        """Test failure when using GET request to mark as read"""
         response = self.client.get(reverse('mark_all_as_read'))
         self.assertEqual(response.status_code, 400)
         self.assertJSONEqual(response.content, {'status': 'failure'})
 
     def test_delete_notification_post(self):
-        """測試刪除單筆通知"""
+        """Test deleting a single notification"""
         response = self.client.post(reverse('delete_notification', args=[self.notification1.id]))
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'success'})
@@ -85,26 +85,26 @@ class NotificationTestCase(TestCase):
             Notification.objects.get(id=self.notification1.id)
 
     def test_delete_notification_get(self):
-        """測試 GET 請求刪除通知是否失敗"""
+        """Test failure when using GET request to delete notification"""
         response = self.client.get(reverse('delete_notification', args=[self.notification2.id]))
         self.assertEqual(response.status_code, 400)
         self.assertJSONEqual(response.content, {'status': 'error', 'message': 'Invalid request method'})
 
     def test_delete_all_notifications_post(self):
-        """測試刪除所有通知"""
+        """Test deleting all notifications"""
         response = self.client.post(reverse('delete_all_notifications'))
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'success'})
         self.assertEqual(Notification.objects.filter(user=self.user).count(), 0)
 
     def test_delete_all_notifications_get(self):
-        """測試 GET 請求刪除所有通知是否失敗"""
+        """Test failure when using GET request to delete all notifications"""
         response = self.client.get(reverse('delete_all_notifications'))
         self.assertEqual(response.status_code, 400)
         self.assertJSONEqual(response.content, {'status': 'error'})
 
     def test_base_notifications_context(self):
-        """測試 base_notifications 是否正確返回未讀通知"""
+        """Test whether base_notifications correctly returns unread notifications"""
         from .views import base_notifications
         request = self.factory.get('/')
         request.user = self.user
@@ -115,55 +115,55 @@ class NotificationTestCase(TestCase):
         self.assertEqual(len(context['notifications']), 2)
 
     def test_delete_all_notifications_auto_cleanup(self):
-        """測試當通知超過 2000 條時，最舊的通知是否被刪除"""
-        # 建立 2000 條通知
+        """Test whether the oldest notification is deleted when exceeding 2000 notifications"""
+        # Create 2000 notifications
         for i in range(2000):
             Notification.objects.create(user=self.user, title=f"Title {i}", message=f"Message {i}")
 
-        # 取得最舊的通知
+        # Get the oldest notification
         oldest_notification = Notification.objects.order_by('created_at').first()
         self.assertIsNotNone(oldest_notification)
 
-        # 確保目前有 2000 條
+        # Ensure there are 2000 notifications
         self.assertEqual(Notification.objects.filter(user=self.user).count(), 2000)
 
-        # 再新增一條通知，應該會觸發自動刪除最舊的通知
+        # Create one more notification, which should trigger auto-deletion of the oldest
         new_notification = Notification.objects.create(user=self.user, title="Newest", message="Newest Message")
 
-        # 確保仍然只有 2000 條（而不是 2001 條）
+        # Ensure the count remains at 2000 (not 2001)
         self.assertEqual(Notification.objects.filter(user=self.user).count(), 2000)
 
-        # 確保最舊的通知已經被刪除
+        # Ensure the oldest notification was deleted
         with self.assertRaises(Notification.DoesNotExist):
             Notification.objects.get(id=oldest_notification.id)
 
-        # 執行刪除所有通知的 API
+        # Call the delete all API
         response = self.client.post(reverse('delete_all_notifications'))
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'success'})
 
-        # 確保刪除後的通知數量為 0
+        # Ensure notifications are deleted
         self.assertEqual(Notification.objects.filter(user=self.user).count(), 0)
 
     def test_auto_delete_only_oldest_notification(self):
-        """測試當通知超過 2000 條時，只刪除最舊的一條，而不是全部刪除"""
-        # 建立 2000 條通知
+        """Test that only the oldest notification is deleted when exceeding 2000 notifications"""
+        # Create 2000 notifications
         for i in range(2000):
             Notification.objects.create(user=self.user, title=f"Title {i}", message=f"Message {i}")
 
-        # 取得目前的最舊通知
+        # Get the current oldest notification
         oldest_notification = Notification.objects.order_by('created_at').first()
         self.assertIsNotNone(oldest_notification)
 
-        # 新增第 2001 條通知，應該觸發 `save()` 的自動刪除邏輯
+        # Add the 2001st notification, should trigger auto-delete in save()
         new_notification = Notification.objects.create(user=self.user, title="Newest", message="Newest Message")
 
-        # **確保總數仍然是 2000（因為最舊的一條應該被刪除）**
+        # Ensure total is still 2000 (oldest should be deleted)
         self.assertEqual(Notification.objects.filter(user=self.user).count(), 2000)
 
-        # **確保最舊的那條通知已被刪除**
+        # Ensure the oldest was deleted
         with self.assertRaises(Notification.DoesNotExist):
             Notification.objects.get(id=oldest_notification.id)
 
-        # **確保新通知存在**
+        # Ensure new notification exists
         self.assertTrue(Notification.objects.filter(id=new_notification.id).exists())
