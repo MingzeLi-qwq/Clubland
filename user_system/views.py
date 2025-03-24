@@ -245,9 +245,15 @@ def Mine(request):
             start_time__gte=timezone.now()
         ).distinct().order_by('start_time')
         
+        new_clubs = Club.objects.order_by('-club_id')[:3]
+        news_items = News.objects.order_by('-created_at')[:3]
+        enhanced_news = [enhance_news_with_image(n) for n in news_items]
+        
         return render(request, 'user_system/mine.html', {
             'clubs': user_clubs,
             'events': upcoming_events,
+            'new_clubs': new_clubs,
+            'recent_news': enhanced_news,
         })
 
 def about_us(request):

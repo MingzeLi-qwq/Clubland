@@ -91,6 +91,8 @@ class EventListView(ListView):
         })
         return context
 
+from news_system.views import get_first_image_url
+
 def event_detail(request, pk):
     """Event detail page"""
     event = get_object_or_404(Event, pk=pk)
@@ -99,11 +101,17 @@ def event_detail(request, pk):
         event=event
     ).first() if request.user.is_authenticated else None
     club = event.club
+    
+    # 获取关联新闻并添加首图URL
+    related_news = event.news_event.all()
+    for news in related_news:
+        news.first_image_url = get_first_image_url(news.content)
 
     return render(request, 'event_detail.html', {
         'event': event,
         'user_rsvp': user_rsvp,
-        'club':club,
+        'club': club,
+        'related_news': related_news
     })
 
 @login_required

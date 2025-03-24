@@ -1,0 +1,143 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/home_style.css' %}">
+<section class="py-5">
+    <div class="container text-center">
+      <h1 class="display-4 fw-bold">We're King's College London Students' Union</h1>
+      <p class="lead">Your home for KCLSU events, student groups, news and much more.</p>
+    </div>
+  </section>
+  
+  <section>
+    <div class="container">
+      <!-- 手机端：先显示标题，再显示折叠按钮 -->
+      <div class="d-md-none mb-3">
+        <h2 class="text-center mb-2">系统功能</h2>
+        <button id="toggleFeaturesBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#systemFeaturesCollapse" aria-expanded="false" aria-controls="systemFeaturesCollapse">
+          <span class="toggle-text">Expand</span>
+          <i class="bi bi-chevron-down chevron"></i>
+        </button>
+      </div>
+      <!-- 桌面端：只显示标题 -->
+      <div class="d-none d-md-block mb-3">
+        <h2 class="text-center mb-3">系统功能</h2>
+      </div>
+      <!-- 折叠区域，md 以上始终展开 -->
+      <div id="systemFeaturesCollapse" class="collapse d-md-block">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-6 g-3">
+          <div class="col">
+            <div class="card d-flex flex-column h-100 border-0 shadow-sm hover-scale" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+              <div class="card-body p-3 text-center flex-grow-1">
+                <div class="feature-icon bg-primary text-white mb-3 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi-people-fill fs-3"></i>
+                </div>
+                <h3 class="h5">社团管理</h3>
+                <p class="text-muted mb-0">创建、管理和加入学生社团，组织社团活动</p>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card d-flex flex-column h-100 border-0 shadow-sm hover-scale" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+              <div class="card-body p-3 text-center flex-grow-1">
+                <div class="feature-icon bg-primary text-white mb-3 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi-calendar-event fs-3"></i>
+                </div>
+                <h3 class="h5">活动规划</h3>
+                <p class="text-muted mb-0">创建和管理活动，收集报名信息</p>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card d-flex flex-column h-100 border-0 shadow-sm hover-scale" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+              <div class="card-body p-3 text-center flex-grow-1">
+                <div class="feature-icon bg-primary text-white mb-3 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi-chat-dots fs-3"></i>
+                </div>
+                <h3 class="h5">论坛交流</h3>
+                <p class="text-muted mb-0">创建话题，参与讨论，分享想法</p>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card d-flex flex-column h-100 border-0 shadow-sm hover-scale" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+              <div class="card-body p-3 text-center flex-grow-1">
+                <div class="feature-icon bg-primary text-white mb-3 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi-newspaper fs-3"></i>
+                </div>
+                <h3 class="h5">新闻发布</h3>
+                <p class="text-muted mb-0">发布和阅读校园最新资讯</p>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card d-flex flex-column h-100 border-0 shadow-sm hover-scale" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+              <div class="card-body p-3 text-center flex-grow-1">
+                <div class="feature-icon bg-primary text-white mb-3 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi-bell fs-3"></i>
+                </div>
+                <h3 class="h5">通知系统</h3>
+                <p class="text-muted mb-0">接收重要信息和活动通知</p>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card d-flex flex-column h-100 border-0 shadow-sm hover-scale" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+              <div class="card-body p-3 text-center flex-grow-1">
+                <div class="feature-icon bg-primary text-white mb-3 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi-envelope fs-3"></i>
+                </div>
+                <h3 class="h5">站内消息</h3>
+                <p class="text-muted mb-0">与其他成员进行私人交流</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 获取折叠按钮和文本元素
+    const collapseButton = document.getElementById('toggleFeaturesBtn');
+    const collapseElement = document.getElementById('systemFeaturesCollapse');
+    
+    if (collapseButton && collapseElement) {
+      const toggleText = collapseButton.querySelector('.toggle-text');
+      
+      // 检查初始状态
+      if (collapseElement.classList.contains('show')) {
+        toggleText.textContent = 'Fold';
+      } else {
+        toggleText.textContent = 'Expand';
+      }
+      
+      // 使用Bootstrap的collapse事件
+      const bsCollapse = new bootstrap.Collapse(collapseElement, {
+        toggle: false
+      });
+      
+      // 监听折叠状态变化
+      collapseElement.addEventListener('shown.bs.collapse', function () {
+        console.log('展开了');
+        toggleText.textContent = 'Fold';
+      });
+      
+      collapseElement.addEventListener('hidden.bs.collapse', function () {
+        console.log('折叠了');
+        toggleText.textContent = 'Expand';
+      });
+      
+      // 额外添加按钮点击事件处理（作为备选方案）
+      collapseButton.addEventListener('click', function() {
+        // 200ms后检查折叠状态并更新按钮文本
+        setTimeout(function() {
+          if (collapseElement.classList.contains('show')) {
+            toggleText.textContent = 'Fold';
+          } else {
+            toggleText.textContent = 'Expand';
+          }
+        }, 200);
+      });
+    }
+  });
+</script>

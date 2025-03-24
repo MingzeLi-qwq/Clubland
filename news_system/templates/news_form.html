@@ -108,7 +108,14 @@
         'club': clubId
       },
       success: function(data) {
-        $("#id_event").html(data);
+        // 清空当前选项
+        $("#id_event").empty();
+        // 添加一个空选项
+        $("#id_event").append('<option value="">---------</option>');
+        // 遍历JSON数据并添加选项
+        $.each(data, function(index, event) {
+          $("#id_event").append('<option value="' + event.id + '">' + event.name + '</option>');
+        });
       }
     });
   });
