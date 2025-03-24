@@ -26,6 +26,7 @@ from user_system.views import change_password
 from notification_system.views import notification_list
 from notification_system.views import notification_detail
 from notification_system.views import mark_all_as_read
+from message_system.views import get_messages, send_message, search_users
 from notification_system.views import delete_notification
 from notification_system.views import delete_all_notifications
 from club_hub.views import ImageUploadView
@@ -53,6 +54,7 @@ urlpatterns = [
     #path('accounts/', include('accounts.urls')),
     path('', user_system.views.home, name='home'),
     path('signup/', user_system.views.SignUpView.as_view(), name='signup'),
+    path('about-us/', user_system.views.about_us, name='about_us'),  # 添加关于我们页面的路由
 
     path('login/', user_system.views.LogInView.as_view(), name='login'),
     path('logout/', user_system.views.LogOutView, name='logout'),
@@ -96,9 +98,9 @@ urlpatterns = [
 
     # Message related / 消息相关
     path('messages/message_dashboard', message_system.views.message_dashboard, name='message_dashboard'),
-
-
-
+    path('api/messages/', message_system.views.get_messages, name='get_messages'),
+    path('api/send/', message_system.views.send_message, name='send_message'),
+    path("api/search_users/", message_system.views.search_users, name="search_users"),
     #---------------------------------------------------- Event related / Event相关页面 -----------------------------------------------------------------------
     path('events/', include('event_system.urls')),
     #-------------------------------------------------------- Event related END ----------------------------------------------------------------------------

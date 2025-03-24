@@ -14,10 +14,16 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from club_system.models import Membership, NewClubRequest, Club
 from event_system.models import Event
+from news_system.models import News
+from news_system.views import get_first_image_url, enhance_news_with_image
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.template.loader import render_to_string
 from django.db.models import Q
+from django.contrib.auth import get_user_model
+from news_system.models import News
+import re
+from django.utils.html import strip_tags
 
 
 
@@ -32,6 +38,15 @@ def home(request):
     upcoming_events_list = Event.objects.filter(
         start_time__gte=timezone.now()
     ).order_by('start_time')
+    
+    # 查询最新的社团 - 按照创建时间倒序排列，取最近的3个
+    new_clubs = Club.objects.order_by('-club_id')[:3]
+    
+    # 查询最新的新闻 - 按照创建时间倒序排列，取最新的3条
+    news_items = News.objects.order_by('-created_at')[:3]
+    
+    # 使用news_system中的函数增强新闻数据
+    enhanced_news = [enhance_news_with_image(news) for news in news_items]
     
     paginator = Paginator(upcoming_events_list, events_per_page)
     try:
@@ -58,7 +73,10 @@ def home(request):
     
     return render(request, 'shared/home.html', {
         'events': events,
+        'new_clubs': new_clubs,
+        'recent_news': enhanced_news,
     })
+
 
 
 
@@ -94,12 +112,16 @@ class LogInView(View):
             user = form.get_user()
             login(request, user)
             return redirect("home")
+        else:
+            # 添加错误提示
+            messages.error(request, "Invalid username or password.")
         return render(request, self.template_name, {"form": form})
 
 def LogOutView(request):
     logout(request)
     messages.success(request, "You have successfully logged out.")
-    return redirect('home')
+    # 直接重定向到登录页面，而不是首页
+    return redirect('login')
 
 
 # def societies(request):
@@ -193,20 +215,44 @@ class ClubMembershipDetail(LoginRequiredMixin, ClubExistsRequiredMixin, UserType
 @login_required
 def Mine(request):
     """Mine view"""
-    # Get user's clubs through memberships
-    user_clubs = Club.objects.filter(membership__user=request.user)
-    
-    # Get user's upcoming events (both club events and RSVPed events)
-    upcoming_events = Event.objects.filter(
-        Q(club__in=user_clubs) |  # Events from user's clubs
-        Q(rsvp__user=request.user),  # Events user has RSVPed to
-        start_time__gte=timezone.now()
-    ).distinct().order_by('start_time')
-    
-    return render(request, 'user_system/mine.html', {
-        'clubs': user_clubs,
-        'events': upcoming_events,
-    })
+    # Check if user is an admin
+    if hasattr(request.user, 'account_type') and request.user.account_type == 'Admin':
+        # Admin view - get all data for dashboard
+        all_clubs = Club.objects.all()
+        all_events = Event.objects.filter(start_time__gte=timezone.now()).order_by('start_time')
+        
+        # Get user count - import User model at the top of the file
+        User = get_user_model()
+        users_count = User.objects.count()
+        
+        # Get news count - import News model at the top of the file
+        news_count = News.objects.count()
+        
+        return render(request, 'user_system/mine.html', {
+            'clubs': all_clubs,
+            'events': all_events,
+            'users_count': users_count,
+            'news_count': news_count,
+        })
+    else:
+        # Regular user view - original functionality
+        user_clubs = Club.objects.filter(membership__user=request.user)
+        
+        # Get user's upcoming events (both club events and RSVPed events)
+        upcoming_events = Event.objects.filter(
+            Q(club__in=user_clubs) |  # Events from user's clubs
+            Q(rsvp__user=request.user),  # Events user has RSVPed to
+            start_time__gte=timezone.now()
+        ).distinct().order_by('start_time')
+        
+        return render(request, 'user_system/mine.html', {
+            'clubs': user_clubs,
+            'events': upcoming_events,
+        })
+
+def about_us(request):
+    """关于我们页面"""
+    return render(request, 'shared/about_us.html')
 
 
 

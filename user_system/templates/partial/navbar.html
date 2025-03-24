@@ -1,127 +1,164 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm border-bottom mb-3">
   <div class="container">
-    <a class="navbar-brand" href="{% url 'home' %}">
-      <i class="bi-people-fill"></i> miHoyo
+    <a class="navbar-brand fw-semibold text-white" href="{% url 'home' %}">
+      <i class="bi-award-fill"></i> kclsu
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+    <!-- 响应式设置：手机上垂直排列且左对齐，桌面上水平排列左右对齐 -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'clubs' %}">Clubs</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'news_system:news_list' %}">News</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'forum_system:blog_list' %}">Forums</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'events' %}">Events</a>
-        </li>
-        {% if user.is_authenticated %}
-          {% if user.account_type == 'Admin' %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'admin_panel_clubs' %}">Admin Panel</a>
-            </li>
-          {% else %}
+      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center w-100">
+        <ul class="navbar-nav mb-0 flex-column flex-lg-row me-lg-auto">
+          <li class="nav-item">
+            <a class="nav-link rounded px-2 py-1" href="{% url 'clubs' %}">Clubs</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link rounded px-2 py-1" href="{% url 'news_system:news_list' %}">News</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link rounded px-2 py-1" href="{% url 'forum_system:blog_list' %}">Forums</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link rounded px-2 py-1" href="{% url 'events' %}">Events</a>
+          </li>
+          {% if user.is_authenticated %}
+            {% if user.account_type == 'Admin' %}
+              <li class="nav-item">
+                <a class="nav-link rounded px-2 py-1" href="{% url 'admin_panel_clubs' %}">Admin Panel</a>
+              </li>
+            {% else %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle rounded px-2 py-1" href="#" id="clubDropdown" role="button"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                  My Club
+                </a>
+                <ul class="dropdown-menu mobile-dropdown-drawer" aria-labelledby="clubDropdown" id="clubMenu">
+                  {% for membership in request.user.membership_set.all %}
+                    <li>
+                      <a class="dropdown-item" href="{% url 'club_dashboard' club_id=membership.club.club_id %}">
+                        {{ membership.club.name }}
+                      </a>
+                    </li>
+                  {% empty %}
+                    <li>
+                      <span class="dropdown-item text-muted">
+                        You haven't joined any clubs.
+                      </span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </li>
+            {% endif %}
+          {% endif %}
+        </ul>
+        <ul class="navbar-nav mb-0 flex-column flex-lg-row ms-lg-auto">
+          {% if user.is_authenticated %}
+            <!-- Notifications -->
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="clubDropdown" role="button"
+              <a class="nav-link dropdown-toggle rounded px-2 py-1 d-flex align-items-center" href="#" id="notificationDropdown" role="button" 
                  data-bs-toggle="dropdown" aria-expanded="false">
-                My Club
+                <i class="fas fa-bell text-white fs-5"></i>
+                <span class="d-lg-none ms-2">Notifications</span>
+                {% if unread_notifications_count > 0 %}
+                  <span class="badge bg-danger">{{ unread_notifications_count }}</span>
+                {% endif %}
               </a>
-              <ul class="dropdown-menu" aria-labelledby="clubDropdown" id="clubMenu">
-                {% for membership in request.user.membership_set.all %}
+              <ul class="dropdown-menu dropdown-menu-end mobile-dropdown-drawer" aria-labelledby="notificationDropdown">
+                {% for notification in notifications %}
                   <li>
-                    <a class="dropdown-item" href="{% url 'club_dashboard' club_id=membership.club.club_id %}">
-                      {{ membership.club.name }}
+                    <a class="dropdown-item" href="{% url 'notification_detail' notification.id %}">
+                      {{ notification.message }}
                     </a>
                   </li>
                 {% empty %}
-                  <li><span class="dropdown-item text-muted">You haven't joined any clubs.</span></li>
+                  <li>
+                    <span class="dropdown-item text-muted">
+                      No new notifications
+                    </span>
+                  </li>
                 {% endfor %}
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item text-center" href="{% url 'notifications' %}">View all</a>
+                </li>
+              </ul>
+            </li>
+            <!-- Messages -->
+            <li class="nav-item">
+              <a class="nav-link position-relative rounded px-2 py-1 d-flex align-items-center" href="{% url 'message_dashboard' %}">
+                <i class="fas fa-envelope text-white fs-5" style="position: relative; top: 2px;"></i>
+                <span class="d-lg-none ms-2">Messages</span>
+                {% if unread_messages_count > 0 %}
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{ unread_messages_count }}
+                  </span>
+                {% endif %}
+              </a>
+            </li>
+            <!-- Account -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle rounded px-2 py-1 d-flex align-items-center" href="#" id="navbarDropdown" role="button" 
+                 data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user-circle text-secondary fs-4"></i>
+                <span class="ms-2 align-middle">{{ user.username }}</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end mobile-dropdown-drawer" aria-labelledby="navbarDropdown">
+                <li>
+                  <a class="dropdown-item" href="{% url 'dashboard_personal_information' %}">Dashboard</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'logout' %}">Exit</a>
+                </li>
+              </ul>
+            </li>
+          {% else %}
+            <!-- 未登录状态：Messages -->
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center rounded px-2 py-1" href="{% url 'login' %}">
+                <i class="fas fa-envelope text-white fs-5" style="position: relative; top: 2px;"></i>
+                <span class="d-lg-none ms-2">Messages</span>
+              </a>
+            </li>
+            <!-- 未登录状态：Account -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle rounded px-2 py-1 d-flex align-items-center" href="#" id="navbarDropdown" role="button" 
+                 data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user-circle text-secondary fs-4"></i>
+                <span class="d-lg-none ms-2">Account</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end mobile-dropdown-drawer" aria-labelledby="navbarDropdown">
+                <li>
+                  <a class="dropdown-item" href="{% url 'login' %}">Log in</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'signup' %}">Sign up</a>
+                </li>
               </ul>
             </li>
           {% endif %}
-        {% endif %}
-      </ul>
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        {% if user.is_authenticated %}
-          <!-- notification按钮 -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" 
-               data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-bell" style="color: white; font-size: 20px;"></i>
-              {% if unread_notifications_count > 0 %}
-                <span class="badge bg-danger">{{ unread_notifications_count }}</span>
-              {% endif %}
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
-              {% for notification in notifications %}
-                <li>
-                  <a class="dropdown-item" href="{% url 'notification_detail' notification.id %}">
-                    {{ notification.message }}
-                  </a>
-                </li>
-              {% empty %}
-                <li><span class="dropdown-item text-muted">No new notifications</span></li>
-              {% endfor %}
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <a class="dropdown-item text-center" href="{% url 'notifications' %}">View all</a>
-              </li>
-            </ul>
-          </li>
-          <!-- 消息通知按钮 -->
-          <li class="nav-item">
-            <a class="nav-link position-relative" href="{% url 'message_dashboard' %}">
-              <i class="fas fa-envelope" style="color: white; font-size: 20px;"></i>
-              {% if unread_messages_count > 0 %}
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {{ unread_messages_count }}
-                </span>
-              {% endif %}
-            </a>
-          </li>
-          <!-- 用户头像和下拉菜单 -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
-               data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
-              <span class="ms-2" style="position: relative; top: -3px;">{{ user.username }}</span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <li>
-                <a class="dropdown-item" href="{% url 'dashboard_personal_information' %}">Dashboard</a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="{% url 'logout' %}">Exit</a>
-              </li>
-            </ul>
-          </li>
-        {% else %}
-          <!-- 未登录：邮件图标跳转到登录 -->
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">
-              <i class="fas fa-envelope" style="color: white; font-size: 20px;"></i>
-            </a>
-          </li>
-          <!-- 未登录：用户头像跳转到登录 -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
-               data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-user-circle" style="color: grey; font-size: 24px;"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="{% url 'login' %}">Log in</a></li>
-              <li><a class="dropdown-item" href="{% url 'signup' %}">Sign up</a></li>
-            </ul>
-          </li>
-        {% endif %}
-      </ul>
+        </ul>
+      </div>
     </div>
   </div>
 </nav>
+
+<style>
+@media (max-width: 991.98px) {
+  .mobile-dropdown-drawer {
+    position: static !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    background-color: #343a40 !important;
+    border-top: 1px solid rgba(255,255,255,.1) !important;
+    border-bottom: 1px solid rgba(255,255,255,.1) !important;
+  }
+  .mobile-dropdown-drawer .dropdown-item {
+    color: #adb5bd !important;
+  }
+}
+</style>

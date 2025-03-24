@@ -2,39 +2,58 @@
 {% load static %}
 
 {% block body %}
-<div class="container mt-4">
+<div class="container-fluid mt-4">
   <h2 class="mb-4">博客文章列表</h2>
   
-  <!-- 写新文章按钮 -->
-  <div class="mb-3">
-    <a href="{% url 'forum_system:blog_create' %}" class="btn btn-primary">写新文章</a>
+  <!-- 写新文章按钮和搜索表单 - 移动端优化 -->
+  <div class="row g-2 mb-2">
+    <div class="col-12 col-md-6 mb-2 mb-md-0">
+      <a href="{% url 'forum_system:blog_create' %}" class="btn btn-primary">写新文章</a>
+    </div>
+    <div class="col-12 col-md-6">
+      <div class="d-flex justify-content-md-end align-items-center">
+        <form method="get" class="d-flex">
+          <div class="input-group">
+            <input type="text" name="q" id="searchInput" class="form-control" value="{{ request.GET.q }}">
+            <button type="submit" class="btn btn-primary">搜索</button>
+          </div>
+          {% for key, value in request.GET.items %}
+            {% if key not in "q" %}
+              <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endif %}
+          {% endfor %}
+        </form>
+      </div>
+    </div>
   </div>
-  
-  <!-- 筛选条件表单：排序和每页显示数量 -->
+
+  <!-- 筛选条件表单：排序、每页显示、社团过滤 - 移动端优化 -->
   <div class="mb-3">
     <form method="get">
-      <div class="row">
-        <div class="col-md-6 text-start">
-          <label for="orderSelect">排序：</label>
+      <div class="row g-2">
+        <div class="col-12 col-md-6 mb-2 mb-md-0">
+          <label for="orderSelect" class="me-2">排序：</label>
           <select name="order" id="orderSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
             <option value="asc" {% if request.GET.order == "asc" %}selected{% endif %}>最早</option>
             <option value="desc" {% if request.GET.order == "desc" or not request.GET.order %}selected{% endif %}>最新</option>
           </select>
         </div>
-        <div class="col-md-6 text-end">
-          <label for="perPageSelect">每页显示：</label>
-          <select name="per_page" id="perPageSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
-            <option value="5" {% if request.GET.per_page == "5" %}selected{% endif %}>5</option>
-            <option value="10" {% if request.GET.per_page == "10" or not request.GET.per_page %}selected{% endif %}>10</option>
-            <option value="20" {% if request.GET.per_page == "20" %}selected{% endif %}>20</option>
-            <option value="50" {% if request.GET.per_page == "50" %}selected{% endif %}>50</option>
-          </select>
+        <div class="col-12 col-md-6 mb-2 mb-md-0">
+          <div class="d-flex justify-content-md-end align-items-center">
+            <label for="perPageSelect" class="me-2">每页显示：</label>
+            <select name="per_page" id="perPageSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
+              <option value="5" {% if request.GET.per_page == "5" %}selected{% endif %}>5</option>
+              <option value="10" {% if request.GET.per_page == "10" or not request.GET.per_page %}selected{% endif %}>10</option>
+              <option value="20" {% if request.GET.per_page == "20" %}selected{% endif %}>20</option>
+              <option value="50" {% if request.GET.per_page == "50" %}selected{% endif %}>50</option>
+            </select>
+          </div>
         </div>
       </div>
       <!-- 社团过滤 -->
-      <div class="row mt-3">
-        <div class="col-md-6">
-          <label for="clubSelect">社团：</label>
+      <div class="row mt-2">
+        <div class="col-12 col-md-6">
+          <label for="clubSelect" class="me-2">社团：</label>
           <select name="club" id="clubSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
             <option value="">全部社团</option>
             {% for club in clubs %}
@@ -43,66 +62,84 @@
           </select>
         </div>
       </div>
+      <!-- 保持其他查询参数 -->
+      {% for key, value in request.GET.items %}
+        {% if key != "order" and key != "per_page" and key != "club" and key != "q" %}
+          <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endif %}
+      {% endfor %}
     </form>
   </div>
   
   <!-- 博客文章列表 -->
-  <div class="list-group">
-    {% for post in posts %}
-      <a href="{% url 'forum_system:blog_detail' post.pk %}" class="list-group-item list-group-item-action">
-        <div class="d-flex w-100 justify-content-between">
-          <h5 class="mb-1">{{ post.title }}</h5>
-          <small>{{ post.created_at|date:"Y-m-d H:i" }}</small>
-        </div>
-        <p class="mb-1">
-          {% if post.club %}
-            所属社团：{{ post.club.name }}
-          {% else %}
-            所属社团：未指定
-          {% endif %}
-        </p>
-      </a>
-    {% empty %}
+  <div class="list-group list-group-flush">
+    {% if posts %}
+      {% for post in posts %}
+        <a href="{% url 'forum_system:blog_detail' post.pk %}" class="list-group-item list-group-item-action">
+          <div class="d-flex w-100 justify-content-between flex-column flex-sm-row">
+            <h5 class="mb-1 text-break">{{ post.title }}</h5>
+            <small class="ms-0 ms-sm-2">{{ post.created_at|date:"Y-m-d H:i" }}</small>
+          </div>
+          <!-- 预览正文，限制2行显示，添加断词确保不溢出 -->
+          <p class="mb-1 text-break" style="display: -webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word; max-width: 100%;">
+            {{ post.content|striptags }}
+          </p>
+          <!-- 显示作者和所属社团 -->
+          <p class="mb-0">
+            {% if post.author %}
+              {{ post.author.first_name }} {{ post.author.last_name }}
+            {% else %}
+              未知作者
+            {% endif %}
+            &nbsp;&nbsp;|&nbsp;&nbsp;
+            {% if post.club %}
+              {{ post.club.name }}
+            {% else %}
+              未指定社团
+            {% endif %}
+          </p>
+        </a>
+      {% endfor %}
+    {% else %}
       <div class="list-group-item">暂无文章</div>
-    {% endfor %}
+    {% endif %}
   </div>
 
-  {% if is_paginated %}
+  <!-- 分页导航 -->
+  {% if paginator.num_pages > 1 %}
     <nav aria-label="Page navigation" class="mt-4">
-      <ul class="pagination justify-content-center">
+      <ul class="pagination justify-content-center flex-wrap">
         {% if page_obj.has_previous %}
           <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}{% if request.GET.club %}&club={{ request.GET.club }}{% endif %}" aria-label="Previous">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Previous">
               <span aria-hidden="true">&laquo;</span>
             </a>
           </li>
         {% else %}
           <li class="page-item disabled">
-            <span class="page-link" aria-hidden="true">&laquo;</span>
+            <span class="page-link">&laquo;</span>
           </li>
         {% endif %}
         
         {% for num in paginator.page_range %}
           {% if page_obj.number == num %}
-            <li class="page-item active">
-              <span class="page-link">{{ num }}</span>
-            </li>
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
           {% else %}
             <li class="page-item">
-              <a class="page-link" href="?page={{ num }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}{% if request.GET.club %}&club={{ request.GET.club }}{% endif %}">{{ num }}</a>
+              <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
             </li>
           {% endif %}
         {% endfor %}
         
         {% if page_obj.has_next %}
           <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}{% if request.GET.club %}&club={{ request.GET.club }}{% endif %}" aria-label="Next">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
             </a>
           </li>
         {% else %}
           <li class="page-item disabled">
-            <span class="page-link" aria-hidden="true">&raquo;</span>
+            <span class="page-link">&raquo;</span>
           </li>
         {% endif %}
       </ul>

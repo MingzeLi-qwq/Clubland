@@ -2,6 +2,20 @@
 {% load param_replace %}
 {% load static %}
 
+{% block extra_css %}
+<style>
+  /* 保留最小必要的自定义样式 */
+  .hover-scale {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-scale:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15)!important;
+  }
+</style>
+{% endblock %}
+
 {% block body %}
 <div class="card shadow-sm mb-4">
   <div class="card-body">
@@ -13,7 +27,7 @@
           <span class="input-group-text">
             <i class="bi-search"></i>
           </span>
-          <input type="text" name="search" class="form-control" 
+          <input type="text" name="search" class="form-control rounded-3" 
                  placeholder="Search events..." value="{{ current_search }}">
         </div>
       </div>
@@ -61,15 +75,19 @@
             {% endfor %}
         </select>
       </div>
-
+      
+      <div class="col-lg-12 text-end mt-0">      </div>
+      
       <!-- 自定义日期范围 -->
       <div class="col-lg-3">
-        <input type="date" name="start_date" class="form-control" 
-               value="{{ start_date }}" placeholder="From date">
+        <input type="text" id="start_date" name="start_date" class="form-control" 
+               placeholder="Date from" onfocus="this.type='date'" 
+               value="{{ start_date }}">
       </div>
       <div class="col-lg-3">
-        <input type="date" name="end_date" class="form-control"
-               value="{{ end_date }}" placeholder="To date">
+        <input type="text" id="end_date" name="end_date" class="form-control"
+               placeholder="Date to" onfocus="this.type='date'" 
+               value="{{ end_date }}">
       </div>
 
       <!-- Action buttons -->
@@ -89,7 +107,7 @@
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
     {% for event in events %}
     <div class="col">
-      <div class="card h-100 shadow-sm hover-scale event-card">
+      <div class="card h-100 shadow-sm hover-scale rounded-3">
         <div class="card-body">
           <h5 class="card-title text-dark fw-bold">{{ event.name }}</h5>
           <div class="d-flex flex-column gap-3">
@@ -99,26 +117,26 @@
               {% endfor %}
             </div>
 
-            <div class="club text-muted">
+            <div class="text-muted">
               <i class="bi bi-flag me-2 text-primary"></i>
               {{ event.club.name }} 
             </div>
             
-            <div class="event-time text-muted">
+            <div class="text-muted">
               <i class="bi-calendar-event me-2 text-primary"></i>
               {{ event.start_time|date:"M d, Y H:i" }} 
               <span class="mx-2">-</span>
               {{ event.end_time|date:"H:i" }}
             </div>
 
-            <div class="event-location text-muted">
+            <div class="text-muted">
               <i class="bi-geo-alt me-2 text-primary"></i>
               {{ event.location|truncatechars:35 }}
             </div>
 
             <div class="mt-auto">
               <a href="{% url 'event_detail' event.pk %}" 
-                 class="btn btn-primary w-100">
+                 class="btn btn-primary w-100 rounded-3">
                 View Details <i class="bi-arrow-right ms-2"></i>
               </a>
             </div>
@@ -141,7 +159,7 @@
   <ul class="pagination justify-content-center">
     {% if page_obj.has_previous %}
     <li class="page-item">
-      <a class="page-link" href="?{% param_replace page=1 %}">
+      <a class="page-link rounded-2" href="?{% param_replace page=1 %}">
         <i class="bi-chevron-double-left"></i>
       </a>
     </li>
@@ -149,7 +167,7 @@
 
     {% for num in page_obj.paginator.page_range %}
     <li class="page-item {% if page_obj.number == num %}active{% endif %}">
-      <a class="page-link" href="?{% param_replace page=num %}">
+      <a class="page-link rounded-2" href="?{% param_replace page=num %}">
         {{ num }}
       </a>
     </li>
@@ -157,7 +175,7 @@
 
     {% if page_obj.has_next %}
     <li class="page-item">
-      <a class="page-link" href="?{% param_replace page=page_obj.paginator.num_pages %}">
+      <a class="page-link rounded-2" href="?{% param_replace page=page_obj.paginator.num_pages %}">
         <i class="bi-chevron-double-right"></i>
       </a>
     </li>

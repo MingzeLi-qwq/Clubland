@@ -1,16 +1,19 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block body %}
-<div class="container my-4">
-  <!-- 修改文章展示盒：使用简洁的白色背景和边框 -->
-  <div class="mb-3 p-4 border rounded" style="background-color: #ffffff;">
+<div class="container-fluid my-4">
+  <!-- 移除白色背景颜色，仅保留边框和内边距 -->
+  <div class="mb-3 p-4 border rounded">
     <h2 class="mb-2">
-      <span>{{ post.title }}</span>
-      {% if user == post.author %}
-      <div class="d-flex justify-content-end mt-3">
-        <a href="{% url 'forum_system:blog_delete' post.pk %}" class="btn btn-danger btn-sm flex-shrink-0">删除文章</a>
+      <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <span style="word-break: break-word; overflow-wrap: break-word;">{{ post.title }}</span>
+        {% if user == post.author or user.is_admin %}
+          <a href="#" onclick="confirmDelete('{% url 'forum_system:blog_delete' post.pk %}', '{{ post.title }}')" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit;">
+            <i class="bi bi-trash" style="color: inherit; font-size: 1rem;"></i>
+          </a>
+        {% endif %}
       </div>
-    {% endif %}
     </h2>
     <hr/>
     <div class="mb-2">
@@ -44,4 +47,24 @@
     <a href="{% url 'forum_system:blog_list' %}" class="btn btn-primary">返回列表</a>
   </div>
 </div>
+
+<script src="{% static 'js/csrf_utils.js' %}"></script>
+<script>
+function confirmDelete(url, title) {
+  if (confirm(`确定要删除 "${title}" 吗？`)) {
+    let form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+    
+    let csrfToken = document.createElement('input');
+    csrfToken.type = 'hidden';
+    csrfToken.name = 'csrfmiddlewaretoken';
+    csrfToken.value = getCsrfToken(); // 使用工具函数获取最新令牌
+    
+    form.appendChild(csrfToken);
+    document.body.appendChild(form);
+    form.submit();
+  }
+}
+</script>
 {% endblock %}

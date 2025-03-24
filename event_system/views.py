@@ -1,4 +1,3 @@
-from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -14,7 +13,6 @@ from club_system.models import Club
 from django.contrib import messages
 from django.urls import reverse
 from user_system.models import User
-
 def events_home(request):
     return render(request, 'events.html')
 
@@ -257,12 +255,11 @@ class UpdateEventName(LoginRequiredMixin, ClubManagerRequiredMixin, View):
             messages.error(request, "There's already an Event with the same name.")
             return redirect(redirect_url, club_id=club_id, event_id=event_id)
             
-        try:
-            event.name = new_name
-            event.save()
-            messages.success(request, "Event name updated successfully.")
-        except IntegrityError:
-            messages.error(request, "This event name does not match the specification.")
+
+        event.name = new_name
+        event.save()
+        messages.success(request, "Event name updated successfully.")
+
         
         return redirect(redirect_url, club_id=club_id, event_id=event_id)
 
@@ -294,6 +291,7 @@ class UpdateEventDescription(LoginRequiredMixin, ClubManagerRequiredMixin, View)
         messages.success(request, "Event description updated successfully.")
         
         return redirect(redirect_url, club_id=club_id, event_id=event_id)
+
 
 """Update event time"""
 class UpdateEventTime(LoginRequiredMixin, ClubManagerRequiredMixin, View):
@@ -353,10 +351,6 @@ class UpdateEventLocation(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         if new_location == event.location:
             messages.error(request, "The new location cannot be the same as the current one.")
             return redirect(redirect_url, club_id=club_id, event_id=event_id)
-            
-        if Event.objects.filter(club=club, location=new_location).exclude(id=event_id).exists():
-            messages.error(request, "Another event already has this location.")
-            return redirect(redirect_url, club_id=club_id, event_id=event_id)
 
         event.location = new_location
         event.save()
@@ -389,28 +383,26 @@ class UpdateEventCategory(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         messages.success(request, "Event categories updated successfully")
         return redirect(redirect_url, club_id=club_id, event_id=event_id)
 
+
+class DeleteCategoryView(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+
+    def get(self, request, category_id):
+        category = get_object_or_404(Category, id=category_id)
+        category_name = category.name
+        
+        category.delete()
+        
+        messages.success(request, f"Category '{category_name}' has been deleted")
+        
+        # get HTTP_REFERER to go back to the previous page
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        else:
+            return redirect('admin_panel')
+
 """--------------------------------------------------以上部分负责针对单个event的相关操作-------------------------------------------------"""
-
-
-def club_details(request, club_id):
-    club = get_object_or_404(Club, pk=club_id)
-
-    # 比如拿该俱乐部最近的活动，不加时间过滤：
-    recent_events = Event.objects.filter(club=club).order_by('-start_time')[:3]
-
-    # ... 只想要未来活动，还要加上 start_time__gte=timezone.now() ...
-    # recent_events = Event.objects.filter(
-    #     club=club,
-    #     start_time__gte=timezone.now()
-    # ).order_by('start_time')[:3]
-
-    context = {
-        'club': club,
-        'recent_events': recent_events,
-        # 其它上下文...
-    }
-    return render(request, 'club_details.html', context)
-
 
 class SearchRSVPCandidatesView(View):
     """搜索可添加为RSVP的用户"""
@@ -475,24 +467,4 @@ class AddRSVPView(LoginRequiredMixin, ClubManagerRequiredMixin, View):
 
 
 """-------------------------------------------------- Above section handles Event-specific operations -------------------------------------------------"""
-
-
-def club_details(request, club_id):
-    club = get_object_or_404(Club, pk=club_id)
-
-    # Get recent events for this club without time filter
-    recent_events = Event.objects.filter(club=club).order_by('-start_time')[:3]
-
-    # To get only future events, add start_time__gte=timezone.now()
-    # recent_events = Event.objects.filter(
-    #     club=club,
-    #     start_time__gte=timezone.now()
-    # ).order_by('start_time')[:3]
-
-    context = {
-        'club': club,
-        'recent_events': recent_events,
-        # Other context...
-    }
-    return render(request, 'club_details.html', context)
 

@@ -2,7 +2,38 @@
 {% load static %}
 {% load param_replace %}
 {% block body %}
-<!-- Flash Messages -->
+<style>
+    .link-secondary {
+        text-decoration: none !important;
+    }
+    .link-secondary:hover {
+        text-decoration: underline !important;
+    }
+    /* 新增折叠按钮样式 */
+    .toggle-btn {
+        background: none;
+        border: none;
+        color: #0070c9;
+        font-size: 1.1rem;
+        font-weight: bold;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 10px;
+    }
+    button[data-bs-toggle="collapse"][aria-expanded="true"] .chevron {
+        transform: rotate(180deg);
+    }
+    button[data-bs-toggle="collapse"][aria-expanded="false"] .chevron {
+        transform: rotate(0deg);
+    }
+    .chevron {
+        transition: transform 0.3s ease;
+    }
+</style>
 {% if messages %}
   <div class="container mt-3">
     {% for message in messages %}
@@ -13,70 +44,94 @@
     {% endfor %}
   </div>
 {% endif %}
-<!-- Hero Section -->
-<section class="hero-section min-vh-100 d-flex align-items-center bg-light">
+
+<section class="py-5">
+  <div class="container text-center">
+    <h1 class="display-4 fw-bold">We're King's College London Students' Union</h1>
+    <p class="lead">Your home for KCLSU events, student groups, news and much more.</p>
+  </div>
+</section>
+
+<section>
   <div class="container">
-    <div class="row justify-content-center text-center">
-      <div class="col-lg-8">
-        <!-- Branding -->
-        <div class="mb-5">
-          <h1 class="display-3 fw-bold text-primary mb-3">
-            <i class="bi-people-fill"></i> miHoyo
-          </h1>
-          <p class="lead text-muted fs-4">Empowering Student Communities</p>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="d-flex justify-content-center gap-3 mb-5">
-          {% if user.is_authenticated %}
-            <a href="{% url 'dashboard_personal_information' %}" class="btn btn-primary btn-lg px-4 py-3">
-              <i class="bi-speedometer2 me-2"></i>Go to Dashboard
-            </a>
-          {% else %}
-            <a href="{% url 'signup' %}" class="btn btn-primary btn-lg px-4 py-3">
-              <i class="bi-rocket-takeoff me-2"></i>Get Started
-            </a>
-            <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg px-4 py-3">
-              <i class="bi-box-arrow-in-right me-2"></i>Sign In
-            </a>
-          {% endif %}
-        </div>
-
-        <!-- Feature Cards -->
-        <div class="row g-4 py-5">
-          <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-lg hover-shadow">
-              <div class="card-body p-4 text-center">
-                <div class="feature-icon bg-primary text-white mb-4">
-                  <i class="bi-shield-lock fs-1"></i>
-                </div>
-                <h3 class="h4">Secure Platform</h3>
-                <p class="text-muted">GDPR-compliant data protection with end-to-end encryption</p>
+    <!-- 手机端：先显示标题，再显示折叠按钮 -->
+    <div class="d-md-none mb-3">
+      <h2 class="text-center mb-2">系统功能</h2>
+      <button class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#systemFeaturesCollapse" aria-expanded="false" aria-controls="systemFeaturesCollapse">
+        展开
+        <i class="bi bi-chevron-down chevron"></i>
+      </button>
+    </div>
+    <!-- 桌面端：只显示标题 -->
+    <div class="d-none d-md-block mb-3">
+      <h2 class="text-center mb-3">系统功能</h2>
+    </div>
+    <!-- 折叠区域，md 以上始终展开 -->
+    <div id="systemFeaturesCollapse" class="collapse d-md-block">
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-6 g-3">
+        <div class="col">
+          <div class="card d-flex flex-column h-100 border-0 shadow-sm hover-scale" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div class="card-body p-3 text-center flex-grow-1">
+              <div class="feature-icon bg-primary text-white mb-3 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi-people-fill fs-3"></i>
               </div>
+              <h3 class="h5">社团管理</h3>
+              <p class="text-muted mb-0">创建、管理和加入学生社团，组织社团活动</p>
             </div>
           </div>
-
-          <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-lg hover-shadow">
-              <div class="card-body p-4 text-center">
-                <div class="feature-icon bg-primary text-white mb-4">
-                  <i class="bi-palette fs-1"></i>
-                </div>
-                <h3 class="h4">Custom Branding</h3>
-                <p class="text-muted">Full control over colors, logos and domain names</p>
+        </div>
+        <div class="col">
+          <div class="card d-flex flex-column h-100 border-0 shadow-sm hover-scale" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div class="card-body p-3 text-center flex-grow-1">
+              <div class="feature-icon bg-primary text-white mb-3 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi-calendar-event fs-3"></i>
               </div>
+              <h3 class="h5">活动规划</h3>
+              <p class="text-muted mb-0">创建和管理活动，收集报名信息</p>
             </div>
           </div>
-
-          <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-lg hover-shadow">
-              <div class="card-body p-4 text-center">
-                <div class="feature-icon bg-primary text-white mb-4">
-                  <i class="bi-calendar-event fs-1"></i>
-                </div>
-                <h3 class="h4">Event System</h3>
-                <p class="text-muted">Integrated calendar with RSVP and notifications</p>
+        </div>
+        <div class="col">
+          <div class="card d-flex flex-column h-100 border-0 shadow-sm hover-scale" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div class="card-body p-3 text-center flex-grow-1">
+              <div class="feature-icon bg-primary text-white mb-3 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi-chat-dots fs-3"></i>
               </div>
+              <h3 class="h5">论坛交流</h3>
+              <p class="text-muted mb-0">创建话题，参与讨论，分享想法</p>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card d-flex flex-column h-100 border-0 shadow-sm hover-scale" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div class="card-body p-3 text-center flex-grow-1">
+              <div class="feature-icon bg-primary text-white mb-3 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi-newspaper fs-3"></i>
+              </div>
+              <h3 class="h5">新闻发布</h3>
+              <p class="text-muted mb-0">发布和阅读校园最新资讯</p>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card d-flex flex-column h-100 border-0 shadow-sm hover-scale" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div class="card-body p-3 text-center flex-grow-1">
+              <div class="feature-icon bg-primary text-white mb-3 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi-bell fs-3"></i>
+              </div>
+              <h3 class="h5">通知系统</h3>
+              <p class="text-muted mb-0">接收重要信息和活动通知</p>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card d-flex flex-column h-100 border-0 shadow-sm hover-scale" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div class="card-body p-3 text-center flex-grow-1">
+              <div class="feature-icon bg-primary text-white mb-3 mx-auto rounded-circle" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi-envelope fs-3"></i>
+              </div>
+              <h3 class="h5">站内消息</h3>
+              <p class="text-muted mb-0">与其他成员进行私人交流</p>
             </div>
           </div>
         </div>
@@ -86,367 +141,81 @@
 </section>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- Showing Events -->
-<section class="container py-5">
-    <!-- Title and View All button -->
-    <div class="text-center mb-4">
-        <h2 class="fw-bold">Upcoming Events</h2>
+<section class="py-4">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">新社团来袭</h2>
+      <a href="{% url 'clubs' %}" class="btn btn-outline-primary btn-sm">查看全部</a>
     </div>
-    <div class="text-end mb-4">
-        <div class="view-all-card">
-            <a href="{% url 'events' %}?date=upcoming" class="btn btn-light shadow-sm rounded-pill px-4">
-                View All <i class="bi-arrow-right ms-2"></i>
-            </a>
+
+    {% if new_clubs %}
+    <div class="row g-4" id="clubs-container">
+      {% for club in new_clubs %}
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 border-0 shadow-sm d-flex flex-column" onclick="window.location.href='{% url 'club_detail' club_id=club.club_id %}'" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            {% if club.first_image_url %}
+              <img src="{{ club.first_image_url }}" class="card-img-top" alt="{{ club.name }}">
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">
+                <a class="link-secondary" href="{% url 'club_detail' club_id=club.club_id %}">{{ club.name }}</a>
+              </h5>
+              <p class="card-text flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                {{ club.description }}
+              </p>
+            </div>
+          </div>
         </div>
+      {% endfor %}
     </div>
-
-    <!-- Events Grid -->
-    <div class="row g-4" id="events-container">
-        {% include 'shared/events_list.html' with events=events %}
+    {% else %}
+    <div class="text-center p-4 bg-light rounded">
+      <p class="text-muted mb-0">暂无新社团</p>
     </div>
-
-    <!-- Pagination -->
-    <div id="pagination-container">
-        {% include 'shared/pagination.html' with events=events %}
-    </div>
+    {% endif %}
+  </div>
 </section>
 
+<section class="py-4">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">最近新闻</h2>
+      <a href="{% url 'news_system:news_list' %}" class="btn btn-outline-primary btn-sm">查看全部</a>
+    </div>
+    <div class="row g-4">
+      {% for news in recent_news %}
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm d-flex flex-column" onclick="window.location.href='{{ news.url }}'" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            {% if news.first_image_url %}
+              <img src="{{ news.first_image_url }}" class="card-img-top" alt="{{ news.title }}" style="aspect-ratio: 4/3; object-fit: cover;">
+            {% endif %}
+            <div class="card-body p-4 d-flex flex-column">
+              <h5 class="card-title">
+                <a class="link-secondary" href="{{ news.url }}">{{ news.title }}</a>
+              </h5>
+              <div class="d-flex flex-column align-items-start mt-auto">
+                <small class="text-muted mb-1">作者：{{ news.author.get_full_name }}</small>
+                {% if news.club %}
+                  <small class="text-muted mb-1">社团：{{ news.club.name }}</small>
+                {% endif %}
+                {% if news.event %}
+                  <small class="text-muted mb-1">活动：{{ news.event.name }}</small>
+                {% endif %}
+                <small class="text-muted">{{ news.created_at|date:"Y-m-d" }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <p class="text-center">暂无新闻</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
 
 {% block extra_js %}
-<script>
-function loadEvents(page) {
-    // 添加加载指示器
-    const eventsContainer = document.getElementById('events-container');
-    eventsContainer.style.opacity = '0.5';
-
-    fetch(`?page=${page}&ajax=1`)
-        .then(response => response.json())
-        .then(data => {
-            // 更新事件列表
-            eventsContainer.innerHTML = data.events_html;
-            eventsContainer.style.opacity = '1';
-            
-            // 更新分页控件
-            const paginationContainer = document.getElementById('pagination-container');
-            if (paginationContainer) {
-                paginationContainer.innerHTML = data.pagination_html;
-            }
-            
-            // 添加调试信息
-            console.log('Page loaded:', data.current_page);
-            console.log('Has next:', data.has_next);
-            console.log('Has previous:', data.has_previous);
-        })
-        .catch(error => {
-            console.error('Error loading events:', error);
-            eventsContainer.style.opacity = '1';
-        });
-}
-
-// 使用事件委托处理分页点击
-document.addEventListener('click', function(e) {
-    const target = e.target.closest('.pagination-btn');
-    if (target) {
-        e.preventDefault();
-        const page = target.dataset.page;
-        console.log('Loading page:', page);  // 调试信息
-        loadEvents(page);
-    }
-});
-</script>
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- Featured Communities -->
-<section class="bg-light py-6">
-  <div class="container">
-    <h2 class="text-center mb-5 display-5 fw-bold">Featured Communities</h2>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body">
-            <h3 class="h5">Tech Society</h3>
-            <p class="text-muted">Weekly workshops and hackathons</p>
-            <div class="badge bg-primary">200+ Members</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body">
-            <h3 class="h5">Debate Union</h3>
-            <p class="text-muted">Monthly inter-school competitions</p>
-            <div class="badge bg-primary">150+ Members</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body">
-            <h3 class="h5">Music Society</h3>
-            <p class="text-muted">Open mic nights every Friday</p>
-            <div class="badge bg-primary">80+ Members</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="bg-light" style="height: 200px;"></div>
-
-<!-- Value Proposition -->
-<section class="bg-light py-6">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-md-6">
-        <h2 class="display-6 fw-bold mb-4">Why Choose Us?</h2>
-        <ul class="list-unstyled">
-          <li class="d-flex mb-4">
-            <div class="flex-shrink-0 text-primary fs-3 me-3">
-              <i class="bi-shield-check"></i>
-            </div>
-            <div>
-              <h3 class="h5">Ad-Free Experience</h3>
-              <p class="text-muted mb-0">No ads, no tracking, just pure community engagement</p>
-            </div>
-          </li>
-          <li class="d-flex mb-4">
-            <div class="flex-shrink-0 text-primary fs-3 me-3">
-              <i class="bi-piggy-bank"></i>
-            </div>
-            <div>
-              <h3 class="h5">Free for Students</h3>
-              <p class="text-muted mb-0">Completely free platform for educational institutions</p>
-            </div>
-          </li>
-          <li class="d-flex">
-            <div class="flex-shrink-0 text-primary fs-3 me-3">
-              <i class="bi-graph-up"></i>
-            </div>
-            <div>
-              <h3 class="h5">Analytics Dashboard</h3>
-              <p class="text-muted mb-0">Real-time insights into community engagement</p>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="bg-light" style="height: 50px;"></div>
-
-{% endblock %}
-
-{% block extra_css %}
-<style>
-  .hero-section {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  }
-
-  .feature-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .hover-shadow {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .hover-shadow:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 1rem 3rem rgba(0,0,0,0.1)!important;
-  }
-
-  .card-img-top {
-    height: 200px;
-    object-fit: cover;
-  }
-
-
-/* view */
-  .view-all-card {
-    transition: all 0.3s ease;
-  }
-
-  .view-all-card .btn {
-    background: white;
-    border: none;
-    padding: 10px 20px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-  }
-
-  .view-all-card .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-    background: #f8f9fa;
-  }
-
-  .view-all-card .bi-arrow-right,
-  .view-all-card .bi-arrow-left {
-    transition: transform 0.3s ease;
-  }
-
-  .view-all-card .btn:hover .bi-arrow-right {
-    transform: translateX(4px);
-  }
-
-  .view-all-card .btn:hover .bi-arrow-left {
-    transform: translateX(-4px);
-  }
-
-
-  /* event */
-  .pagination {
-    margin-bottom: 0;
-  }
-
-  .pagination .page-link {
-    border: none;
-    padding: 8px 12px;
-    color: #6c757d;
-    transition: all 0.3s ease;
-  }
-
-  .pagination .page-link:hover {
-    background-color: #f8f9fa;
-    color: #0d6efd;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .pagination .active .page-link {
-    background-color: #0d6efd;
-    color: white;
-  }
-
-  /* 新增卡片尺寸控制 */
-  .event-card {
-    height: 250px !important; /* 固定卡片高度 */
-    margin-bottom: 20px;
-  }
-  
-  .event-card .card-body {
-    padding: 1.25rem;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .card-title {
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-    height: 2.75rem; /* 固定标题高度 */
-  }
-  
-  .text-truncate-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .event-info {
-    flex: 1;
-    min-height: 80px; /* 固定信息区域最小高度 */
-    overflow: hidden;
-  }
-  
-  .event-info .text-truncate {
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .event-card .btn {
-    margin-top: auto;
-    width: 100%;
-  }
-
-  /* 确保图标大小一致 */
-  .event-card i {
-    font-size: 1rem;
-    width: 1.2rem;
-    text-align: center;
-    flex-shrink: 0;
-  }
-
-  /* 确保小文本大小一致 */
-  .event-card small {
-    font-size: 0.875rem;
-    line-height: 1.2;
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  /* 确保信息行的布局一致 */
-  .event-card .d-flex {
-    gap: 0.5rem;
-  }
-
-  /* 分页按钮定位优化 */
-  #pagination-container {
-    position: sticky;
-    bottom: 20px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 15px;
-    border-radius: 50px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 100;
-  }
-
-</style>
-{% endblock %}
-
-

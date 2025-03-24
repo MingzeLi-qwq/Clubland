@@ -2,220 +2,332 @@
 {% load static %}
 
 {% block body %}
-<div id="app">
-    <div class="chat-container">
-        <!-- 左侧消息列表 -->
-        <div class="sidebar">
-            <h5>Messages</h5>
-            <ul class="chat-list">
-                <li v-for="(chat, index) in chatList" :key="index" @click="selectChat(index)" :class="{ active: currentChatIndex === index }">
-                    <div class="icon-wrapper">
-                        <i :class="chat.icon"></i>
-                    </div>
-                    <div>
-                        <strong>{{ chat.name }}</strong>
-                        <p style="margin:0; font-size: 12px; color: gray;">{{ chat.lastMessage }}</p>
-                    </div>
-                </li>
-            </ul>
+<div class="chat-container">
+    <!-- 左侧消息列表 -->
+    <div class="sidebar">
+        <h5>Messages</h5>
+
+        <!-- 搜索栏和搜索按钮 -->
+        <div class="search-bar">
+            <input type="text" id="searchQuery" placeholder="Search users..." class="search-input">
+            <button onclick="searchUsers()" class="search-btn">
+                <i class="fas fa-search"></i>
+            </button>
         </div>
 
-        <!-- 右侧聊天框 -->
-        <div class="chat-content">
-            <div class="chat-header">
-                <strong>{{ currentChat.name }}</strong>
-                <button class="btn btn-outline-secondary btn-sm">Setting</button>
-            </div>
+        <ul class="chat-list" id="chatList">
+            <!-- 动态填充聊天列表 -->
+        </ul>
+    </div>
 
-            <div class="chat-box">
-                <div v-for="(msg, index) in currentChat.messages" :key="index" :class="['chat-message', msg.sender]">
-                    <p>{{ msg.text }}</p>
-                </div>
-            </div>
+    <!-- 右侧聊天框 -->
+    <div class="chat-content">
+        <div class="chat-header">
+            <strong id="chatName">Select a chat</strong>
+        </div>
 
-            <!-- 优化的输入框 -->
-            <div class="chat-footer">
-                <textarea v-model="newMessage" 
-                          @keydown="handleKeyPress"
-                          @input="adjustTextareaHeight" 
-                          placeholder="Input Message..." 
-                          class="message-input"></textarea>
-                <button @click="sendMessage" class="send-btn">Send</button>
-            </div>
+        <div class="chat-box" id="chatBox">
+            <!-- 动态填充消息 -->
+        </div>
+
+        <!-- 输入框 -->
+        <div class="chat-footer">
+            <textarea id="newMessage" placeholder="Input Message..." class="message-input"></textarea>
+            <button onclick="sendMessage()" class="send-btn">Send</button>
         </div>
     </div>
 </div>
 
-<!-- Vue 逻辑 -->
 {% block extra_js %}
-<script src="https://unpkg.com/vue@3.2.36/dist/vue.global.js"></script>
 <script>
-const app = Vue.createApp({
-    data() {
-        return {
-            chatList: [
-                { name: "无畏契约赛事", icon: "fas fa-gamepad", lastMessage: "🔥 快来看比赛", messages: [{ text: "你好！", sender: "other" }] },
-                { name: "崩坏星穹铁道", icon: "fas fa-space-shuttle", lastMessage: "全新世界开启！", messages: [{ text: "你好呀！", sender: "other" }] },
-                { name: "哔哩哔哩晚会", icon: "fas fa-tv", lastMessage: "直播开始提醒", messages: [{ text: "今晚看直播吗？", sender: "other" }] }
-            ],
-            currentChatIndex: 0,
-            newMessage: "",
-        };
-    },
-    computed: {
-        currentChat() {
-            return this.chatList[this.currentChatIndex];
-        }
-    },
-    methods: {
-        selectChat(index) {
-            this.currentChatIndex = index;
-        },
-        sendMessage() {
-            if (this.newMessage.trim()) {
-                this.currentChat.messages.push({ text: this.newMessage, sender: "me" });
-                this.newMessage = "";
-                this.resetTextareaHeight();  // 发送后重置输入框高度
-            }
-        },
-        handleKeyPress(event) {
-            if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                this.sendMessage();
-            }
-        },
-        adjustTextareaHeight(event) {
-            event.target.style.height = "auto";
-            event.target.style.height = (event.target.scrollHeight) + "px";
-        },
-        resetTextareaHeight() {
-            document.querySelector(".message-input").style.height = "40px";
-        }
+    const chatListElement = document.getElementById('chatList');
+    const chatBoxElement = document.getElementById('chatBox');
+    const chatNameElement = document.getElementById('chatName');
+    const newMessageElement = document.getElementById('newMessage');
+    let currentChat = null;
+
+    // 获取聊天列表
+    function fetchMessages() {
+        fetch('/api/messages/')
+            .then(response => response.json())
+            .then(data => {
+                const userMessages = data.messages;
+                const usersWithChats = new Set();
+
+                // 收集所有与当前用户有聊天记录的用户
+                userMessages.forEach(msg => {
+                    if (msg.sender === "{{ request.user.username }}") {
+                        usersWithChats.add(msg.receiver);
+                    } else {
+                        usersWithChats.add(msg.sender);
+                    }
+                });
+
+                // 过滤出有聊天记录的用户
+                const usersWithChatsArray = Array.from(usersWithChats);
+                renderChatList(usersWithChatsArray);
+            });
     }
-}).mount("#app");
+
+    // 渲染聊天列表
+    function renderChatList(users, isSearchResult = false) {
+        chatListElement.innerHTML = '';
+
+        if (users.length === 0) {
+            chatListElement.innerHTML = `<li>${isSearchResult ? 'No users found' : 'No messages available'}</li>`;
+            return;
+        }
+
+        users.forEach(user => {
+            const listItem = document.createElement('li');
+            listItem.textContent = typeof user === 'string' ? user : user.username;
+
+            // 直接使用 user 或 user.username
+            listItem.onclick = () => {
+                const username = typeof user === 'string' ? user : user.username;
+                if (isSearchResult) {
+                    startNewChat(username);
+                } else {
+                    selectChat(username);
+                }
+            };
+
+            chatListElement.appendChild(listItem);
+        });
+    }
+
+
+    // 搜索用户
+    function searchUsers() {
+        const query = document.getElementById('searchQuery').value;
+        fetch(`/api/search_users/?q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                const users = data.users.map(user => user.username || user);
+
+                renderChatList(users, true);
+            });
+    }
+
+
+    // 选择聊天
+    function selectChat(username) {
+        currentChat = username;
+        chatNameElement.textContent = `Chat with ${username}`;
+        loadChatMessages(username);
+    }
+
+    // 加载消息
+    function loadChatMessages(username) {
+        fetch(`/api/messages/?receiver=${username}`)
+            .then(response => response.json())
+            .then(data => {
+                chatBoxElement.innerHTML = '';
+                const currentUser = "{{ request.user.username }}"; // 获取当前用户
+
+                data.messages.forEach(msg => {
+                    const messageElement = document.createElement('div');
+
+                    // 比较 sender 和当前用户，决定消息位置
+                    if (msg.sender === currentUser) {
+                        messageElement.classList.add('sent'); // 右侧显示
+                    } else {
+                        messageElement.classList.add('received'); // 左侧显示
+                    }
+
+                    messageElement.textContent = msg.text;
+                    chatBoxElement.appendChild(messageElement);
+                });
+
+                // 滚动到底部
+                chatBoxElement.scrollTop = chatBoxElement.scrollHeight;
+            });
+    }
+
+    // 初始化加载消息
+    function initializeChat() {
+        fetch('/api/messages/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.messages.length > 0) {
+                    const firstChat = data.messages[0].sender !== "{{ request.user.username }}"
+                        ? data.messages[0].sender
+                        : data.messages[0].receiver;
+                    selectChat(firstChat);
+                }
+            });
+    }
+
+    initializeChat();
+
+    // start a new chat
+    function startNewChat(username) {
+        currentChat = username;
+        chatNameElement.textContent = `Chat with ${username}`;
+        chatBoxElement.innerHTML = ''; // 清空旧消息
+
+        loadChatMessages(username);
+    }
+
+
+    // 发送消息
+    function sendMessage() {
+        const text = newMessageElement.value;
+        if (!text || !currentChat) return;
+
+        fetch('/api/send/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.cookie.split(';').find(item => item.trim().startsWith('csrftoken=')).split('=')[1]
+            },
+            body: `receiver=${currentChat}&text=${text}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                newMessageElement.value = '';
+                // 重新加载消息，确保新消息和旧消息一起显示
+                loadChatMessages(currentChat);
+            }
+        });
+    }
+
+
+
+    // 初始化加载消息
+    fetchMessages();
 </script>
 {% endblock %}
 
-<!-- 引入 FontAwesome 图标库 -->
+<!-- FontAwesome 图标 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-<!-- CSS 样式优化 -->
+<!-- CSS 样式 -->
 <style>
-.chat-container {
-    display: flex;
-    height: 90vh;
-}
+    .chat-container {
+        display: flex;
+        height: 90vh;
+    }
 
-.sidebar {
-    width: 30%;
-    background: #f4f4f4;
-    padding: 10px;
-    border-right: 1px solid #ddd;
-}
+    /* 左侧聊天列表 */
+    .sidebar {
+        width: 30%;
+        background-color: #f4f4f8;
+        padding: 10px;
+        overflow-y: auto;
+        border-right: 1px solid #ddd;
+    }
 
-.chat-list {
-    list-style: none;
-    padding: 0;
-}
+    .search-bar {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 10px;
+    }
 
-.chat-list li {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
+    .search-input {
+        flex-grow: 1;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
 
-.chat-list li:hover, .chat-list li.active {
-    background: #ddd;
-}
+    .search-btn {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
 
-.icon-wrapper {
-    width: 40px;
-    height: 40px;
-    background: #007bff;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    margin-right: 10px;
-    font-size: 18px;
-}
+    .chat-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
 
-.chat-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
+    .chat-list li {
+        padding: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+        transition: background 0.2s;
+    }
 
-.chat-header {
-    padding: 10px;
-    background: #007bff;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    .chat-list li:hover {
+        background-color: #f1f1f1;
+    }
 
-.chat-box {
-    flex-grow: 1;
-    padding: 15px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
+    /* 右侧聊天框 */
+    .chat-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+    }
 
-.chat-message {
-    max-width: 60%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-}
+    .chat-header {
+        padding: 10px;
+        background-color: #fafafa;
+        border-bottom: 1px solid #ddd;
+    }
 
-.chat-message.other {
-    background: #eaeaea;
-    align-self: flex-start;
-}
+    .chat-box {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+    }
 
-.chat-message.me {
-    background: #007bff;
-    color: white;
-    align-self: flex-end;
-}
+    /* 发送的消息（右对齐） */
+    .sent {
+        background-color: #d1e7dd; /* 绿色背景 */
+        color: #155724; /* 深绿色文本 */
+        align-self: flex-end;
+        padding: 10px;
+        margin: 5px;
+        border-radius: 16px;
+        max-width: 70%;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-.chat-footer {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-top: 1px solid #ddd;
-}
+/* 接收的消息（左对齐） */
+    .received {
+        background-color: #f8d7da; /* 红色背景 */
+        color: #721c24; /* 深红色文本 */
+        align-self: flex-start;
+        padding: 10px;
+        margin: 5px;
+        border-radius: 16px;
+        max-width: 70%;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-.message-input {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    resize: none;
-    height: 40px;
-    overflow-y: auto;
-}
+    .chat-footer {
+        display: flex;
+        gap: 5px;
+    }
 
-.send-btn {
-    margin-left: 10px;
-    padding: 10px 15px;
-    border: none;
-    background: #007bff;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
+    .message-input {
+        flex-grow: 1;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
 
-.send-btn:hover {
-    background: #0056b3;
-}
+    .send-btn {
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
 </style>
 
 {% endblock %}

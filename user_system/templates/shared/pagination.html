@@ -1,25 +1,25 @@
-<div class="d-flex justify-content-between align-items-center mt-4">
-    <div class="view-all-card">
-        {% if events.has_previous %}
-        <a href="#" 
-           class="btn btn-light shadow-sm rounded-pill px-4 pagination-btn"
-           data-page="{{ events.previous_page_number }}">
-            <i class="bi-arrow-left me-2"></i> Previous
-        </a>
-        {% endif %}
-    </div>
-
-    <div class="text-muted">
-        Page <span id="current-page">{{ events.number }}</span> of <span id="total-pages">{{ events.paginator.num_pages }}</span>
-    </div>
-
-    <div class="view-all-card">
-        {% if events.has_next %}
-        <a href="#" 
-           class="btn btn-light shadow-sm rounded-pill px-4 pagination-btn"
-           data-page="{{ events.next_page_number }}">
-            Next <i class="bi-arrow-right ms-2"></i>
-        </a>
-        {% endif %}
-    </div>
-</div>
+{% if events.has_other_pages %}
+  <div class="pagination d-flex justify-content-center align-items-center">
+    {% if events.has_previous %}
+      <a href="#" class="pagination-btn btn btn-sm btn-outline-primary rounded-pill px-3 me-2" data-page="{{ events.previous_page_number }}">
+        <i class="bi bi-chevron-left me-1"></i> 上一页
+      </a>
+    {% else %}
+      <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 me-2" disabled>
+        <i class="bi bi-chevron-left me-1"></i> 上一页
+      </button>
+    {% endif %}
+    
+    <span class="px-3">{{ events.number }} / {{ events.paginator.num_pages }}</span>
+    
+    {% if events.has_next %}
+      <a href="#" class="pagination-btn btn btn-sm btn-outline-primary rounded-pill px-3 ms-2" data-page="{{ events.next_page_number }}">
+        下一页 <i class="bi bi-chevron-right ms-1"></i>
+      </a>
+    {% else %}
+      <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 ms-2" disabled>
+        下一页 <i class="bi bi-chevron-right ms-1"></i>
+      </button>
+    {% endif %}
+  </div>
+{% endif %}
