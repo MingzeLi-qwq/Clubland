@@ -12,8 +12,8 @@
       <!-- 手机端：先显示标题，再显示折叠按钮 -->
       <div class="d-md-none mb-3">
         <h2 class="text-center mb-2">系统功能</h2>
-        <button class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#systemFeaturesCollapse" aria-expanded="false" aria-controls="systemFeaturesCollapse">
-          
+        <button id="toggleFeaturesBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#systemFeaturesCollapse" aria-expanded="false" aria-controls="systemFeaturesCollapse">
+          <span class="toggle-text">Expand</span>
           <i class="bi bi-chevron-down chevron"></i>
         </button>
       </div>
@@ -94,4 +94,50 @@
       </div>
     </div>
   </section>
-  
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 获取折叠按钮和文本元素
+    const collapseButton = document.getElementById('toggleFeaturesBtn');
+    const collapseElement = document.getElementById('systemFeaturesCollapse');
+    
+    if (collapseButton && collapseElement) {
+      const toggleText = collapseButton.querySelector('.toggle-text');
+      
+      // 检查初始状态
+      if (collapseElement.classList.contains('show')) {
+        toggleText.textContent = 'Fold';
+      } else {
+        toggleText.textContent = 'Expand';
+      }
+      
+      // 使用Bootstrap的collapse事件
+      const bsCollapse = new bootstrap.Collapse(collapseElement, {
+        toggle: false
+      });
+      
+      // 监听折叠状态变化
+      collapseElement.addEventListener('shown.bs.collapse', function () {
+        console.log('展开了');
+        toggleText.textContent = 'Fold';
+      });
+      
+      collapseElement.addEventListener('hidden.bs.collapse', function () {
+        console.log('折叠了');
+        toggleText.textContent = 'Expand';
+      });
+      
+      // 额外添加按钮点击事件处理（作为备选方案）
+      collapseButton.addEventListener('click', function() {
+        // 200ms后检查折叠状态并更新按钮文本
+        setTimeout(function() {
+          if (collapseElement.classList.contains('show')) {
+            toggleText.textContent = 'Fold';
+          } else {
+            toggleText.textContent = 'Expand';
+          }
+        }, 200);
+      });
+    }
+  });
+</script>
