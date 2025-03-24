@@ -4,14 +4,14 @@
   <div class="container">
     <!-- 桌面视图标题和按钮 -->
     <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
-      <h2 class="mb-0">新社团来袭</h2>
+      <h2 class="mb-0">New Clubs Coming!</h2>
       <a href="{% url 'clubs' %}" class="btn btn-outline-primary btn-sm">View All</a>
     </div>
     
     <!-- 移动视图标题和折叠按钮 -->
     <div class="d-md-none mb-3">
       <div class="text-center mb-2">
-        <h2 class="mb-0">新社团来袭</h2>
+        <h2 class="mb-0">New Clubs Coming!</h2>
       </div>
       <div class="d-flex justify-content-between align-items-center mb-2" style="padding: 0 10px;">
         <div style="flex: 1;"></div>
@@ -60,14 +60,14 @@
   <div class="container">
     <!-- 桌面视图标题和按钮 -->
     <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
-      <h2 class="mb-0">最近新闻</h2>
+      <h2 class="mb-0">Recent News</h2>
       <a href="{% url 'news_system:news_list' %}" class="btn btn-outline-primary btn-sm">View All</a>
     </div>
     
     <!-- 移动视图标题和折叠按钮 -->
     <div class="d-md-none mb-3">
       <div class="text-center mb-2">
-        <h2 class="mb-0">最近新闻</h2>
+        <h2 class="mb-0">Recent News</h2>
       </div>
       <div class="d-flex justify-content-between align-items-center mb-2" style="padding: 0 10px;">
         <div style="flex: 1;"></div>
@@ -95,12 +95,12 @@
                 <a class="link-secondary" href="{{ news.url }}">{{ news.title }}</a>
               </h5>
               <div class="d-flex flex-column align-items-start mt-auto">
-                <small class="text-muted mb-1">作者：{{ news.author.get_full_name }}</small>
+                <small class="text-muted mb-1">Author: {{ news.author.get_full_name }}</small>
                 {% if news.club %}
-                  <small class="text-muted mb-1">社团：{{ news.club.name }}</small>
+                  <small class="text-muted mb-1">Club: {{ news.club.name }}</small>
                 {% endif %}
                 {% if news.event %}
-                  <small class="text-muted mb-1">活动：{{ news.event.name }}</small>
+                  <small class="text-muted mb-1">Event: {{ news.event.name }}</small>
                 {% endif %}
                 <small class="text-muted">{{ news.created_at|date:"Y-m-d" }}</small>
               </div>
