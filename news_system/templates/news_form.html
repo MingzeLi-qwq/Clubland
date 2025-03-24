@@ -10,7 +10,7 @@
     <div class="col-12 col-md-10 col-lg-8">
       <!-- 删除旧card结构，替换为简单容器 -->
       <div class="p-4">
-        <h2 class="mb-4">创建 News</h2>
+        <h2 class="mb-4">Composing News</h2>
         <!-- 自动加载 django-summernote 所需的媒体文件 -->
         {{ form.media }}
         <form method="post" enctype="multipart/form-data" id="news-form">
@@ -56,7 +56,7 @@
             {% endif %}
           </div>
           <div class="text-center">
-            <button type="submit" class="btn btn-outline-secondary w-100 w-sm-auto">Submit</button>
+            <button type="submit" class="btn btn-outline-secondary w-100 w-sm-auto">Publish</button>
           </div>
         </form>
       </div>
