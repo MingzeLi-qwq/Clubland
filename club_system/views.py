@@ -325,7 +325,7 @@ class SetManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerReq
         messages.success(request, f"{user.get_full_name} is now a manager.")
         return redirect(redirect_url, club_id=club_id)
 
-"""This section is used to implement the auto-search function of the club manager - Membership - Add members - auto-search box.""""
+"""This section is used to implement the auto-search function of the club manager - Membership - Add members - auto-search box."""
 class SearchUsersView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         query = request.GET.get('q', '')
@@ -347,7 +347,7 @@ class SearchUsersView(LoginRequiredMixin, View):
         
         return JsonResponse(results, safe=False)
     
-"""This section is used to implement the club manager's ability to remove Memberships.""""
+"""This section is used to implement the club manager's ability to remove Memberships."""
 class RemoveMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, username, *args, **kwargs):
         club = get_object_or_404(Club, club_id=club_id)
@@ -386,7 +386,7 @@ class RemoveMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerR
         messages.success(request, f"{user_to_remove.username} has been removed from the club.")
         return redirect(redirect_url, club_id=club_id)
 
-"""This section is used to implement the club manager - add member functionality.""""
+"""This section is used to implement the club manager - add member functionality."""
 class AddMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, username):
         # If the request to access this view came from the admin panel, the redirection url is the admin panel.
