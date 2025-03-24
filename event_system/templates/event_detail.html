@@ -72,9 +72,9 @@
       <!-- 本活动的新闻 -->
       <div class="mb-4">
         <h4 class="mb-3">本活动的新闻</h4>
-        {% if event.news_event.all %}
+        {% if related_news %}
           <div class="list-group list-group-flush">
-            {% for news in event.news_event.all %}
+            {% for news in related_news %}
               <a href="{% url 'news_system:news_detail' news.pk %}" class="list-group-item list-group-item-action p-3">
                 <div class="d-flex">
                   <div class="flex-grow-1 me-3">
