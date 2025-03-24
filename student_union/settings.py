@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
-# 改为绝对导入, 从 CMS_mixins 文件夹中导入 CMS_utils
 from CMS_mixins import CMS_utils
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -67,7 +66,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'user_system.middleware.CSRFRefreshMiddleware',  # 添加新的中间件
+    'user_system.middleware.CSRFRefreshMiddleware',
 ]
 
 ROOT_URLCONF = 'student_union.urls'
@@ -205,7 +204,7 @@ SUMMERNOTE_CONFIG = {
 
     # 延迟加载（若想在页面底部初始化 summernote 可启用）
     'lazy': True,
-    # 使用从 CMS_mixins 导入的上传路径生成函数
+    # 使用 CMS_mixins 的上传路径生成函数
     'attachment_upload_to': CMS_utils.RTEUploadUtils.upload_img_func,
 }
 

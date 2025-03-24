@@ -141,7 +141,7 @@ def change_password(request):
             user = form.save()
             update_session_auth_hash(request, user)  # 防止用户被登出
             messages.success(request, 'Your password was successfully updated!')
-            return redirect('dashboard_personal_information')  # 这里要确保你的 URL 名称正确
+            return redirect('dashboard_personal_information') # 重定向到个人资料页
         else:
             messages.error(request, 'Please correct the errors below.')
     else:

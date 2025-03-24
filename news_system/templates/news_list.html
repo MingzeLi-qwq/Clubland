@@ -62,7 +62,7 @@
           </select>
         </div>
       </div>
-      <!-- 保持其他查询参数 -->
+
       {% for key, value in request.GET.items %}
         {% if key != "order" and key != "per_page" and key != "club" and key != "q" %}
           <input type="hidden" name="{{ key }}" value="{{ value }}">
@@ -71,7 +71,6 @@
     </form>
   </div>
   
-  <!-- News 文章列表，修改为带图片的布局 -->
 
   <div class="list-group list-group-flush">
     {% for post in posts %}
@@ -79,7 +78,7 @@
          class="list-group-item list-group-item-action p-3">
         <div class="d-flex">
           
-          <!-- 左侧内容区：保持原有的 me-3、p-3 等，不改动 -->
+
           <div class="flex-grow-1 me-3">
             <div class="d-flex w-100 justify-content-between flex-column flex-sm-row">
               <h5 class="mb-1 text-break">{{ post.title }}</h5>

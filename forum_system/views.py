@@ -58,7 +58,7 @@ class BlogPostDetailView(FormMixin, DetailView):
         # 新增讨论的排序和分页
         from django.core.paginator import Paginator
         threadposts_qs = self.object.thread_posts.all()
-        order_thread = self.request.GET.get('order_thread', 'asc')  # 修改默认值为 'asc'
+        order_thread = self.request.GET.get('order_thread', 'asc')
         if order_thread == 'asc':
             threadposts_qs = threadposts_qs.order_by('created_at')
         else:
@@ -121,7 +121,6 @@ class ThreadPostCreateView(LoginRequiredMixin, CreateView):
 
 class BlogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = BlogPost
-    # 删除模板引用，因为我们不再使用确认页面
     success_url = reverse_lazy('forum_system:blog_list')
 
     def test_func(self):
@@ -134,13 +133,11 @@ class BlogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
-        # 不再渲染确认页面，直接重定向到博客列表
         return redirect(self.success_url)
 
 
 class ThreadPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = ThreadPost
-    # 删除模板引用，因为我们不再使用确认页面
 
     def get_success_url(self):
         return reverse('forum_system:blog_detail', kwargs={'pk': self.get_object().blog_post.pk})
@@ -155,7 +152,6 @@ class ThreadPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
-        # 不再渲染确认页面，直接重定向回博客详情页
         return redirect(self.get_success_url())
 
 

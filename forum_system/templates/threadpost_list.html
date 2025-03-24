@@ -1,18 +1,18 @@
 <div class="mb-4">
-  <h4>讨论</h4>
+  <h4>Discussion</h4>
   <!-- 排序和每页显示表单 -->
   <form method="get" id="threadpost-sort-form" class="mb-3">
     <div class="row g-2">
       <div class="col-12 col-md-6 mb-2 mb-md-0">
-        <label for="orderThreadSelect">排序：</label>
+        <label for="orderThreadSelect">Order by: </label>
         <select name="order_thread" id="orderThreadSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
-          <option value="desc" {% if order_thread == "desc" %}selected{% endif %}>时间倒序</option>
-          <option value="asc" {% if order_thread == "asc" or not order_thread %}selected{% endif %}>时间正序</option>
+          <option value="desc" {% if order_thread == "desc" %}selected{% endif %}>Latest</option>
+          <option value="asc" {% if order_thread == "asc" or not order_thread %}selected{% endif %}>Earliest</option>
         </select>
       </div>
       <div class="col-12 col-md-6 mb-2 mb-md-0">
         <div class="d-flex justify-content-md-end align-items-center">
-          <label for="perPageThreadSelect">每页显示：</label>
+          <label for="perPageThreadSelect">Items per page:</label>
           <select name="per_page_thread" id="perPageThreadSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
             <option value="5" {% if per_page_thread == 5 %}selected{% endif %}>5</option>
             <option value="10" {% if per_page_thread == 10 %}selected{% endif %}>10</option>
@@ -100,13 +100,13 @@
       </nav>
     {% endif %}
   {% else %}
-    <p>暂无讨论</p>
+    <p>No disscussions at the moment</p>
   {% endif %}
 </div>
 
 <script>
 function confirmThreadDelete(url) {
-  if (confirm("确定要删除这条讨论吗？")) {
+  if (confirm("Are you sure to delete this discussion?")) {
     let form = document.createElement('form');
     form.method = 'POST';
     form.action = url;

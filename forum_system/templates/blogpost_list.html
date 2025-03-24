@@ -62,7 +62,7 @@
           </select>
         </div>
       </div>
-      <!-- 保持其他查询参数 -->
+
       {% for key, value in request.GET.items %}
         {% if key != "order" and key != "per_page" and key != "club" and key != "q" %}
           <input type="hidden" name="{{ key }}" value="{{ value }}">
