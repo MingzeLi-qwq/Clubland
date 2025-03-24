@@ -78,7 +78,7 @@
   
   // 新闻删除确认
   function confirmNewsDelete(url, title) {
-    if (confirm(`确定要删除 "${title}" 吗？`)) {
+    if (confirm(`Are you sure to delete "${title}"?`)) {
       $.ajax({
         url: url,
         type: 'POST',
@@ -89,7 +89,7 @@
           window.location.href = '{% url "news_system:news_list" %}';
         },
         error: function(xhr, status, error) {
-          alert('删除失败: ' + error);
+          alert('Fail to delete: ' + error);
         }
       });
     }
@@ -97,7 +97,7 @@
   
   // 评论删除确认
   function confirmCommentDelete(url) {
-    if (confirm("确定要删除这条评论吗？")) {
+    if (confirm("Are you sure to delete this comment?")) {
       $.ajax({
         url: url,
         type: 'POST',
@@ -105,7 +105,7 @@
           location.reload();
         },
         error: function(xhr, status, error) {
-          alert('删除失败: ' + error);
+          alert('Fail to delete: ' + error);
         }
       });
     }

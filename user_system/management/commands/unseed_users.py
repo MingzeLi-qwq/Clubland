@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class Command(BaseCommand):
-    help = "删除所有测试用户,除了后台用户Superuser"
+    help = "Delete all test users, except for the superuser."
 
     def handle(self, *args, **kwargs):
         protected_users = ["superuser@kcl.ac.uk", "@superuser"]
@@ -15,6 +15,6 @@ class Command(BaseCommand):
         if users.exists():
             deleted_count = users.count()
             users.delete()
-            self.stdout.write(f"已删除 {deleted_count} 个测试用户，保留超级用户 {protected_users}")
+            self.stdout.write(f"Deleted {deleted_count} test users, kept superusers {protected_users}")
         else:
-            self.stdout.write("没有需要删除的测试用户")
+            self.stdout.write("No test users to delete")

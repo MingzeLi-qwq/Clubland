@@ -51,7 +51,7 @@
 <script src="{% static 'js/csrf_utils.js' %}"></script>
 <script>
 function confirmDelete(url, title) {
-  if (confirm(`确定要删除 "${title}" 吗？`)) {
+  if (confirm(`Are you sure to delete "${title}"?`)) {
     let form = document.createElement('form');
     form.method = 'POST';
     form.action = url;
