@@ -11,7 +11,7 @@ from club_system.models import Club
 from CMS_mixins.CMS_utils import RTEUploadUtils
 from django.db.models import Q
 from django.shortcuts import redirect
-from news_system.views import get_first_image_url  // 新增导入
+from news_system.views import get_first_image_url
 
 # 博客列表页：显示所有博客文章
 class BlogPostListView(ListView):

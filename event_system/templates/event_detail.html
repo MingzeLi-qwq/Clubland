@@ -73,11 +73,38 @@
       <div class="mb-4">
         <h4 class="mb-3">本活动的新闻</h4>
         {% if event.news_event.all %}
-          <div class="list-group">
+          <div class="list-group list-group-flush">
             {% for news in event.news_event.all %}
-              <a href="{% url 'news_system:news_detail' news.pk %}" class="list-group-item list-group-item-action">
-                <h5 class="mb-1">{{ news.title }}</h5>
-                <small>{{ news.created_at|date:"Y-m-d H:i" }}</small>
+              <a href="{% url 'news_system:news_detail' news.pk %}" class="list-group-item list-group-item-action p-3">
+                <div class="d-flex">
+                  <div class="flex-grow-1 me-3">
+                    <div class="d-flex w-100 justify-content-between flex-column flex-sm-row">
+                      <h5 class="mb-1 text-break">{{ news.title }}</h5>
+                      <small class="ms-0 ms-sm-2">{{ news.created_at|date:"Y-m-d H:i" }}</small>
+                    </div>
+                    <p class="mb-1 text-break"
+                       style="display: -webkit-box; -webkit-line-clamp:2; -webkit-box-orient: vertical;
+                              overflow: hidden; word-wrap: break-word; max-width: 100%;">
+                      {{ news.content|striptags }}
+                    </p>
+                    <p class="mb-0">
+                      {% if news.author %}
+                        {{ news.author.first_name }} {{ news.author.last_name }}
+                      {% else %}
+                        未知作者
+                      {% endif %}
+                      {% if news.club %}
+                        &nbsp;&nbsp;|&nbsp;&nbsp;{{ news.club.name }}
+                      {% endif %}
+                    </p>
+                  </div>
+                  <div class="d-none d-sm-block flex-shrink-0" style="aspect-ratio: 4/3; width: 150px;">
+                    {% if news.first_image_url %}
+                      <img src="{{ news.first_image_url }}" alt="{{ news.title }}" class="img-fluid rounded"
+                           style="width: 100%; height: 100%; object-fit: cover;">
+                    {% endif %}
+                  </div>
+                </div>
               </a>
             {% endfor %}
           </div>
