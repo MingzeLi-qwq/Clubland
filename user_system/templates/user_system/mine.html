@@ -290,7 +290,7 @@
             setInterval(updateCountdown, 1000);
             updateCountdown(); // 立即执行一次
 
-            // 事件分页功能实现 - 替换轮播相关代码
+            // 事件分页功能实现
             const eventItems = document.querySelectorAll('.event-item');
             const totalEvents = eventItems.length;
             
@@ -333,13 +333,13 @@
                     return;
                 }
                 
-                // 首先隐藏所有事件
+                // 隐藏所有事件
                 eventItems.forEach((item, index) => {
                     item.style.display = 'none';
                     console.log(`隐藏事件 #${index+1}: ${item.querySelector('.card-title').textContent}`);
                 });
                 
-                // 计算当前页应该显示的事件的起始和结束索引
+                // 计算当前页显示的起始和结束索引
                 const startIndex = (pageNumber - 1) * eventsPerPage;
                 const endIndex = Math.min(startIndex + eventsPerPage, totalEvents);
                 
@@ -360,10 +360,7 @@
                     console.log(`已更新当前事件页码显示：${pageNumber}`);
                 }
                 
-                // 更新当前页变量
                 currentEventPage = pageNumber;
-                
-                // 更新按钮状态
                 updateEventButtonState();
             }
             
@@ -429,13 +426,13 @@
                     return;
                 }
                 
-                // 首先隐藏所有俱乐部
+                // 隐藏所有俱乐部
                 clubItems.forEach((item, index) => {
                     item.style.display = 'none';
                     console.log(`隐藏俱乐部 #${index+1}: ${item.querySelector('.card-title').textContent}`);
                 });
                 
-                // 计算当前页应该显示的俱乐部的起始和结束索引
+                // 计算当前页显示的起始和结束索引
                 const startIndex = (pageNumber - 1) * clubsPerPage;
                 const endIndex = Math.min(startIndex + clubsPerPage, totalClubs);
                 
@@ -456,10 +453,7 @@
                     console.log(`已更新当前页码显示：${pageNumber}`);
                 }
                 
-                // 更新当前页变量
                 currentPage = pageNumber;
-                
-                // 更新按钮状态
                 updateButtonState();
             }
             
@@ -482,48 +476,45 @@
             showPage(1);
             console.log('初始化完成，显示第1页');
 
-            // 折叠按钮功能
-            document.addEventListener('DOMContentLoaded', function() {
-                // 初始化各区域折叠功能
-                initCollapsible('toggleClubsBtn', 'clubsCollapse');
-                initCollapsible('toggleEventsBtn', 'eventsCollapse');
+            // 修复折叠按钮功能：直接初始化折叠逻辑
+            initCollapsible('toggleClubsBtn', 'clubsCollapse');
+            initCollapsible('toggleEventsBtn', 'eventsCollapse');
+
+            function initCollapsible(btnId, collapseId) {
+                const collapseButton = document.getElementById(btnId);
+                const collapseElement = document.getElementById(collapseId);
                 
-                function initCollapsible(btnId, collapseId) {
-                    const collapseButton = document.getElementById(btnId);
-                    const collapseElement = document.getElementById(collapseId);
+                if (collapseButton && collapseElement) {
+                    const toggleText = collapseButton.querySelector('.toggle-text');
                     
-                    if (collapseButton && collapseElement) {
-                        const toggleText = collapseButton.querySelector('.toggle-text');
-                        
-                        // 检查初始状态
-                        if (collapseElement.classList.contains('show')) {
-                            toggleText.textContent = 'Fold';
-                        } else {
-                            toggleText.textContent = 'Expand';
-                        }
-                        
-                        // 监听折叠状态变化
-                        collapseElement.addEventListener('shown.bs.collapse', function () {
-                            toggleText.textContent = 'Fold';
-                        });
-                        
-                        collapseElement.addEventListener('hidden.bs.collapse', function () {
-                            toggleText.textContent = 'Expand';
-                        });
-                        
-                        // 额外添加按钮点击事件处理
-                        collapseButton.addEventListener('click', function() {
-                            setTimeout(function() {
-                                if (collapseElement.classList.contains('show')) {
-                                    toggleText.textContent = 'Fold';
-                                } else {
-                                    toggleText.textContent = 'Expand';
-                                }
-                            }, 200);
-                        });
+                    // 检查初始状态
+                    if (collapseElement.classList.contains('show')) {
+                        toggleText.textContent = 'Fold';
+                    } else {
+                        toggleText.textContent = 'Expand';
                     }
+                    
+                    // 监听折叠状态变化
+                    collapseElement.addEventListener('shown.bs.collapse', function () {
+                        toggleText.textContent = 'Fold';
+                    });
+                    
+                    collapseElement.addEventListener('hidden.bs.collapse', function () {
+                        toggleText.textContent = 'Expand';
+                    });
+                    
+                    // 额外添加按钮点击事件处理
+                    collapseButton.addEventListener('click', function() {
+                        setTimeout(function() {
+                            if (collapseElement.classList.contains('show')) {
+                                toggleText.textContent = 'Fold';
+                            } else {
+                                toggleText.textContent = 'Expand';
+                            }
+                        }, 200);
+                    });
                 }
-            });
+            }
         {% endif %}
     });
 </script>
