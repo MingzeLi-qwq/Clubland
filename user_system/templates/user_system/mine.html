@@ -147,57 +147,54 @@
             </div>
             
             {% if events %}
-            <div class="event-carousel-wrapper">
-                <div id="eventCarousel" class="carousel slide" data-bs-ride="false">
-                    <div class="carousel-inner">
-                        {% for event in events %}
-                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <div class="card event-card">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ event.title }}</h5>
-                                    <div class="event-info">
-                                        <div class="info-item mb-2">
-                                            <i class="bi bi-calendar3"></i>
-                                            <span>{{ event.start_time|date:"F j, Y" }}</span>
-                                        </div>
-                                        <div class="info-item mb-2">
-                                            <i class="bi bi-clock"></i>
-                                            <span>{{ event.start_time|date:"g:i A" }} - {{ event.end_time|date:"g:i A" }}</span>
-                                        </div>
-                                        <div class="info-item mb-2">
-                                            <i class="bi bi-geo-alt"></i>
-                                            <span>{{ event.location }}</span>
-                                        </div>
-                                        <div class="countdown" data-start-time="{{ event.start_time|date:'c' }}">
-                                            <strong>Starts in:</strong> <span class="countdown-value">calculating...</span>
-                                        </div>
-                                    </div>
-                                    <div class="mt-3">
-                                        <a href="{% url 'event_detail' event.pk %}" class="btn btn-outline-primary btn-sm w-100">
-                                            View Details
-                                        </a>
-                                    </div>
+            <!-- Events Grid - 替换原来的轮播图 -->
+            <div class="row g-4" id="events-container">
+                {% for event in events %}
+                <div class="event-item col-md-4 mb-4">
+                    <div class="card event-card shadow-sm h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ event.title }}</h5>
+                            <div class="event-info">
+                                <div class="info-item mb-2">
+                                    <i class="bi bi-calendar3"></i>
+                                    <span>{{ event.start_time|date:"F j, Y" }}</span>
+                                </div>
+                                <div class="info-item mb-2">
+                                    <i class="bi bi-clock"></i>
+                                    <span>{{ event.start_time|date:"g:i A" }} - {{ event.end_time|date:"g:i A" }}</span>
+                                </div>
+                                <div class="info-item mb-2">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>{{ event.location }}</span>
+                                </div>
+                                <div class="countdown" data-start-time="{{ event.start_time|date:'c' }}">
+                                    <strong>Starts in:</strong> <span class="countdown-value">calculating...</span>
                                 </div>
                             </div>
+                            <div class="mt-3">
+                                <a href="{% url 'event_detail' event.pk %}" class="btn btn-outline-primary btn-sm w-100">
+                                    View Details
+                                </a>
+                            </div>
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
-                
-                <!-- Event Pagination -->
-                <div class="d-flex justify-content-between align-items-center mt-4">
-                    <button id="prevEvent" class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center">
-                        <i class="bi bi-arrow-left me-1"></i>
-                        <span>Previous</span>
-                    </button>
-                    <div class="page-indicator">
-                        Page <span id="currentPage">1</span> of <span id="totalPages">{{ events|length }}</span>
-                    </div>
-                    <button id="nextEvent" class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center">
-                        <span>Next</span>
-                        <i class="bi bi-arrow-right ms-1"></i>
-                    </button>
+                {% endfor %}
+            </div>
+            
+            <!-- Event Pagination -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <button id="prevEvent" class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    <span>Previous</span>
+                </button>
+                <div class="page-indicator">
+                    Page <span id="currentEventPage">1</span> of <span id="totalEventPages">1</span>
                 </div>
+                <button id="nextEvent" class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center">
+                    <span>Next</span>
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </button>
             </div>
             {% else %}
             <div class="text-center p-4 bg-light rounded">
@@ -274,39 +271,101 @@
             setInterval(updateCountdown, 1000);
             updateCountdown(); // 立即执行一次
 
-            // 事件轮播功能
-            const eventCarousel = document.getElementById('eventCarousel');
-            if (eventCarousel) {
-                const carousel = new bootstrap.Carousel(eventCarousel, {
-                    interval: false // 禁用自动循环
-                });
-
-                // 事件导航按钮
-                const prevEventBtn = document.getElementById('prevEvent');
-                const nextEventBtn = document.getElementById('nextEvent');
-                
-                // 事件页面跟踪
-                let currentEventPage = 1;
-                const totalEventPages = parseInt(document.getElementById('totalPages')?.textContent || '1');
-                
-                prevEventBtn?.addEventListener('click', function() {
-                    carousel.prev();
-                    currentEventPage = currentEventPage > 1 ? currentEventPage - 1 : totalEventPages;
-                    document.getElementById('currentPage').textContent = currentEventPage;
-                });
-                
-                nextEventBtn?.addEventListener('click', function() {
-                    carousel.next();
-                    currentEventPage = currentEventPage < totalEventPages ? currentEventPage + 1 : 1;
-                    document.getElementById('currentPage').textContent = currentEventPage;
-                });
-                
-                // 事件变化处理程序
-                eventCarousel.addEventListener('slid.bs.carousel', function (event) {
-                    currentEventPage = event.to + 1;
-                    document.getElementById('currentPage').textContent = currentEventPage;
-                });
+            // 事件分页功能实现 - 替换轮播相关代码
+            const eventItems = document.querySelectorAll('.event-item');
+            const totalEvents = eventItems.length;
+            
+            console.log(`找到 ${totalEvents} 个事件，开始处理分页...`);
+            
+            // 设置每页显示的事件数量
+            const eventsPerPage = 3;
+            // 计算总页数 (向上取整)
+            const totalEventPages = Math.ceil(totalEvents / eventsPerPage);
+            
+            console.log(`每页显示 ${eventsPerPage} 个事件，共需 ${totalEventPages} 页`);
+            
+            // 更新总页数显示
+            const totalEventPagesElement = document.getElementById('totalEventPages');
+            if (totalEventPagesElement) {
+                totalEventPagesElement.textContent = totalEventPages;
+                console.log(`已更新总页数显示：${totalEventPages}`);
             }
+            
+            // 初始化当前页为第1页
+            let currentEventPage = 1;
+            
+            // 获取分页按钮
+            const prevEventButton = document.getElementById('prevEvent');
+            const nextEventButton = document.getElementById('nextEvent');
+            
+            // 更新按钮状态的函数
+            function updateEventButtonState() {
+                if (prevEventButton) prevEventButton.disabled = currentEventPage <= 1;
+                if (nextEventButton) nextEventButton.disabled = currentEventPage >= totalEventPages;
+                console.log(`事件按钮状态已更新: 上一页=${prevEventButton?.disabled ? '禁用' : '可用'}, 下一页=${nextEventButton?.disabled ? '禁用' : '可用'}`);
+            }
+            
+            // 定义显示指定页码的函数
+            function showEventPage(pageNumber) {
+                console.log(`尝试显示事件第 ${pageNumber} 页...`);
+                
+                if (pageNumber < 1 || pageNumber > totalEventPages) {
+                    console.log(`页码 ${pageNumber} 无效，范围应为 1-${totalEventPages}`);
+                    return;
+                }
+                
+                // 首先隐藏所有事件
+                eventItems.forEach((item, index) => {
+                    item.style.display = 'none';
+                    console.log(`隐藏事件 #${index+1}: ${item.querySelector('.card-title').textContent}`);
+                });
+                
+                // 计算当前页应该显示的事件的起始和结束索引
+                const startIndex = (pageNumber - 1) * eventsPerPage;
+                const endIndex = Math.min(startIndex + eventsPerPage, totalEvents);
+                
+                console.log(`当前页显示范围: 从索引 ${startIndex} 到 ${endIndex-1}`);
+                
+                // 显示当前页的事件
+                for (let i = startIndex; i < endIndex; i++) {
+                    if (eventItems[i]) {
+                        eventItems[i].style.display = 'block';
+                        console.log(`显示事件 #${i+1}: ${eventItems[i].querySelector('.card-title').textContent}`);
+                    }
+                }
+                
+                // 更新当前页码显示
+                const currentEventPageElement = document.getElementById('currentEventPage');
+                if (currentEventPageElement) {
+                    currentEventPageElement.textContent = pageNumber;
+                    console.log(`已更新当前事件页码显示：${pageNumber}`);
+                }
+                
+                // 更新当前页变量
+                currentEventPage = pageNumber;
+                
+                // 更新按钮状态
+                updateEventButtonState();
+            }
+            
+            // 绑定按钮点击事件
+            prevEventButton?.addEventListener('click', function() {
+                console.log('点击了"上一页"按钮');
+                if (currentEventPage > 1) {
+                    showEventPage(currentEventPage - 1);
+                }
+            });
+            
+            nextEventButton?.addEventListener('click', function() {
+                console.log('点击了"下一页"按钮');
+                if (currentEventPage < totalEventPages) {
+                    showEventPage(currentEventPage + 1);
+                }
+            });
+            
+            // 初始化第一页
+            showEventPage(1);
+            console.log('事件页面初始化完成，显示第1页');
 
             // Club分页功能实现
             const clubItems = document.querySelectorAll('.club-item');
