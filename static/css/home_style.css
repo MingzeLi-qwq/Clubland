@@ -1,0 +1,31 @@
+/* 从 home.html 移动过来的样式 */
+.link-secondary {
+    text-decoration: none !important;
+}
+.link-secondary:hover {
+    text-decoration: underline !important;
+}
+/* 新增折叠按钮样式 */
+.toggle-btn {
+    background: none;
+    border: none;
+    color: #0070c9;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 10px;
+}
+button[data-bs-toggle="collapse"][aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
+}
+button[data-bs-toggle="collapse"][aria-expanded="false"] .chevron {
+    transform: rotate(0deg);
+}
+.chevron {
+    transition: transform 0.3s ease;
+}

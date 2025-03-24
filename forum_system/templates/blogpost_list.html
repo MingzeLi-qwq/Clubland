@@ -8,14 +8,14 @@
   <!-- 写新文章按钮和搜索表单 - 移动端优化 -->
   <div class="row g-2 mb-2">
     <div class="col-12 col-md-6 mb-2 mb-md-0">
-      <a href="{% url 'forum_system:blog_create' %}" class="btn btn-primary">写新文章</a>
+      <a href="{% url 'forum_system:blog_create' %}" class="btn btn-primary">Write new blogpost</a>
     </div>
     <div class="col-12 col-md-6">
       <div class="d-flex justify-content-md-end align-items-center">
         <form method="get" class="d-flex">
           <div class="input-group">
             <input type="text" name="q" id="searchInput" class="form-control" value="{{ request.GET.q }}">
-            <button type="submit" class="btn btn-primary">搜索</button>
+            <button type="submit" class="btn btn-primary">Search</button>
           </div>
           {% for key, value in request.GET.items %}
             {% if key not in "q" %}
@@ -32,15 +32,15 @@
     <form method="get">
       <div class="row g-2">
         <div class="col-12 col-md-6 mb-2 mb-md-0">
-          <label for="orderSelect" class="me-2">排序：</label>
+          <label for="orderSelect" class="me-2">Order by: </label>
           <select name="order" id="orderSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
-            <option value="asc" {% if request.GET.order == "asc" %}selected{% endif %}>最早</option>
-            <option value="desc" {% if request.GET.order == "desc" or not request.GET.order %}selected{% endif %}>最新</option>
+            <option value="asc" {% if request.GET.order == "asc" %}selected{% endif %}>Earliest</option>
+            <option value="desc" {% if request.GET.order == "desc" or not request.GET.order %}selected{% endif %}>Latest</option>
           </select>
         </div>
         <div class="col-12 col-md-6 mb-2 mb-md-0">
           <div class="d-flex justify-content-md-end align-items-center">
-            <label for="perPageSelect" class="me-2">每页显示：</label>
+            <label for="perPageSelect" class="me-2">Items per page: </label>
             <select name="per_page" id="perPageSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
               <option value="5" {% if request.GET.per_page == "5" %}selected{% endif %}>5</option>
               <option value="10" {% if request.GET.per_page == "10" or not request.GET.per_page %}selected{% endif %}>10</option>
@@ -53,9 +53,9 @@
       <!-- 社团过滤 -->
       <div class="row mt-2">
         <div class="col-12 col-md-6">
-          <label for="clubSelect" class="me-2">社团：</label>
+          <label for="clubSelect" class="me-2">Club: </label>
           <select name="club" id="clubSelect" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
-            <option value="">全部社团</option>
+            <option value="">All Clubs</option>
             {% for club in clubs %}
               <option value="{{ club.pk }}" {% if request.GET.club == club.pk|stringformat:"s" %}selected{% endif %}>{{ club.name }}</option>
             {% endfor %}
@@ -75,33 +75,43 @@
   <div class="list-group list-group-flush">
     {% if posts %}
       {% for post in posts %}
-        <a href="{% url 'forum_system:blog_detail' post.pk %}" class="list-group-item list-group-item-action">
-          <div class="d-flex w-100 justify-content-between flex-column flex-sm-row">
-            <h5 class="mb-1 text-break">{{ post.title }}</h5>
-            <small class="ms-0 ms-sm-2">{{ post.created_at|date:"Y-m-d H:i" }}</small>
+        <a href="{% url 'forum_system:blog_detail' post.pk %}" class="list-group-item list-group-item-action p-3">
+          <div class="d-flex">
+            <div class="flex-grow-1 me-3">
+              <div class="d-flex w-100 justify-content-between flex-column flex-sm-row">
+                <h5 class="mb-1 text-break">{{ post.title }}</h5>
+                <small class="ms-0 ms-sm-2">{{ post.created_at|date:"Y-m-d H:i" }}</small>
+              </div>
+              <p class="mb-1 text-break"
+                 style="display: -webkit-box; -webkit-line-clamp:2; -webkit-box-orient: vertical;
+                        overflow: hidden; word-wrap: break-word; max-width: 100%;">
+                {{ post.content|striptags }}
+              </p>
+              <p class="mb-0">
+                {% if post.author %}
+                  {{ post.author.first_name }} {{ post.author.last_name }}
+                {% else %}
+                  Unknown author
+                {% endif %}
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                {% if post.club %}
+                  {{ post.club.name }}
+                {% else %}
+                  Club unspecified
+                {% endif %}
+              </p>
+            </div>
+            <div class="d-none d-sm-block flex-shrink-0" style="aspect-ratio: 4/3; width: 150px;">
+              {% if post.first_image_url %}
+                <img src="{{ post.first_image_url }}" alt="{{ post.title }}" class="img-fluid rounded"
+                     style="width: 100%; height: 100%; object-fit: cover;">
+              {% endif %}
+            </div>
           </div>
-          <!-- 预览正文，限制2行显示，添加断词确保不溢出 -->
-          <p class="mb-1 text-break" style="display: -webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word; max-width: 100%;">
-            {{ post.content|striptags }}
-          </p>
-          <!-- 显示作者和所属社团 -->
-          <p class="mb-0">
-            {% if post.author %}
-              {{ post.author.first_name }} {{ post.author.last_name }}
-            {% else %}
-              未知作者
-            {% endif %}
-            &nbsp;&nbsp;|&nbsp;&nbsp;
-            {% if post.club %}
-              {{ post.club.name }}
-            {% else %}
-              未指定社团
-            {% endif %}
-          </p>
         </a>
       {% endfor %}
     {% else %}
-      <div class="list-group-item">暂无文章</div>
+      <div class="list-group-item">No blogposts</div>
     {% endif %}
   </div>
 
@@ -147,3 +157,30 @@
   {% endif %}
 </div>
 {% endblock %}
+{% for post in posts %}
+<div class="card mb-3">
+  <div class="row g-0">
+    <!-- 图片区域 -->
+    {% if post.first_image_url %}
+    <div class="col-md-4">
+      <img src="{{ post.first_image_url }}" class="img-fluid rounded-start" alt="文章首图" style="height:200px;object-fit: cover;">
+    </div>
+    {% endif %}
+    
+    <!-- 内容区域 -->
+    <div class="{% if post.first_image_url %}col-md-8{% else %}col-12{% endif %}">
+      <div class="card-body">
+        <h5 class="card-title">{{ post.title }}</h5>
+        <p class="card-text">
+          <small class="text-muted">
+            作者：{{ post.author.username }}<br>
+            社团：{{ post.club.name }}<br>
+            {{ post.created_at|date:"Y-m-d H:i" }}
+          </small>
+        </p>
+        <a href="{{ post.get_absolute_url }}" class="btn btn-primary">阅读全文</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
