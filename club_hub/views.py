@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Widget
-from .serializers import WidgetSerializer
+from .serializers import WidgetSerializer, EventSerializer
 from club_system.helpers.mixins import ClubMemberRequiredMixin
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -13,7 +13,8 @@ from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.core.files.storage import default_storage
 from club_system.models import Club
-
+from event_system.models import Event
+from .serializers import EventSerializer
 
 def get_csrf_token(request):
     return JsonResponse({"csrfToken": get_token(request)})
@@ -35,7 +36,6 @@ class WidgetViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["POST"])
     def update_layout(self, request, club_id=None):
-        """✅ 更新组件布局"""
         layout = request.data.get("layout", [])
 
         if not layout:
@@ -87,6 +87,22 @@ class ClubInfoView(APIView):
             "name": club.name,
             "background_image": club.background_image.url if club.background_image else None
         })
+
+class EventViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
+    def get_queryset(self):
+        club_id = self.request.query_params.get('club_id', None)
+        print(f"Received club_id: {club_id}")
+        if club_id is not None:
+            return Event.objects.filter(club__id=club_id)
+        return Event.objects.all()
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 @login_required
 def club_dashboard(request, club_id):

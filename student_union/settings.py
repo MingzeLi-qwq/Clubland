@@ -198,14 +198,11 @@ SUMMERNOTE_CONFIG = {
         # ],
     },
 
-    # 附件相关配置，若不需要附件上传可保持默认，不作修改
     'attachment_require_authentication': True,
     'disable_attachment': False,
     'attachment_absolute_uri': False,
 
-    # 延迟加载（若想在页面底部初始化 summernote 可启用）
     'lazy': True,
-    # 使用从 CMS_mixins 导入的上传路径生成函数
     'attachment_upload_to': CMS_utils.RTEUploadUtils.upload_img_func,
 }
 

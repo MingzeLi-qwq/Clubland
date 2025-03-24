@@ -5,6 +5,8 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
+// 修正导入路径，使用相对路径
+import EventSelector from '../components/EventSelector';
 
 
 const Dashboard = () => {
@@ -21,6 +23,7 @@ const Dashboard = () => {
     const widgetConfig = {
         clock: { w: 2, h: 3, resizable: false },
         calendar: { w: 3, h: 3, resizable: false },
+        event_selector: { w: 4, h: 4, resizable: true },
         default: { w: 2, h: 2, resizable: true }
     };
     useEffect(() => {
@@ -122,7 +125,7 @@ const Dashboard = () => {
     };
     
     const addWidget = async () => {
-        const widgetType = prompt('Choose your widget type:\n1. text\n2. chart\n3. notice\n4. image\n5. countdown\n6. clock');
+        const widgetType = prompt('Choose your widget type:\n1. text\n2. chart\n3. notice\n4. image\n5. countdown\n6. clock\n7. event_selector');
         if (!widgetType) return;
         
         const typeMap: {[key: string]: string} = {
@@ -131,7 +134,8 @@ const Dashboard = () => {
         '3': 'notice',
         '4': 'image',
         '5': 'countdown',
-        '6': 'clock'
+        '6': 'clock',
+        '7': 'event_selector'
         };
         
         const csrfToken = await getCsrfToken();
@@ -149,13 +153,15 @@ const Dashboard = () => {
         }, 
         { withCredentials: true, headers: { "X-CSRFToken": csrfToken } }
         ).then(res => {
+            const widgetConfigItem = widgetConfig[res.data.widget_type as keyof typeof widgetConfig] || widgetConfig.default;
+
             setWidgets([...widgets, res.data]);
             setLayout([...layout, { 
                 i: String(res.data.id), 
                 x: 0, 
                 y: newY, 
-                w: widgetConfig[res.data.widget_type as keyof typeof widgetConfig]?.w || res.data.width,
-                h: widgetConfig[res.data.widget_type as keyof typeof widgetConfig]?.h || res.data.height,
+                w: widgetConfigItem.w,
+                h: widgetConfigItem.h,
             }]);
         });
     };
@@ -274,16 +280,16 @@ const Dashboard = () => {
     };
 
     return (
-        <div 
-            style={{
-                padding: "40px",
-                minHeight: "100vh",
-                backgroundImage: dashboardBg ? `url(${dashboardBg})` : "none",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat"
-            }}
-        >
+            <div 
+                style={{
+                    padding: "40px",
+                    minHeight: "100vh",
+                    backgroundImage: dashboardBg ? `url(${dashboardBg})` : "none",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat"
+                }}
+            >
             <h2 
                 style={{
                     textAlign: "center",
@@ -299,7 +305,6 @@ const Dashboard = () => {
             >
                 {clubName ? `Welcome to ${clubName}` : "Loading..."}
             </h2>
-
             <div style={{ display: "flex", justifyContent: "center", marginBottom: "10px" }}>
                 <button className="button" onClick={addWidget}>
                     ➕ Add Widget
@@ -561,6 +566,7 @@ const Dashboard = () => {
                                                 bottom: '50%',
                                                 width: '4px',
                                                 height: '25%',
+                  
                                                 background: '#fff',
                                                 transform: `rotate(${time.hours * 30 + time.minutes * 0.5}deg)`,
                                                 transformOrigin: 'bottom',
@@ -579,6 +585,9 @@ const Dashboard = () => {
                                             }} />
                                         </div>
                                     </div>
+                                )}
+                                {widget.widget_type === "event_selector" && (
+                                    <EventSelector clubId={club_id} />
                                 )}
                             </div>
                         </div>

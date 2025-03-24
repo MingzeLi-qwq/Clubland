@@ -4,11 +4,12 @@ import GridLayout from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import axios from "axios";
+import EventSelector from '../components/EventSelector';
 // 定义组件类型接口
 interface WidgetType {
     id: number;
     name: string;
-    widget_type: 'text' | 'image' | 'notice' | 'countdown' | 'clock' | 'calendar';
+    widget_type: 'text' | 'image' | 'notice' | 'countdown' | 'clock' | 'calendar' | 'event_selector';
     x: number;
     y: number;
     width?: number;
@@ -34,6 +35,7 @@ const PublicView = () => {
     const widgetConfig = {
         clock: { w: 2, h: 3, resizable: false },
         calendar: { w: 3, h: 3, resizable: false },
+        default: { w: 2, h: 2, resizable: true }
     };
     
 
@@ -220,7 +222,9 @@ const PublicView = () => {
                         }} />
                     </div>
                 </div>;
-
+            case 'event_selector':
+                return <EventSelector clubId={club_id} />;
+                
             default:
                 return <div>未知组件类型</div>;
         }

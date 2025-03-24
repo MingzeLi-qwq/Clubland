@@ -5,14 +5,14 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class Widget(models.Model):
-    """可拖拽组件"""
     WIDGET_TYPES = [
         ('text', '文本'),
         ('chart', '图表'),
         ('notice', '公告'),
         ('image', '图片'),
         ('countdown', '倒计时'),
-        ('clock', '时钟')
+        ('clock', '时钟'),
+        ('event_selector', '活动')
     ]
     
     widget_type = models.CharField(
