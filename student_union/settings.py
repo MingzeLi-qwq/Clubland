@@ -29,7 +29,11 @@ SECRET_KEY = 'django-insecure-pgs68)47-z#uhn8t288el0co1dx#9@r0n%n77ep4t@mv8)u7lg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    '51.21.191.188',
+]
 
 
 # Application definition
@@ -67,8 +71,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    
 
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'student_union.urls'
 
