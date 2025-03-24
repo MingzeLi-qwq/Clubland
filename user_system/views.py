@@ -259,6 +259,38 @@ def about_us(request):
     """关于我们页面"""
     return render(request, 'shared/about_us.html')
 
+# CSRF失败处理视图
+def csrf_failure(request, reason=""):
+    """
+    自定义CSRF错误处理视图，用于改善用户体验
+    - 对于AJAX请求，返回JSON错误
+    - 对于普通请求，显示弹窗并重定向回上一页
+    """
+    error_message = "You may have switched between different accounts too quickly.\nPlease wait a short moment and try again. (CSRF validation)"
+    
+    # 判断是否为AJAX请求
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'status': 'error',
+            'message': error_message
+        }, status=403)
+    
+    # 对于普通请求，返回带有弹窗和返回上一页的脚本的响应
+    response = HttpResponse("""
+    <html>
+    <head><title>Account Security Verification Notice</title></head>
+    <body>
+        <script>
+            alert("{}");
+            history.back();
+        </script>
+    </body>
+    </html>
+    """.format(error_message))
+    
+    response.status_code = 403
+    return response
+
 
 
 
