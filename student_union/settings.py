@@ -210,5 +210,5 @@ SUMMERNOTE_CONFIG = {
 
 LOGIN_URL = '/login/'
 
-# 自定义CSRF失败视图 - 修改为使用views.py中的函数
+# 自定义CSRF失败视图
 CSRF_FAILURE_VIEW = 'user_system.views.csrf_failure'
