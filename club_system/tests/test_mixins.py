@@ -6,10 +6,10 @@ from django.utils import timezone
 
 class ClubSystemMixinsTest(TestCase):
     def setUp(self):
-        # 创建测试客户端
+        # Creating a Test Client
         self.client = Client()
         
-        # 创建普通测试用户
+        # Creating a Normal Test User
         self.user = User.objects.create_user(
             username="@testuser",
             email="test@example.com",
@@ -19,7 +19,7 @@ class ClubSystemMixinsTest(TestCase):
             account_type="User"
         )
         
-        # 创建管理员用户
+        # Creating an Administrator User
         self.admin_user = User.objects.create_user(
             username="@adminuser",
             email="admin@example.com",
@@ -29,7 +29,7 @@ class ClubSystemMixinsTest(TestCase):
             account_type="Admin"
         )
         
-        # 创建另一个普通用户作为club manager
+        # Create another normal user as club manager
         self.manager_user = User.objects.create_user(
             username="@manageruser",
             email="manager@example.com",
@@ -39,40 +39,23 @@ class ClubSystemMixinsTest(TestCase):
             account_type="User"
         )
         
-        # 创建测试俱乐部
+        # Create a test club
         self.club = Club.objects.create(
             name="Test Club",
             description="Test Description"
         )
         
-        # 创建普通用户作为manager的会员关系
+        # Create a membership relationship with a regular user as a manager
         self.manager_membership = Membership.objects.create(
             user=self.manager_user,
             club=self.club,
             is_manager=True
         )
         
-        # 创建一个不存在的club_id
-        self.non_existent_club_id = 9999  # 假设这个ID不存在
+        # Create a club id that does not exist
+        self.non_existent_club_id = 9999
     
-    # def test_club_member_required_mixin(self):
-    #     """测试 ClubMemberRequiredMixin - 权限验证"""
-    #     # 测试未授权访问
-    #     self.client.login(username='@testuser', password='testpass123')
-    #     response = self.client.get(reverse('club_web', args=[self.club.pk]))
-    #     self.assertEqual(response.status_code, 403)  # 明确状态码断言
-    #     self.assertIn("not a member", response.content.decode())
-    
-    #     # 测试授权访问
-    #     Membership.objects.create(user=self.user, club=self.club)
-    #     response = self.client.get(reverse('club_web', args=[self.club.pk])) 
-    #     self.assertEqual(response.status_code, 200)  # 通过不会重定向的视图验证
-    
-    #     # 测试未登录访问
-    #     self.client.logout()
-    #     response = self.client.get(reverse('club_web', args=[self.club.pk]))
-    #     self.assertEqual(response.status_code, 302)  # 验证登录重定向
-    
+
     def test_club_manager_required_mixin_non_member(self):
         """测试 ClubManagerRequiredMixin - 非社团成员访问 club manager 会被拒绝"""
         # 尝试访问需要管理员权限的页面（例如：club_manager_general）
