@@ -11,6 +11,9 @@ class Club(models.Model):
         through='Membership',
         related_name='clubs_joined'
     )
+    background_image = models.ImageField(upload_to='backgrounds/', null=True, blank=True)
+
+    
 
     """This section is used to implement the logic for incrementing association IDs"""
     def save(self, *args, **kwargs):
