@@ -3,7 +3,7 @@
 
 {% block body %}
 <style>
-    /* 为所有控件添加圆角样式 */
+    /* Add rounded corners to all controls */
     .card, .form-control, .list-group {
       border-radius: 12px;
     }
@@ -32,7 +32,7 @@
                     <a href="{% url 'dashboard_personal_information' %}" class="list-group-item list-group-item-action">
                         Personal Information
                     </a>
-                    <!-- 只有当user不是admin时才会有以下内容 -->
+                    <!-- The following content will only appear if the user is not admin -->
                     {% if user.account_type == 'User' %}
                         <a href="{% url 'dashboard_my_club' %}" class="list-group-item list-group-item-action">
                             My Club
@@ -45,7 +45,7 @@
             </div>
     
             <div class="col-md-8">
-                <!-- 错误信息框样式  -->
+                <!-- Error message box style  -->
                 <style>
                     .alert-error {
                         background-color: #f8d7da;
@@ -63,7 +63,7 @@
                 {% endif %}
 
                 {% block dashboard_content %}
-                <!-- 动态内容区域 -->
+                <!-- Dynamic content area -->
                 {% endblock %}       
             </div>
         </div>

@@ -4,35 +4,35 @@
 
 <style>
     .membership-date {
-        color: #007bff;  /* 蓝色，可以根据需要调整 */
-        font-weight: 500;  /* 稍微加粗 */
+        color: #007bff; 
+        font-weight: 500; 
     }
 
     .membership-date i {
-        margin-right: 8px;  /* 图标右侧的间距 */
+        margin-right: 8px;  
     }
     .membership-card {
         transition: transform 0.2s, box-shadow 0.2s;
         overflow: hidden;
-        max-width: 800px;  /* 调整卡片的最大宽度 */
-        margin: 2rem auto;  /* 居中显示卡片 */
+        max-width: 800px;  
+        margin: 2rem auto;  
     }
     .membership-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     }
     .role-bar {
-        height: 12px;  /* 增加顶部条的高度 */
+        height: 12px; 
         width: 100%;
     }
     .manager-bar {
-        background: linear-gradient(45deg, #ffd700, #ffa500);  /* 金色到橙色的渐变 */
+        background: linear-gradient(45deg, #ffd700, #ffa500);  
     }
     .member-bar {
-        background: linear-gradient(45deg, #4e54c8, #8f94fb);  /* 蓝紫色的渐变 */
+        background: linear-gradient(45deg, #4e54c8, #8f94fb);  
     }
     .membership-date {
-        color: #6c757d;  /* 使用Bootstrap的次要文本颜色 */
+        color: #6c757d;  
         font-weight: 500;
     }
     .membership-date i {
@@ -48,7 +48,7 @@
 
 
 
-<!-- 添加分割线 -->
+<!-- Add a dividing line -->
 <hr class="my-3 mb-4">
 <div class="membership-card card">
     <div class="role-bar 
@@ -58,7 +58,7 @@
             member-bar
         {% endif %}">
     </div>
-    <div class="card-body p-4">  <!-- 增加内边距 -->
+    <div class="card-body p-4">  <!-- Increase padding -->
         <h3 class="card-title mb-3">
             <i class="bi bi-binoculars me-2"></i>
             Membership - {{ membership.club.name }}
