@@ -1,17 +1,32 @@
 \chapter{Introduction}
 \label{chap:introduction}
 
-\defaultInstructions
+\subsubsection{Business objectives}\label{business-objectives}
 
-\begin{expectations}
-A good introduction gives the reader a good idea of what the project is about in the shortest amount of text.  A reader should be able to get through this chapter very quickly and decide whether this project is relevant to their interests.
+This project aims to provide student societies with a secure,
+privacy-focused alternative to mainstream social media platforms for
+managing their online presence. By creating a dedicated web application,
+societies can centralize membership tracking, news sharing, and event
+coordination while avoiding the data exploitation and polarization
+prevalent on third-party platforms. Universities and student unions gain
+oversight capabilities to approve, monitor, or revoke society pages,
+ensuring alignment with institutional guidelines. The platform
+prioritizes branding flexibility, allowing societies to tailor their
+pages to reflect their unique identities and organizational needs,
+fostering inclusivity for diverse groups ranging from academic clubs to
+competitive teams.
+
+\subsubsection{System Statement}\label{system-statement}
+
+Built as a scalable Django web application, the platform operates 
+across desktop and mobile browsers, utilizing Python for backend 
+logic with Django's ORM managing SQLite databases. 
+The frontend combines HTML/CSS templates with React-based interactive components, 
+enhanced by Django-summernote's rich text editing for content management systems. 
+Modular architecture enables:
 \begin{itemize}
-\item A summary of the overriding business objective of the application.  Explain what the client, the end-users of your application, or the organisation deploying it would gain from the application.  Explain this value from the perspective of the client's or users' world, not from your perspective as a developer.   Do not list features, requirements, or specifications here.  The software is a means to an end, not the objective in itself.
-\item A statement of the type of system you built, including the platforms on which it can be used, and the technology stack used to build it.
+\item Dynamic widget customization through React Grid Layout
+\item RESTful API integrations via Axios
+\item Progressive enhancement with Vite-built frontend modules
 \end{itemize}
-This chapter does not require any sections of subsections.  In many projects, two short paragraphs will be enough.  However, you can use more if the objective cannot be explained in a single paragraph.  Note, though, that you will be developing the objectives further in the next chapter.
-\end{expectations}
-
-\begin{length}
-A single page should be sufficient for this chapter.  More than two pages is too long.
-\end{length}
+Authentication and permissions leverage Django's built-in tools, while container-ready deployment supports both on-premises and cloud infrastructure.
