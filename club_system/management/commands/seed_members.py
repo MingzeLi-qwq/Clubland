@@ -17,7 +17,7 @@ class Command(BaseCommand):
             # 40 randomly selected users
             selected_users = random.sample(self.all_regular_users, 40)
 
-            # Set the first 2 users as administrators
+            # Set the first 2 users as managers
             for i, user in enumerate(selected_users):
                 # Check if the same user_id and club_id combination already exists
                 if not Membership.objects.filter(user=user, club=club).exists():
@@ -30,7 +30,7 @@ class Command(BaseCommand):
             self.stdout.write("Club member assignments are complete!")
 
 
-        # Set up the @john_doe user as an administrator for Book Club
+        # Set up the @john_doe user as an manager for Book Club
         john_doe = User.objects.get(username='@john_doe')
         book_club = Club.objects.get(name='Book Club')
         membership, created = Membership.objects.get_or_create(user=john_doe, club=book_club)

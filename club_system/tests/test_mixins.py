@@ -88,7 +88,7 @@ class ClubSystemMixinsTest(TestCase):
         self.assertEqual(response.status_code, 200)
     
     def test_non_club_manager_required_mixin(self):
-        """测试 NonClubManagerRequiredMixin - 社团管理员访问取消会员方法会被拒绝"""
+        """Test NonClubManagerRequiredMixin - club manager access to cancel membership method is denied"""
         Membership.objects.create(user=self.user, club=self.club)
         
         # Log in with a regular member account - you can access
@@ -97,12 +97,12 @@ class ClubSystemMixinsTest(TestCase):
         
         self.assertRedirects(response, reverse('dashboard_my_club'))
         
-        # Login with administrator account - Access denied
+        # Login with manager account - Access denied
         self.client.login(username='@manageruser', password='managerpass123')
         response = self.client.get(reverse('cancel_membership', args=[self.club.pk]))
         
         self.assertNotEqual(response.status_code, 302)  
-        self.assertIn("You are the club administrator", response.content.decode())
+        self.assertIn("You are the club manager", response.content.decode())
     
     def test_non_club_member_required_mixin(self):
         """Test NonClubMemberRequiredMixin - club member access to registered members is denied"""

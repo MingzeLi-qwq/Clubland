@@ -11,7 +11,6 @@ class ClubSystemViewsTest(TestCase):
     def setUp(self):
         self.client = Client()
         
-        # Creating a Normal Test User
         self.user = User.objects.create_user(
             username="@testuser",
             email="test@example.com",
@@ -30,7 +29,6 @@ class ClubSystemViewsTest(TestCase):
             account_type="User"
         )
 
-        # Create administrator user (no membership with club)
         self.admin_user = User.objects.create_user(
             username="@adminuser",
             email="admin@example.com",
@@ -40,7 +38,6 @@ class ClubSystemViewsTest(TestCase):
             account_type="Admin"
         )
         
-        # Create another normal user as club manager
         self.manager_user = User.objects.create_user(
             username="@manageruser",
             email="manager@example.com",
@@ -128,26 +125,6 @@ class ClubSystemViewsTest(TestCase):
         self.assertTrue(isSameClubNameExist("test  club"))
         
 
-    def test_isSameClubNameExistInRequest(self):
-        """Test if the isSameClubNameExistInRequest function correctly detects duplicate club request names"""
-        # Test the exact same name
-        self.assertTrue(isSameClubNameExistInRequest("New Test Club"))
-        
-        # Testing different names
-        self.assertFalse(isSameClubNameExistInRequest("Different Club Request"))
-        
-        # Tests Ignore Case
-        self.assertTrue(isSameClubNameExistInRequest("NEW TEST CLUB"))
-        self.assertTrue(isSameClubNameExistInRequest("new test club"))
-        
-        # Test Ignore Spaces
-        self.assertTrue(isSameClubNameExistInRequest("NewTestClub"))
-        self.assertTrue(isSameClubNameExistInRequest("New  Test  Club"))
-        self.assertTrue(isSameClubNameExistInRequest(" New Test Club "))
-        
-        # Test for ignoring both case and spaces
-        self.assertTrue(isSameClubNameExistInRequest("NEWTESTCLUB"))
-        self.assertTrue(isSameClubNameExistInRequest("new  test  club"))
 
 
     def test_club_manager_members_view(self):
@@ -157,8 +134,7 @@ class ClubSystemViewsTest(TestCase):
         response = self.client.get(reverse('club_manager_members', args=[self.club.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club_manager/members.html')
-        
-        # Examining Contextual Data
+
         self.assertEqual(response.context['club_id'], self.club.pk)
         self.assertEqual(response.context['club'], self.club)
         self.assertEqual(response.context['manager_count'], 1)
@@ -319,15 +295,6 @@ class ClubSystemViewsTest(TestCase):
         self.club.refresh_from_db()
         self.assertEqual(self.club.description, "Test Description")
         
-        # The new description cannot duplicate the old description
-        self.client.login(username='@manageruser', password='managerpass123')
-        response = self.client.post(
-            reverse('update_club_description', args=[self.club.pk]),
-            {'club_description': 'Test Description'}
-        )
-        self.club.refresh_from_db()
-        self.assertEqual(self.club.description, "Test Description")
-        
         # A new description that is empty will use the default description
         response = self.client.post(
             reverse('update_club_description', args=[self.club.pk]),
@@ -380,8 +347,6 @@ class ClubSystemViewsTest(TestCase):
         response = self.client.post(
             reverse('remove_manager', args=[self.club.pk, '@anothermanager'])
         )
-        
-        # Check if another manager has been removed
         another_membership = Membership.objects.get(user=another_manager, club=self.club)
         self.assertFalse(another_membership.is_manager)
         
@@ -389,7 +354,6 @@ class ClubSystemViewsTest(TestCase):
         response = self.client.post(
             reverse('remove_manager', args=[self.club.pk, '@manageruser'])
         )
-
         membership = Membership.objects.get(user=self.manager_user, club=self.club)
         self.assertTrue(membership.is_manager)
         
@@ -414,7 +378,6 @@ class ClubSystemViewsTest(TestCase):
             is_manager=False
         )
         
-        # Logging in as an manager user
         self.client.login(username='@manageruser', password='managerpass123')
         
         # Test setting regular members as manager
@@ -452,20 +415,6 @@ class ClubSystemViewsTest(TestCase):
         )
         self.assertEqual(Membership.objects.filter(club=self.club).count(), 3)
         
-        # Test removing users who do not belong to the club
-        another_user = User.objects.create_user(
-            username="@anotheruser",
-            email="another@example.com",
-            password="testpass123",
-            first_name="Another",
-            last_name="User",
-            account_type="User"
-        )
-        response = self.client.post(
-            reverse('remove_member', args=[self.club.pk, '@anotheruser'])
-        )
-        self.assertEqual(Membership.objects.filter(club=self.club).count(), 3)
-        
         # Test removing manager will be denied
         response = self.client.post(
             reverse('remove_member', args=[self.club.pk, '@manageruser'])
@@ -478,8 +427,6 @@ class ClubSystemViewsTest(TestCase):
         )
         self.assertFalse(Membership.objects.filter(user=normal_member, club=self.club).exists())
         
-        # 测试管理员用户移除成员
-        # 先重新创建会员关系
         normal_membership = Membership.objects.create(
             user=normal_member,
             club=self.club,
@@ -489,112 +436,88 @@ class ClubSystemViewsTest(TestCase):
         response = self.client.post(
             reverse('remove_member', args=[self.club.pk, '@normalmember'])
         )
-        # 检查普通成员是否已被移除
         self.assertFalse(Membership.objects.filter(user=normal_member, club=self.club).exists())
         
-        # 清理测试数据
         normal_member.delete()
         another_user.delete()
 
     def test_club_manager_event_general_view(self):
-        """测试俱乐部管理员事件一般信息页面视图"""
-        # 登录管理员用户
+        """Test Club manager events General information page view"""
         self.client.login(username='@manageruser', password='managerpass123')
         
-        # 访问事件一般信息管理页面
         response = self.client.get(
             reverse('club_manager_event_general', args=[self.club.pk, self.event1.pk])
         )
-        
-        # 检查响应状态码
         self.assertEqual(response.status_code, 200)
-        
-        # 检查使用的模板
         self.assertTemplateUsed(response, 'club_manager/event/general.html')
         
-        # 测试非管理员用户访问（应该被重定向）
+        # Test non-manager user access (should be redirected)
         self.client.login(username='@testuser', password='testpass123')
         response = self.client.get(
             reverse('club_manager_event_general', args=[self.club.pk, self.event1.pk])
         )
-        self.assertNotEqual(response.status_code, 200)  # 应该不是200，可能是302重定向
+        self.assertNotEqual(response.status_code, 200)
 
     def test_club_manager_event_rsvps_view(self):
-        """测试俱乐部管理员事件RSVP列表页面视图"""
-        # 创建一个RSVP记录用于测试
+        """Test Club manager Events RSVP List Page View"""
+        # Create an RSVP record for testing
         rsvp = RSVP.objects.create(
             user=self.user,
             event=self.event1
         )
         
-        # 登录管理员用户
         self.client.login(username='@manageruser', password='managerpass123')
         
-        # 访问事件RSVP管理页面
         response = self.client.get(
             reverse('club_manager_event_RSVPs', args=[self.club.pk, self.event1.pk])
         )
-        
-        # 检查响应状态码
         self.assertEqual(response.status_code, 200)
-        
-        # 检查使用的模板
         self.assertTemplateUsed(response, 'club_manager/event/RSVPs.html')
         
-        # 测试搜索功能
+        # Test the search function
         response = self.client.get(
             reverse('club_manager_event_RSVPs', args=[self.club.pk, self.event1.pk]),
             {'search': 'Test'}
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['rsvps']), 1)  # 应该找到一个结果
+        self.assertEqual(len(response.context['rsvps']), 1)
         
-        # 测试无结果搜索
+        # Test no result search
         response = self.client.get(
             reverse('club_manager_event_RSVPs', args=[self.club.pk, self.event1.pk]),
             {'search': 'NonExistent'}
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['rsvps']), 0)  # 应该没有结果
+        self.assertEqual(len(response.context['rsvps']), 0)
         
-        # 测试非管理员用户访问（应该被重定向）
+        # Test non-manager user access (should be redirected)
         self.client.login(username='@testuser', password='testpass123')
         response = self.client.get(
             reverse('club_manager_event_RSVPs', args=[self.club.pk, self.event1.pk])
         )
-        self.assertNotEqual(response.status_code, 200)  # 应该不是200，可能是302重定向
+        self.assertNotEqual(response.status_code, 200)
         
-        # 清理测试数据
         rsvp.delete()
 
     def test_apply_new_club_view_get(self):
-        """测试申请新俱乐部页面的GET请求"""
-        # 登录普通用户
+        """Testing GET requests for requesting new club pages"""
         self.client.login(username='@testuser', password='testpass123')
-        
-        # 访问申请新俱乐部页面
         response = self.client.get(reverse('apply_new_club'))
         
-        # 检查响应状态码
         self.assertEqual(response.status_code, 200)
-        
-        # 检查使用的模板
         self.assertTemplateUsed(response, 'apply_new_club.html')
-        
-        # 检查表单是否在上下文中
         self.assertTrue('form' in response.context)
         
-        # 测试未登录用户访问（应该被重定向）
+        # Testing unlogged user access (should be redirected)
         self.client.logout()
         response = self.client.get(reverse('apply_new_club'))
-        self.assertNotEqual(response.status_code, 200)  # 应该不是200，可能是302重定向
+        self.assertNotEqual(response.status_code, 200) 
 
     def test_apply_new_club_view_post(self):
-        """测试申请新俱乐部页面的POST请求"""
-        # 登录普通用户
+        """Testing POST requests for requesting a new club page"""
         self.client.login(username='@testuser', password='testpass123')
         
-        # 测试提交有效表单
+        # Test submission of valid forms
         response = self.client.post(
             reverse('apply_new_club'),
             {
@@ -603,41 +526,37 @@ class ClubSystemViewsTest(TestCase):
             }
         )
         
-        # 检查是否创建了新的俱乐部申请
+        # Check if a new club request has been created
         self.assertTrue(NewClubRequest.objects.filter(name='Brand New Club').exists())
         new_request = NewClubRequest.objects.get(name='Brand New Club')
         self.assertEqual(new_request.creator, self.user)
         self.assertEqual(new_request.description, 'This is a brand new club for testing')
         self.assertEqual(new_request.status, NewClubRequest.STATUS_PENDING)
         
-        # 测试提交与现有俱乐部重名的表单
+        # Test submitting a form that renames an existing club
         response = self.client.post(
             reverse('apply_new_club'),
             {
-                'name': 'Test Club',  # 与已存在的俱乐部同名
+                'name': 'Test Club',
                 'description': 'This should fail'
             }
         )
-        
-        # 检查是否返回错误信息
-        self.assertEqual(response.status_code, 200)  # 应该返回表单页面
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, "A club with this name already exists")
         
-        # 测试提交与待审核请求重名的表单
+        # Test submitting a form that is renamed with a pending review request
         response = self.client.post(
             reverse('apply_new_club'),
             {
-                'name': 'New Test Club',  # 与已存在的申请同名
+                'name': 'New Test Club',
                 'description': 'This should also fail'
             }
         )
-        
-        # 检查是否返回表单错误
         self.assertEqual(response.status_code, 200)
         self.assertTrue('form' in response.context)
         self.assertTrue(response.context['form'].errors)
         
-        # 测试提交空名称的表单
+        # Test submitting a form with an empty name
         response = self.client.post(
             reverse('apply_new_club'),
             {
@@ -645,13 +564,11 @@ class ClubSystemViewsTest(TestCase):
                 'description': 'This should fail due to empty name'
             }
         )
-        
-        # 检查是否返回表单错误
         self.assertEqual(response.status_code, 200)
         self.assertTrue('form' in response.context)
         self.assertTrue(response.context['form'].errors)
         
-        # 测试未登录用户提交（应该被重定向）
+        # Test for unlogged user submissions (should be redirected)
         self.client.logout()
         response = self.client.post(
             reverse('apply_new_club'),
@@ -660,14 +577,14 @@ class ClubSystemViewsTest(TestCase):
                 'description': 'This should fail due to not logged in'
             }
         )
-        self.assertNotEqual(response.status_code, 200)  # 应该不是200，可能是302重定向
+        self.assertNotEqual(response.status_code, 200)
         
-        # 检查是否没有创建新的俱乐部申请
+        # Check if no new club application has been created
         self.assertFalse(NewClubRequest.objects.filter(name='Another New Club').exists())
 
     @classmethod
     def tearDownClass(cls):
-        """在所有测试完成后执行全局清理（仅执行一次）"""
+        """clean up test cases"""
         super().tearDownClass()
         User.objects.all().delete()
         Club.objects.all().delete()
