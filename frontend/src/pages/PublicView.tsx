@@ -23,6 +23,8 @@ interface WidgetType {
 
 const PublicView = () => {
     const { club_id } = useParams();
+    const { event_id } = useParams();
+    const [event, setEvent] = useState<any>(null);
     const [widgets, setWidgets] = useState<WidgetType[]>([]);
     const [layout, setLayout] = useState<{ i: string; x: number; y: number; w: number; h: number }[]>([]);
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
@@ -51,6 +53,19 @@ const PublicView = () => {
         }, 1000);
         return () => clearInterval(timer);
     }, []);
+
+    useEffect(() => {
+        if (event_id && club_id) {
+          axios
+            .get(`/api/clubs/${club_id}/events/${event_id}/`)
+            .then((response) => {
+              setEvent(response.data);
+            })
+            .catch((error) => {
+              console.error('Error fetching event details', error);
+            });
+        }
+      }, [club_id, event_id]);
 
     useEffect(() => {
         if (!club_id || isNaN(Number(club_id))) return;
@@ -224,7 +239,27 @@ const PublicView = () => {
                     </div>
                 </div>;
             case 'event_selector':
-                return <EventSelector clubId={club_id} />;
+                if (!widget.data?.event_id) {
+                    return <div>请选择活动</div>;
+                }
+                
+                // Remove useState/useEffect from here and use existing data
+                return (
+                    <div style={{ padding: 10 }}>
+                        <h3>Event Detail</h3>
+                        {widget.data ? (
+                            <>
+                                <p><strong>Event Name:</strong> {widget.data.name}</p>
+                                <p><strong>TIme:</strong> {new Date(widget.data.start_time).toLocaleString()} - {new Date(widget.data.end_time).toLocaleString()}</p>
+                                <p><strong>Location:</strong> {widget.data.location}</p>
+                                <p><strong>Descriptioon:</strong> {widget.data.description}</p>
+                            </>
+                        ) : (
+                            <div>加载中...</div>
+                        )}
+                    </div>
+                );
+          
                 
             default:
                 return <div>未知组件类型</div>;

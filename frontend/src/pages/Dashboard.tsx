@@ -14,7 +14,7 @@ const Dashboard = () => {
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
     const [clubName, setClubName] = useState<string | null>(null);
     const [currentTime, setCurrentTime] = useState(new Date());
-    const [isResizable, setIsResizable] = useState(true);
+    const [selectedEvent, setSelectedEvent] = useState<any>(null);
     const [time, setTime] = useState({
         hours: 0,
         minutes: 0,
@@ -26,6 +26,10 @@ const Dashboard = () => {
         event_selector: { w: 4, h: 4, resizable: true },
         default: { w: 2, h: 2, resizable: true }
     };
+    const handleEventSelect = (event: any) => {
+        setSelectedEvent(event); 
+        console.log(event); 
+      };
     useEffect(() => {
         const updateClock = () => {
             const now = new Date();
@@ -55,7 +59,6 @@ const Dashboard = () => {
                     }
                 );
 
-                // 添加数据格式验证
                 const validData = response.data.filter((w: any) => 
                     w?.id && 
                     Number.isInteger(w.x) && 
@@ -63,7 +66,6 @@ const Dashboard = () => {
                 );
 
                 setWidgets(validData);
-                // 在布局数据设置处保持尺寸固定
                 setLayout(validData.map((w: any) => ({
                     i: String(w.id),
                     x: w.x,
@@ -81,7 +83,7 @@ const Dashboard = () => {
                     setDashboardBg(clubRes.data.background_image);
                 }
                 if (clubRes.data.name) {
-                    setClubName(clubRes.data.name); // 设置club名称
+                    setClubName(clubRes.data.name);
                 }
 
             } catch (error) {
@@ -90,9 +92,8 @@ const Dashboard = () => {
         };
 
         loadData();
-    }, [club_id]); // 确保依赖项正确
+    }, [club_id]);
 
-    // State declarations should be at the top
     const [widgets, setWidgets] = useState<{ 
         id: number, 
         name: string, 
@@ -138,6 +139,30 @@ const Dashboard = () => {
         const csrfToken = await getCsrfToken();
         const newY = widgets.length > 0 ? Math.max(...widgets.map(w => w.y)) + 1 : 0;
         
+        let widgetData = {};
+    if (typeMap[widgetType] === 'event_selector') {
+        const eventId = prompt('请输入要关联的活动ID（在PublicView展示）:');
+        if (!eventId) return;
+        
+        // 获取活动详情
+        try {
+                const eventRes = await axios.get(
+                    `http://127.0.0.1:8000/api/clubs/${club_id}/events/${eventId}/`,
+                    { withCredentials: true }
+                );
+                widgetData = {
+                    event_id: eventId,
+                    name: eventRes.data.name,
+                    start_time: eventRes.data.start_time,
+                    end_time: eventRes.data.end_time,
+                    location: eventRes.data.location,
+                    description: eventRes.data.description
+                };
+            } catch (error) {
+                console.error('获取活动详情失败:', error);
+                return;
+            }
+        }
         axios.post(`http://127.0.0.1:8000/api/clubs/${club_id}/widgets/`, {
         name: `${widgets.length + 1}`,
         widget_type: typeMap[widgetType],
@@ -146,7 +171,7 @@ const Dashboard = () => {
         width: 2, 
         height: 2, 
         club: club_id,
-        data: {}
+        data: widgetData
         }, 
         { withCredentials: true, headers: { "X-CSRFToken": csrfToken } }
         ).then(res => {
@@ -243,17 +268,17 @@ const Dashboard = () => {
                         withCredentials: true
                     }
                 );
-                alert("背景上传并保存成功！");
+                alert("Background uploaded successfully");
             };
     
             img.onerror = () => {
-                console.error("图片加载失败");
-                alert("上传成功但图片加载失败");
+                console.error("Pthoto uploaded successfully but image loading failed");
+                alert("Uploaded successfully but image loading failed");
             };
     
         } catch (error) {
-            console.error('背景上传失败:', error);
-            alert('背景图片上传失败');
+            console.error('Background uploaded failed:', error);
+            alert('Background uploaded failed');
         }
     };
     
@@ -584,7 +609,20 @@ const Dashboard = () => {
                                     </div>
                                 )}
                                 {widget.widget_type === "event_selector" && (
-                                    <EventSelector clubId={club_id} />
+                                    <div>
+                                    <h2>Event Selector</h2>
+                                    <EventSelector clubId={club_id} onEventSelect={handleEventSelect} />
+                                    
+                                    {selectedEvent && (
+                                      <div>
+                                        <h3>Selected Event Details:</h3>
+                                        <p><strong>Name:</strong> {selectedEvent.name}</p>
+                                        <p><strong>Start Time:</strong> {new Date(selectedEvent.start_time).toLocaleString()}</p>
+                                        <p><strong>Location:</strong> {selectedEvent.location}</p>
+                                        <p><strong>Description:</strong> {selectedEvent.description}</p>
+                                      </div>
+                                    )}
+                                  </div>
                                 )}
                             </div>
                         </div>
