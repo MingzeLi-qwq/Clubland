@@ -1,0 +1,162 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/home_style.css' %}">
+<section class="py-4">
+  <div class="container">
+    <!-- 桌面视图标题和按钮 -->
+    <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">New Clubs Coming!</h2>
+      <a href="{% url 'clubs' %}" class="btn btn-outline-primary btn-sm">View All</a>
+    </div>
+    
+    <!-- 移动视图标题和折叠按钮 -->
+    <div class="d-md-none mb-3">
+      <div class="text-center mb-2">
+        <h2 class="mb-0">New Clubs Coming!</h2>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mb-2" style="padding: 0 10px;">
+        <div style="flex: 1;"></div>
+        <button id="toggleNewClubsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#newClubsCollapse" style="flex: 2; max-width: 200px;">
+          <span class="toggle-text">Fold</span>
+          <i class="bi bi-chevron-down chevron"></i>
+        </button>
+        <div style="flex: 1; text-align: right;">
+          <a href="{% url 'clubs' %}" class="btn btn-outline-primary btn-sm" style="white-space: nowrap;">View All</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 折叠内容区域 - 默认展开 -->
+    <div id="newClubsCollapse" class="collapse show d-md-block">
+    {% if new_clubs %}
+    <div class="row g-4" id="clubs-container">
+      {% for club in new_clubs %}
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 border-0 shadow-sm d-flex flex-column" onclick="window.location.href='{% url 'club_detail' club_id=club.club_id %}'" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            {% if club.first_image_url %}
+              <img src="{{ club.first_image_url }}" class="card-img-top" alt="{{ club.name }}">
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">
+                <a class="link-secondary" href="{% url 'club_detail' club_id=club.club_id %}">{{ club.name }}</a>
+              </h5>
+              <p class="card-text flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                {{ club.description }}
+              </p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center p-4 bg-light rounded">
+      <p class="text-muted mb-0">No new clubs</p>
+    </div>
+    {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="py-4">
+  <div class="container">
+    <!-- 桌面视图标题和按钮 -->
+    <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">Recent News</h2>
+      <a href="{% url 'news_system:news_list' %}" class="btn btn-outline-primary btn-sm">View All</a>
+    </div>
+    
+    <!-- 移动视图标题和折叠按钮 -->
+    <div class="d-md-none mb-3">
+      <div class="text-center mb-2">
+        <h2 class="mb-0">Recent News</h2>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mb-2" style="padding: 0 10px;">
+        <div style="flex: 1;"></div>
+        <button id="toggleNewsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#recentNewsCollapse" style="flex: 2; max-width: 200px;">
+          <span class="toggle-text">Fold</span>
+          <i class="bi bi-chevron-down chevron"></i>
+        </button>
+        <div style="flex: 1; text-align: right;">
+          <a href="{% url 'news_system:news_list' %}" class="btn btn-outline-primary btn-sm" style="white-space: nowrap;">View All</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 折叠内容区域 - 默认展开 -->
+    <div id="recentNewsCollapse" class="collapse show d-md-block">
+    <div class="row g-4">
+      {% for news in recent_news %}
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm d-flex flex-column" onclick="window.location.href='{{ news.url }}'" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            {% if news.first_image_url %}
+              <img src="{{ news.first_image_url }}" class="card-img-top" alt="{{ news.title }}" style="aspect-ratio: 4/3; object-fit: cover;">
+            {% endif %}
+            <div class="card-body p-4 d-flex flex-column">
+              <h5 class="card-title">
+                <a class="link-secondary" href="{{ news.url }}">{{ news.title }}</a>
+              </h5>
+              <div class="d-flex flex-column align-items-start mt-auto">
+                <small class="text-muted mb-1">Author: {{ news.author.get_full_name }}</small>
+                {% if news.club %}
+                  <small class="text-muted mb-1">Club: {{ news.club.name }}</small>
+                {% endif %}
+                {% if news.event %}
+                  <small class="text-muted mb-1">Event: {{ news.event.name }}</small>
+                {% endif %}
+                <small class="text-muted">{{ news.created_at|date:"Y-m-d" }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <p class="text-center">No news</p>
+        </div>
+      {% endfor %}
+    </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 初始化各区域折叠功能
+    initCollapsible('toggleNewClubsBtn', 'newClubsCollapse');
+    initCollapsible('toggleNewsBtn', 'recentNewsCollapse');
+    
+    function initCollapsible(btnId, collapseId) {
+        const collapseButton = document.getElementById(btnId);
+        const collapseElement = document.getElementById(collapseId);
+        
+        if (collapseButton && collapseElement) {
+            const toggleText = collapseButton.querySelector('.toggle-text');
+            
+            // 检查初始状态
+            if (collapseElement.classList.contains('show')) {
+                toggleText.textContent = 'Fold';
+            } else {
+                toggleText.textContent = 'Expand';
+            }
+            
+            // 监听折叠状态变化
+            collapseElement.addEventListener('shown.bs.collapse', function () {
+                toggleText.textContent = 'Fold';
+            });
+            
+            collapseElement.addEventListener('hidden.bs.collapse', function () {
+                toggleText.textContent = 'Expand';
+            });
+            
+            // 额外添加按钮点击事件处理
+            collapseButton.addEventListener('click', function() {
+                setTimeout(function() {
+                    if (collapseElement.classList.contains('show')) {
+                        toggleText.textContent = 'Fold';
+                    } else {
+                        toggleText.textContent = 'Expand';
+                    }
+                }, 200);
+            });
+        }
+    }
+  });
+</script>

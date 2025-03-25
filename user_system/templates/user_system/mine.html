@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Mine{% endblock %}
 
@@ -76,39 +77,48 @@
     
     {% else %}
     <!-- Regular User View -->
-    <!-- Debug Information - For testing and troubleshooting -->
-    <!-- <div class="alert alert-info mb-4" id="debug-info">
-        <h5>Debug Info</h5>
-        <p>Total clubs loaded: <strong>{{ clubs|length }}</strong></p>
-        <ul>
-        {% for club in clubs %}
-            <li>Club #{{ forloop.counter }}: {{ club.name }}</li>
-        {% endfor %}
-        </ul>
-    </div> -->
-
+    
     <!-- Clubs Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2>My Clubs</h2>
-                <a href="{% url 'dashboard_my_club' %}" class="btn btn-outline-primary">View All</a>
+    <section class="py-4">
+        <div class="container">
+            <!-- 标题和按钮行 - 桌面视图使用标准布局，移动视图使用可折叠布局 -->
+            <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">My Clubs</h2>
+                <a href="{% url 'dashboard_my_club' %}" class="btn btn-outline-primary btn-sm">View All</a>
             </div>
             
+            <!-- 移动视图标题和折叠按钮 -->
+            <div class="d-md-none mb-3">
+                <div class="text-center mb-2">
+                    <h2 class="mb-0">My Clubs</h2>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2" style="padding: 0 10px;">
+                    <div style="flex: 1;"></div>
+                    <button id="toggleClubsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#clubsCollapse" style="flex: 2; max-width: 200px;">
+                        <span class="toggle-text">Fold</span>
+                        <i class="bi bi-chevron-down chevron"></i>
+                    </button>
+                    <div style="flex: 1; text-align: right;">
+                        <a href="{% url 'dashboard_my_club' %}" class="btn btn-outline-primary btn-sm" style="white-space: nowrap;">View All</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 折叠内容区域 - 移动设备默认展开 -->
+            <div id="clubsCollapse" class="collapse show d-md-block">
             {% if clubs %}
-            <!-- Clubs Grid - Initially all visible for testing -->
+            <!-- Clubs Grid -->
             <div class="row g-4" id="clubs-container">
                 {% for club in clubs %}
                 <div class="club-item col-md-4 mb-4">
-                    <div class="card club-card shadow-sm h-100">
+                    <div class="card h-100 border-0 shadow-sm d-flex flex-column" onclick="window.location.href='{% url 'club_detail' club_id=club.club_id %}'" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                         <div class="card-body d-flex flex-column">
-                            <h5 class="card-title text-truncate-2">{{ club.name }}</h5>
-                            <p class="description-text flex-grow-1">{{ club.description|truncatechars:100 }}</p>
-                            <div class="mt-auto">
-                                <a href="{% url 'club_detail' club_id=club.club_id %}" class="btn btn-outline-primary btn-sm w-100">
-                                    View Details
-                                </a>
-                            </div>
+                            <h5 class="card-title">
+                                <a class="link-secondary" href="{% url 'club_detail' club_id=club.club_id %}">{{ club.name }}</a>
+                            </h5>
+                            <p class="card-text flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                {{ club.description|truncatechars:100 }}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -135,79 +145,97 @@
                 <a href="{% url 'clubs' %}" class="btn btn-primary mt-3">Explore Clubs</a>
             </div>
             {% endif %}
+            </div>
         </div>
-    </div>
+    </section>
 
     <!-- Events Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2>My Upcoming Events</h2>
-                <a href="{% url 'events' %}" class="btn btn-outline-primary">View All</a>
+    <section class="py-4">
+        <div class="container">
+            <!-- 标题和按钮行 - 桌面视图使用标准布局，移动视图使用可折叠布局 -->
+            <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">My Upcoming Events</h2>
+                <a href="{% url 'events' %}" class="btn btn-outline-primary btn-sm">View All</a>
             </div>
             
+            <!-- 移动视图标题和折叠按钮 -->
+            <div class="d-md-none mb-3">
+                <div class="text-center mb-2">
+                    <h2 class="mb-0">My Upcoming Events</h2>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2" style="padding: 0 10px;">
+                    <div style="flex: 1;"></div>
+                    <button id="toggleEventsBtn" class="toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#eventsCollapse" aria-expanded="true" aria-controls="eventsCollapse" style="flex: 2; max-width: 200px;">
+                        <span class="toggle-text">Fold</span>
+                        <i class="bi bi-chevron-down chevron"></i>
+                    </button>
+                    <div style="flex: 1; text-align: right;">
+                        <a href="{% url 'events' %}" class="btn btn-outline-primary btn-sm" style="white-space: nowrap;">View All</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 折叠内容区域 - 移动设备默认展开 -->
+            <div id="eventsCollapse" class="collapse show d-md-block">
             {% if events %}
-            <div class="event-carousel-wrapper">
-                <div id="eventCarousel" class="carousel slide" data-bs-ride="false">
-                    <div class="carousel-inner">
-                        {% for event in events %}
-                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <div class="card event-card">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ event.title }}</h5>
-                                    <div class="event-info">
-                                        <div class="info-item mb-2">
-                                            <i class="bi bi-calendar3"></i>
-                                            <span>{{ event.start_time|date:"F j, Y" }}</span>
-                                        </div>
-                                        <div class="info-item mb-2">
-                                            <i class="bi bi-clock"></i>
-                                            <span>{{ event.start_time|date:"g:i A" }} - {{ event.end_time|date:"g:i A" }}</span>
-                                        </div>
-                                        <div class="info-item mb-2">
-                                            <i class="bi bi-geo-alt"></i>
-                                            <span>{{ event.location }}</span>
-                                        </div>
-                                        <div class="countdown" data-start-time="{{ event.start_time|date:'c' }}">
-                                            <strong>Starts in:</strong> <span class="countdown-value">calculating...</span>
-                                        </div>
-                                    </div>
-                                    <div class="mt-3">
-                                        <a href="{% url 'event_detail' event.pk %}" class="btn btn-outline-primary btn-sm w-100">
-                                            View Details
-                                        </a>
-                                    </div>
+            <!-- Events Grid -->
+            <div class="row g-4" id="events-container">
+                {% for event in events %}
+                <div class="event-item col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm d-flex flex-column" onclick="window.location.href='{% url 'event_detail' event.pk %}'" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">
+                                <a class="link-secondary" href="{% url 'event_detail' event.pk %}">{{ event.name }}</a>
+                            </h5>
+                            <div class="event-info mb-auto">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-calendar3 text-primary me-2"></i>
+                                    <span class="text-muted">{{ event.start_time|date:"F j, Y" }}</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-clock text-primary me-2"></i>
+                                    <span class="text-muted">{{ event.start_time|date:"g:i A" }} - {{ event.end_time|date:"g:i A" }}</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-geo-alt text-primary me-2"></i>
+                                    <span class="text-muted">{{ event.location }}</span>
                                 </div>
                             </div>
+                            <div class="countdown mt-auto p-2 bg-light rounded small" data-start-time="{{ event.start_time|date:'c' }}">
+                                <strong>Starts in:</strong> <span class="countdown-value">calculating...</span>
+                            </div>
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
-                
-                <!-- Event Pagination -->
-                <div class="d-flex justify-content-between align-items-center mt-4">
-                    <button id="prevEvent" class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center">
-                        <i class="bi bi-arrow-left me-1"></i>
-                        <span>Previous</span>
-                    </button>
-                    <div class="page-indicator">
-                        Page <span id="currentPage">1</span> of <span id="totalPages">{{ events|length }}</span>
-                    </div>
-                    <button id="nextEvent" class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center">
-                        <span>Next</span>
-                        <i class="bi bi-arrow-right ms-1"></i>
-                    </button>
+                {% endfor %}
+            </div>
+            
+            <!-- Event Pagination -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <button id="prevEvent" class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    <span>Previous</span>
+                </button>
+                <div class="page-indicator">
+                    Page <span id="currentEventPage">1</span> of <span id="totalEventPages">1</span>
                 </div>
+                <button id="nextEvent" class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center">
+                    <span>Next</span>
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </button>
             </div>
             {% else %}
             <div class="text-center p-4 bg-light rounded">
                 <p class="text-muted mb-0">No upcoming events at the moment.</p>
             </div>
             {% endif %}
+            </div>
         </div>
-    </div>
+    </section>
     {% endif %}
 </div>
+{% include 'shared/home_intro.html' %}
+{% include 'shared/home_UGC_infographics.html' %}
 {% endblock %}
 
 {% block extra_js %}
@@ -272,39 +300,98 @@
             setInterval(updateCountdown, 1000);
             updateCountdown(); // 立即执行一次
 
-            // 事件轮播功能
-            const eventCarousel = document.getElementById('eventCarousel');
-            if (eventCarousel) {
-                const carousel = new bootstrap.Carousel(eventCarousel, {
-                    interval: false // 禁用自动循环
-                });
-
-                // 事件导航按钮
-                const prevEventBtn = document.getElementById('prevEvent');
-                const nextEventBtn = document.getElementById('nextEvent');
-                
-                // 事件页面跟踪
-                let currentEventPage = 1;
-                const totalEventPages = parseInt(document.getElementById('totalPages')?.textContent || '1');
-                
-                prevEventBtn?.addEventListener('click', function() {
-                    carousel.prev();
-                    currentEventPage = currentEventPage > 1 ? currentEventPage - 1 : totalEventPages;
-                    document.getElementById('currentPage').textContent = currentEventPage;
-                });
-                
-                nextEventBtn?.addEventListener('click', function() {
-                    carousel.next();
-                    currentEventPage = currentEventPage < totalEventPages ? currentEventPage + 1 : 1;
-                    document.getElementById('currentPage').textContent = currentEventPage;
-                });
-                
-                // 事件变化处理程序
-                eventCarousel.addEventListener('slid.bs.carousel', function (event) {
-                    currentEventPage = event.to + 1;
-                    document.getElementById('currentPage').textContent = currentEventPage;
-                });
+            // 事件分页功能实现
+            const eventItems = document.querySelectorAll('.event-item');
+            const totalEvents = eventItems.length;
+            
+            console.log(`找到 ${totalEvents} 个事件，开始处理分页...`);
+            
+            // 设置每页显示的事件数量
+            const eventsPerPage = 3;
+            // 计算总页数 (向上取整)
+            const totalEventPages = Math.ceil(totalEvents / eventsPerPage);
+            
+            console.log(`每页显示 ${eventsPerPage} 个事件，共需 ${totalEventPages} 页`);
+            
+            // 更新总页数显示
+            const totalEventPagesElement = document.getElementById('totalEventPages');
+            if (totalEventPagesElement) {
+                totalEventPagesElement.textContent = totalEventPages;
+                console.log(`已更新总页数显示：${totalEventPages}`);
             }
+            
+            // 初始化当前页为第1页
+            let currentEventPage = 1;
+            
+            // 获取分页按钮
+            const prevEventButton = document.getElementById('prevEvent');
+            const nextEventButton = document.getElementById('nextEvent');
+            
+            // 更新按钮状态的函数
+            function updateEventButtonState() {
+                if (prevEventButton) prevEventButton.disabled = currentEventPage <= 1;
+                if (nextEventButton) nextEventButton.disabled = currentEventPage >= totalEventPages;
+                console.log(`事件按钮状态已更新: 上一页=${prevEventButton?.disabled ? '禁用' : '可用'}, 下一页=${nextEventButton?.disabled ? '禁用' : '可用'}`);
+            }
+            
+            // 定义显示指定页码的函数
+            function showEventPage(pageNumber) {
+                console.log(`尝试显示事件第 ${pageNumber} 页...`);
+                
+                if (pageNumber < 1 || pageNumber > totalEventPages) {
+                    console.log(`页码 ${pageNumber} 无效，范围应为 1-${totalEventPages}`);
+                    return;
+                }
+                
+                // 隐藏所有事件
+                eventItems.forEach((item, index) => {
+                    item.style.display = 'none';
+                    console.log(`隐藏事件 #${index+1}: ${item.querySelector('.card-title').textContent}`);
+                });
+                
+                // 计算当前页显示的起始和结束索引
+                const startIndex = (pageNumber - 1) * eventsPerPage;
+                const endIndex = Math.min(startIndex + eventsPerPage, totalEvents);
+                
+                console.log(`当前页显示范围: 从索引 ${startIndex} 到 ${endIndex-1}`);
+                
+                // 显示当前页的事件
+                for (let i = startIndex; i < endIndex; i++) {
+                    if (eventItems[i]) {
+                        eventItems[i].style.display = 'block';
+                        console.log(`显示事件 #${i+1}: ${eventItems[i].querySelector('.card-title').textContent}`);
+                    }
+                }
+                
+                // 更新当前页码显示
+                const currentEventPageElement = document.getElementById('currentEventPage');
+                if (currentEventPageElement) {
+                    currentEventPageElement.textContent = pageNumber;
+                    console.log(`已更新当前事件页码显示：${pageNumber}`);
+                }
+                
+                currentEventPage = pageNumber;
+                updateEventButtonState();
+            }
+            
+            // 绑定按钮点击事件
+            prevEventButton?.addEventListener('click', function() {
+                console.log('点击了"上一页"按钮');
+                if (currentEventPage > 1) {
+                    showEventPage(currentEventPage - 1);
+                }
+            });
+            
+            nextEventButton?.addEventListener('click', function() {
+                console.log('点击了"下一页"按钮');
+                if (currentEventPage < totalEventPages) {
+                    showEventPage(currentEventPage + 1);
+                }
+            });
+            
+            // 初始化第一页
+            showEventPage(1);
+            console.log('事件页面初始化完成，显示第1页');
 
             // Club分页功能实现
             const clubItems = document.querySelectorAll('.club-item');
@@ -349,13 +436,13 @@
                     return;
                 }
                 
-                // 首先隐藏所有俱乐部
+                // 隐藏所有俱乐部
                 clubItems.forEach((item, index) => {
                     item.style.display = 'none';
                     console.log(`隐藏俱乐部 #${index+1}: ${item.querySelector('.card-title').textContent}`);
                 });
                 
-                // 计算当前页应该显示的俱乐部的起始和结束索引
+                // 计算当前页显示的起始和结束索引
                 const startIndex = (pageNumber - 1) * clubsPerPage;
                 const endIndex = Math.min(startIndex + clubsPerPage, totalClubs);
                 
@@ -376,10 +463,7 @@
                     console.log(`已更新当前页码显示：${pageNumber}`);
                 }
                 
-                // 更新当前页变量
                 currentPage = pageNumber;
-                
-                // 更新按钮状态
                 updateButtonState();
             }
             
@@ -401,12 +485,53 @@
             // 初始化第一页
             showPage(1);
             console.log('初始化完成，显示第1页');
+
+            // 修复折叠按钮功能：直接初始化折叠逻辑
+            initCollapsible('toggleClubsBtn', 'clubsCollapse');
+            initCollapsible('toggleEventsBtn', 'eventsCollapse');
+
+            function initCollapsible(btnId, collapseId) {
+                const collapseButton = document.getElementById(btnId);
+                const collapseElement = document.getElementById(collapseId);
+                
+                if (collapseButton && collapseElement) {
+                    const toggleText = collapseButton.querySelector('.toggle-text');
+                    
+                    // 检查初始状态
+                    if (collapseElement.classList.contains('show')) {
+                        toggleText.textContent = 'Fold';
+                    } else {
+                        toggleText.textContent = 'Expand';
+                    }
+                    
+                    // 监听折叠状态变化
+                    collapseElement.addEventListener('shown.bs.collapse', function () {
+                        toggleText.textContent = 'Fold';
+                    });
+                    
+                    collapseElement.addEventListener('hidden.bs.collapse', function () {
+                        toggleText.textContent = 'Expand';
+                    });
+                    
+                    // 额外添加按钮点击事件处理
+                    collapseButton.addEventListener('click', function() {
+                        setTimeout(function() {
+                            if (collapseElement.classList.contains('show')) {
+                                toggleText.textContent = 'Fold';
+                            } else {
+                                toggleText.textContent = 'Expand';
+                            }
+                        }, 200);
+                    });
+                }
+            }
         {% endif %}
     });
 </script>
 {% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home_style.css' %}">
 <style>
     /* Debug styles */
     #debug-info {
@@ -456,89 +581,48 @@
         text-align: center;
     }
     
-    .event-info {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    
-    .info-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        justify-content: center;
-    }
-    
-    .info-item i {
-        color: #0d6efd;
-        font-size: 1.1rem;
-    }
-    
-    .info-item span,
-    .info-item small {
-        color: #6c757d;
-    }
-    
-    .countdown {
-        margin-top: 0.5rem;
-        font-weight: 500;
-        color: #dc3545;
-        text-align: center;
-        padding: 0.5rem;
-        background-color: #f8f9fa;
-        border-radius: 0.25rem;
-    }
-
-    /* Button styles */
-    .event-card .btn {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-        margin: 0 auto;
-        text-align: center;
-    }
-
-    /* Club card styling */
-    .club-card {
-        border: 1px solid rgba(0, 0, 0, 0.125);
-        border-radius: 0.5rem;
+    /* Common card styles */
+    .card {
         transition: all 0.3s ease;
-        background: white;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
     
-    .club-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    }
-    
-    .club-card .card-body {
-        padding: 1.25rem;
-    }
-    
-    .club-card .card-title {
+    .card-title {
         font-size: 1.1rem;
         font-weight: 500;
         margin-bottom: 0.75rem;
     }
     
-    .description-text {
+    /* Secondary link styling */
+    .link-secondary {
         color: #6c757d;
-        font-size: 0.9rem;
-        line-height: 1.5;
-        margin-bottom: 1rem;
+        text-decoration: none !important;
+        transition: color 0.2s ease;
     }
-
-    /* Event carousel wrapper */
-    .event-carousel-wrapper {
-        position: relative;
-        padding: 1rem;
+    
+    .link-secondary:hover {
+        color: #0d6efd;
+        text-decoration: underline !important;
     }
-
-    .carousel-item {
-        padding: 1rem;
+    
+    /* Event info styling */
+    .event-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
     }
-
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+    }
+    
+    .countdown {
+        font-weight: 500;
+        color: #dc3545;
+        font-size: 0.85rem;
+        text-align: center;
+    }
+    
     /* Page indicator */
     .page-indicator {
         font-size: 0.875rem;
@@ -547,7 +631,7 @@
         align-items: center;
         font-weight: 400;
     }
-
+    
     /* Elliptical button styles */
     #prevEvent, #nextEvent, #prevClub, #nextClub {
         background-color: #f8f9fa;
@@ -558,13 +642,13 @@
         transition: all 0.2s ease;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-
+    
     #prevEvent:hover, #nextEvent:hover, #prevClub:hover, #nextClub:hover {
         background-color: #e9ecef;
         color: #0d6efd;
         box-shadow: 0 2px 5px rgba(0,0,0,0.15);
     }
-
+    
     #prevEvent:disabled, #nextEvent:disabled, #prevClub:disabled, #nextClub:disabled {
         background-color: #f8f9fa;
         color: #adb5bd;
@@ -572,17 +656,7 @@
         opacity: 0.7;
         box-shadow: none;
     }
-
-    /* Text truncation for card titles */
-    .text-truncate-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        height: 2.75rem;
-    }
-
+    
     /* Admin dashboard styles */
     .display-4 {
         font-size: 2.5rem;
@@ -601,7 +675,7 @@
         transform: translateY(-5px);
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     }
-
+    
     /* Ensure Bootstrap Icons are loaded */
     @import url("https://cdn.bootstrapcdn.com/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
 </style>
