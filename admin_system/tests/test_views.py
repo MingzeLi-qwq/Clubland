@@ -8,10 +8,9 @@ from datetime import timedelta
 
 class AdminSystemViewsTest(TestCase):
     def setUp(self):
-        # 创建测试客户端
         self.client = Client()
         
-        # 创建管理员用户
+        # Creating an Administrator User
         self.admin_user = User.objects.create_user(
             username="@adminuser",
             email="admin@example.com",
@@ -21,7 +20,7 @@ class AdminSystemViewsTest(TestCase):
             account_type="Admin"
         )
         
-        # 创建普通用户
+        # Creating an ordinary user
         self.normal_user = User.objects.create_user(
             username="@normaluser",
             email="normal@example.com",
@@ -31,7 +30,7 @@ class AdminSystemViewsTest(TestCase):
             account_type="User"
         )
         
-        # 创建俱乐部管理员用户
+        # Creating Club Manager Users
         self.club_manager = User.objects.create_user(
             username="@clubmanager",
             email="manager@example.com",
@@ -41,19 +40,19 @@ class AdminSystemViewsTest(TestCase):
             account_type="User"
         )
         
-        # 创建测试俱乐部
+        # Create a test club
         self.club = Club.objects.create(
             name="Test Club",
             description="Test Description"
         )
         
-        # 创建另一个测试俱乐部
+        # Create another test club
         self.another_club = Club.objects.create(
             name="Another Club",
             description="Another Description"
         )
         
-        # 创建成员关系
+        # Creating Member Relationships
         self.manager_membership = Membership.objects.create(
             user=self.club_manager,
             club=self.club,
@@ -66,7 +65,7 @@ class AdminSystemViewsTest(TestCase):
             is_manager=False
         )
         
-        # 创建测试事件
+        # Creating test events
         self.event = Event.objects.create(
             name="Test Event",
             description="Test Event Description",
@@ -77,49 +76,47 @@ class AdminSystemViewsTest(TestCase):
         )
 
     def test_admin_panel_clubs_view(self):
-        """测试管理员面板俱乐部列表视图"""
-        # 登录管理员用户
+        """Test Admin Panel Club List View"""
         self.client.login(username='@adminuser', password='adminpass123')
         
-        # 访问俱乐部列表页面
+        # Visit the Club Listings page
         response = self.client.get(reverse('admin_panel_clubs'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin_panel/clubs.html')
         
-        # 测试搜索功能 - 搜索存在的俱乐部
+        # Test Search Function - Search for Existing Clubs
         response = self.client.get(reverse('admin_panel_clubs'), {'search': 'Test'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['clubs']), 1)
         self.assertEqual(response.context['clubs'][0].name, 'Test Club')
         
-        # 测试搜索功能 - 搜索不存在的俱乐部
+        # Testing the search function - searching for non-existing clubs
         response = self.client.get(reverse('admin_panel_clubs'), {'search': 'NonExistent'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['clubs']), 0)
 
     def test_admin_panel_users_view(self):
-        """测试管理员面板用户列表视图"""
-        # 登录管理员用户
+        """Testing the Administrator Panel User List View"""
         self.client.login(username='@adminuser', password='adminpass123')
         
-        # 访问用户列表页面
+        # Accessing the user list page
         response = self.client.get(reverse('admin_panel_users'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin_panel/users.html')
         
-        # 测试搜索功能 - 搜索存在的用户
+        # Testing the search function - searching for existing users
         response = self.client.get(reverse('admin_panel_users'), {'search': 'Normal'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['users']), 1)
         self.assertEqual(response.context['users'][0].username, '@normaluser')
         
-        # 测试搜索功能 - 搜索不存在的用户
+        # Testing the search function - searching for non-existent users
         response = self.client.get(reverse('admin_panel_users'), {'search': 'NonExistent'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['users']), 0)
 
     def test_admin_panel_requests_view(self):
-        """测试管理员面板请求列表视图"""
+        """Testing the admin panel request list view"""
         # 登录管理员用户
         self.client.login(username='@adminuser', password='adminpass123')
         
