@@ -125,17 +125,14 @@ const Dashboard = () => {
     };
     
     const addWidget = async () => {
-        const widgetType = prompt('Choose your widget type:\n1. text\n2. chart\n3. notice\n4. image\n5. countdown\n6. clock\n7. event_selector');
+        const widgetType = prompt('Choose your widget type:\n1. notice\n2. image\n3. clock\n4. event_selector');
         if (!widgetType) return;
         
         const typeMap: {[key: string]: string} = {
-        '1': 'text',
-        '2': 'chart',
-        '3': 'notice',
-        '4': 'image',
-        '5': 'countdown',
-        '6': 'clock',
-        '7': 'event_selector'
+        '1': 'notice',
+        '2': 'image',
+        '3': 'clock',
+        '4': 'event_selector'
         };
         
         const csrfToken = await getCsrfToken();
