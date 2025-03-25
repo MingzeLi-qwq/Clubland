@@ -29,6 +29,7 @@ from notification_system.views import mark_all_as_read
 from message_system.views import get_messages, send_message, search_users
 from notification_system.views import delete_notification
 from notification_system.views import delete_all_notifications
+from club_hub.views import ImageUploadView
 
 
 import event_system.views
@@ -93,6 +94,7 @@ urlpatterns = [
 
     path('api/', include('club_hub.urls')),
     path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
+    path("club-view/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
 
     # Message related / 消息相关
     path('messages/message_dashboard', message_system.views.message_dashboard, name='message_dashboard'),
@@ -118,6 +120,7 @@ urlpatterns = [
     #--------------------------------------------Password verification for dangerous operations END --------------------------------------------------------
 
     path("api/", include("club_hub.urls")),
+    path("api/upload-image/", ImageUploadView.as_view(), name="upload-image"),
 ]   
 
 
