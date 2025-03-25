@@ -70,15 +70,12 @@ class ClubDetailView(ClubExistsRequiredMixin, View):
         is_manager=False
         is_member=False
         
-        # 获取与此俱乐部相关的新闻
         recent_news = None
         if hasattr(club, 'news'):
             recent_news = club.news.all().order_by('-created_at')
             
-            # 为每个新闻添加first_image_url
             from bs4 import BeautifulSoup
             for news_item in recent_news:
-                # 提取第一张图片URL
                 first_image_url = None
                 if news_item.content:
                     soup = BeautifulSoup(news_item.content, 'html.parser')
@@ -97,7 +94,7 @@ class ClubDetailView(ClubExistsRequiredMixin, View):
             'is_manager': is_manager,
             'is_member': is_member,
             'events': events,
-            'recent_news': recent_news,  # 添加recent_news到上下文
+            'recent_news': recent_news,
         })
     
 """This method is used to handle member registration from user itself"""

@@ -65,7 +65,7 @@ class ClubManagerRequiredMixin(AccessMixin):
         return super().dispatch(request, *args, **kwargs)
     
 class NonClubManagerRequiredMixin(AccessMixin):
-    """阻止社团管理员访问"""
+    """Blocking access by association manager"""
     def dispatch(self, request, *args, **kwargs):
         club_id = kwargs.get('club_id')
         if Membership.objects.filter(user=request.user, club_id=club_id, is_manager=True).exists():
@@ -80,7 +80,7 @@ class NonClubManagerRequiredMixin(AccessMixin):
                 </script>
             </head>
             <body>
-                <h2 style="text-align:center; margin-top:20%;">❌ You are the club administrator and cannot access this page.</h2>
+                <h2 style="text-align:center; margin-top:20%;">❌ You are the club manager and cannot access this page.</h2>
                 <p style="text-align:center;">Coming soon to the home page...</p>
             </body>
             </html>

@@ -72,11 +72,11 @@
                 <div class="card-body">
                     {% if recent_news %}
                         {% for news_item in recent_news|slice:":2" %}
-                            <!-- 单条新闻展示 -->
+                            <!-- Individual News Display -->
                             <a href="{% url 'news_system:news_detail' news_item.id %}" 
                                class="text-decoration-none text-dark">
                                 <div class="d-flex mb-3 pb-3 border-bottom">
-                                    <!-- 左侧内容区 -->
+                                    <!-- Left content area -->
                                     <div class="flex-grow-1 me-3">
                                         <div class="d-flex w-100 justify-content-between flex-column flex-sm-row">
                                             <h5 class="mb-1 text-break">{{ news_item.title }}</h5>
@@ -93,7 +93,7 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- 右侧图片展示区 -->
+                                    <!-- Right side photo display area -->
                                     <div class="d-none d-sm-block flex-shrink-0" 
                                          style="margin: 0; padding: 0; aspect-ratio: 4/3; width: 150px;">
                                         {% if news_item.first_image_url %}
@@ -171,7 +171,6 @@
                             {% endif %}
                         {% else %}
                             <!-- When the current user is not logged in -->
-                            <!-- Clickable text buttons -->
                             <p>
                                 <a href="{% url 'login' %}" class="btn btn-link p-0">Login</a> or 
                                 <a href="{% url 'signup' %}" class="btn btn-link p-0">registration</a> is required before registering for membership.

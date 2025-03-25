@@ -46,7 +46,7 @@
       </div>
   </div>
 
-    <!-- This section is responsible for traversing the data in the Club database and displaying the / 这一部分负责将Club数据库中的数据遍历出来并展示 -->
+    <!-- This section is responsible for traversing the data in the Club database and displaying the -->
     <div class="row">
       {% for club in clubs %}
       <a href="{% url 'club_detail' club_id=club.club_id %}" class="text-decoration-none">

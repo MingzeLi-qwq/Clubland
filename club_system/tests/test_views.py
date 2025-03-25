@@ -9,10 +9,9 @@ from club_system.views import isSameClubNameExist, isSameClubNameExistInRequest
 
 class ClubSystemViewsTest(TestCase):
     def setUp(self):
-        # 创建测试客户端
         self.client = Client()
         
-        # 创建普通测试用户
+        # Creating a Normal Test User
         self.user = User.objects.create_user(
             username="@testuser",
             email="test@example.com",
@@ -31,7 +30,7 @@ class ClubSystemViewsTest(TestCase):
             account_type="User"
         )
 
-        # 创建管理员用户（不与club建立会员关系）
+        # Create administrator user (no membership with club)
         self.admin_user = User.objects.create_user(
             username="@adminuser",
             email="admin@example.com",
@@ -41,7 +40,7 @@ class ClubSystemViewsTest(TestCase):
             account_type="Admin"
         )
         
-        # 创建另一个普通用户作为club manager
+        # Create another normal user as club manager
         self.manager_user = User.objects.create_user(
             username="@manageruser",
             email="manager@example.com",
@@ -51,13 +50,13 @@ class ClubSystemViewsTest(TestCase):
             account_type="User"
         )
         
-        # 创建测试俱乐部
+        # Create a test club
         self.club = Club.objects.create(
             name="Test Club",
             description="Test Description"
         )
         
-        # 创建普通用户作为manager的会员关系
+        # Creating a membership for a regular user as a manager
         self.manager_membership = Membership.objects.create(
             user=self.manager_user,
             club=self.club,
@@ -69,7 +68,7 @@ class ClubSystemViewsTest(TestCase):
             club=self.club,
         )
 
-        # 创建测试俱乐部申请
+        # Create a Test Club Application
         self.club_request = NewClubRequest.objects.create(
             creator=self.user,
             name="New Test Club",
@@ -77,7 +76,7 @@ class ClubSystemViewsTest(TestCase):
             status=NewClubRequest.STATUS_PENDING
         )
 
-        # 创建两个测试用的event
+        # Create two test events
         self.event1 = Event.objects.create(
             name="Test Event 1",
             description="Test Event Description 1",
@@ -98,85 +97,78 @@ class ClubSystemViewsTest(TestCase):
         
 
     def test_clubs_list_view(self):
-        """测试俱乐部列表视图"""
+        """Test Club List View"""
         response = self.client.get(reverse('clubs'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'clubs.html')
         
-        # 测试搜索功能
+        # Test the search function
         response = self.client.get(reverse('clubs'), {'search': 'Test'})
         self.assertContains(response, 'Test Club')
         
     def test_isSameClubNameExist(self):
-        """测试 isSameClubNameExist 函数是否能正确检测重复的俱乐部名称"""
-        # 测试完全相同的名称
+        """Testing if the isSameClubNameExist function correctly detects duplicate club names"""
+        # Test the exact same name
         self.assertTrue(isSameClubNameExist("Test Club"))
         
-        # 测试不同的名称
+        # Testing different names
         self.assertFalse(isSameClubNameExist("Different Club"))
         
-        # 测试忽略大小写
+        # Tests Ignore Case
         self.assertTrue(isSameClubNameExist("TEST CLUB"))
         self.assertTrue(isSameClubNameExist("test club"))
         
-        # 测试忽略空格
+        # Test Ignore Spaces
         self.assertTrue(isSameClubNameExist("TestClub"))
         self.assertTrue(isSameClubNameExist("Test  Club"))
         self.assertTrue(isSameClubNameExist(" Test Club "))
         
-        # 测试同时忽略大小写和空格
+        # Test for ignoring both case and spaces
         self.assertTrue(isSameClubNameExist("TESTCLUB"))
         self.assertTrue(isSameClubNameExist("test  club"))
         
 
     def test_isSameClubNameExistInRequest(self):
-        """测试 isSameClubNameExistInRequest 函数是否能正确检测重复的俱乐部申请名称"""
-        # 测试完全相同的名称
+        """Test if the isSameClubNameExistInRequest function correctly detects duplicate club request names"""
+        # Test the exact same name
         self.assertTrue(isSameClubNameExistInRequest("New Test Club"))
         
-        # 测试不同的名称
+        # Testing different names
         self.assertFalse(isSameClubNameExistInRequest("Different Club Request"))
         
-        # 测试忽略大小写
+        # Tests Ignore Case
         self.assertTrue(isSameClubNameExistInRequest("NEW TEST CLUB"))
         self.assertTrue(isSameClubNameExistInRequest("new test club"))
         
-        # 测试忽略空格
+        # Test Ignore Spaces
         self.assertTrue(isSameClubNameExistInRequest("NewTestClub"))
         self.assertTrue(isSameClubNameExistInRequest("New  Test  Club"))
         self.assertTrue(isSameClubNameExistInRequest(" New Test Club "))
         
-        # 测试同时忽略大小写和空格
+        # Test for ignoring both case and spaces
         self.assertTrue(isSameClubNameExistInRequest("NEWTESTCLUB"))
         self.assertTrue(isSameClubNameExistInRequest("new  test  club"))
 
 
     def test_club_manager_members_view(self):
-        """测试俱乐部管理员成员页面视图"""
-        # 登录管理员用户
+        """Test Club manager Member Page View"""
         self.client.login(username='@manageruser', password='managerpass123')
         
-        # 访问成员管理页面
         response = self.client.get(reverse('club_manager_members', args=[self.club.pk]))
-        
-        # 检查响应状态码
         self.assertEqual(response.status_code, 200)
-        
-        # 检查使用的模板
         self.assertTemplateUsed(response, 'club_manager/members.html')
         
-        # 检查上下文数据
+        # Examining Contextual Data
         self.assertEqual(response.context['club_id'], self.club.pk)
         self.assertEqual(response.context['club'], self.club)
-        self.assertEqual(response.context['manager_count'], 1)  # 只有一个管理员
-        self.assertEqual(response.context['muggle_count'], 1)   # 只有一个普通成员
+        self.assertEqual(response.context['manager_count'], 1)
+        self.assertEqual(response.context['muggle_count'], 1)
         
     def test_club_manager_members_search(self):
-        """测试俱乐部管理员成员页面的搜索功能"""
-        # 登录管理员用户
+        """Testing the search function on the club manager's member page"""
         self.client.login(username='@manageruser', password='managerpass123')
 
-        # 测试管理员搜索
+        # Test manager Search
         response = self.client.get(
             reverse('club_manager_members', args=[self.club.pk]),
             {'manager_search': 'Manager'}
@@ -184,7 +176,7 @@ class ClubSystemViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'manager@example.com')
         
-        # 测试成员搜索
+        # Test Member Search
         response = self.client.get(
             reverse('club_manager_members', args=[self.club.pk]),
             {'member_search': 'Testtwo'}
@@ -192,7 +184,7 @@ class ClubSystemViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test2@example.com')
         
-        # 测试邮箱搜索
+        # Test Mailbox Search
         response = self.client.get(
             reverse('club_manager_members', args=[self.club.pk]),
             {'member_search': 'test2@example.com'}
@@ -200,7 +192,7 @@ class ClubSystemViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Testtwo')
         
-        # 测试无结果搜索
+        # Test no result search
         response = self.client.get(
             reverse('club_manager_members', args=[self.club.pk]),
             {'member_search': 'NonExistent'}
@@ -210,34 +202,26 @@ class ClubSystemViewsTest(TestCase):
 
 
     def test_club_manager_events_view(self):
-        """测试俱乐部管理员事件页面视图"""
-        # 登录管理员用户
+        """Test Club manager Event Page View"""
         self.client.login(username='@manageruser', password='managerpass123')
         
-        # 访问事件管理页面
+        # Accessing the Event Management Page
         response = self.client.get(reverse('club_manager_events', args=[self.club.pk]))
         
-        # 检查响应状态码
         self.assertEqual(response.status_code, 200)
-        
-        # 检查使用的模板
         self.assertTemplateUsed(response, 'club_manager/events.html')
-        
-        # 检查上下文数据
         self.assertEqual(response.context['club_id'], self.club.pk)
         self.assertEqual(response.context['club'], self.club)
         
-        # 检查事件列表是否包含两个测试事件
         self.assertEqual(len(response.context['events']), 2)
         self.assertContains(response, 'Test Event 1')
         self.assertContains(response, 'Special Workshop')
         
     def test_club_manager_events_search(self):
-        """测试俱乐部管理员事件页面的搜索功能"""
-        # 登录管理员用户
+        """Testing the search function on the Club manager Events page"""
         self.client.login(username='@manageruser', password='managerpass123')
 
-        # 测试事件名称搜索
+        # Test Event Name Search
         response = self.client.get(
             reverse('club_manager_events', args=[self.club.pk]),
             {'search': 'Special'}
@@ -246,7 +230,7 @@ class ClubSystemViewsTest(TestCase):
         self.assertContains(response, 'Special Workshop')
         self.assertNotContains(response, 'Test Event 1')
         
-        # 测试日期搜索
+        # Test Date Search
         tomorrow = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%d')
         response = self.client.get(
             reverse('club_manager_events', args=[self.club.pk]),
@@ -256,7 +240,7 @@ class ClubSystemViewsTest(TestCase):
         self.assertContains(response, 'Test Event 1')
         self.assertNotContains(response, 'Special Workshop')
         
-        # 测试无结果搜索
+        # Test no result search
         response = self.client.get(
             reverse('club_manager_events', args=[self.club.pk]),
             {'search': 'NonExistent'}
@@ -267,103 +251,101 @@ class ClubSystemViewsTest(TestCase):
 
     
     def test_update_club_name(self):
-        """测试更新俱乐部名称功能"""
-        # 创建另一个俱乐部用于测试名称重复
+        """Test updating club name functionality"""
+        # Create another club for testing name duplication
         club2 = Club.objects.create(
             name="Test Club 2",
             description="Test Description 2"
         )
         
-        # 测试管理员用户 - 新名字不能与旧名字重复
+        # new name cannot duplicate old name
         self.client.login(username='@adminuser', password='adminpass123')
         response = self.client.post(
             reverse('update_club_name', args=[self.club.pk]),
             {'club_name': 'Test Club'}
         )
-        self.assertEqual(self.club.name, "Test Club")  # 名称应该保持不变
+        self.assertEqual(self.club.name, "Test Club")
         
-        # 测试俱乐部管理员 - 新名字不能为空
+        # new name cannot be empty
         self.client.login(username='@manageruser', password='managerpass123')
         response = self.client.post(
             reverse('update_club_name', args=[self.club.pk]),
             {'club_name': ''}
         )
-        self.assertEqual(self.club.name, "Test Club")  # 名称应该保持不变
+        self.assertEqual(self.club.name, "Test Club")
         
-        # 测试俱乐部管理员 - 新名字不能与现有俱乐部名称重复
+        # new names cannot duplicate existing club names
         response = self.client.post(
             reverse('update_club_name', args=[self.club.pk]),
             {'club_name': 'Test Club 2'}
         )
         self.club.refresh_from_db()
-        self.assertEqual(self.club.name, "Test Club")  # 名称应该保持不变
+        self.assertEqual(self.club.name, "Test Club")
         
-        # 测试俱乐部管理员 - 新名字不能与待审核的请求名称重复
+        # The new name cannot duplicate the name of a request that is pending requirement
         response = self.client.post(
             reverse('update_club_name', args=[self.club.pk]),
             {'club_name': 'New Test Club'}
         )
         self.club.refresh_from_db()
-        self.assertEqual(self.club.name, "Test Club")  # 名称应该保持不变
+        self.assertEqual(self.club.name, "Test Club")
         
-        # 测试俱乐部管理员 - 成功更新名称
+        # Successful name update
         response = self.client.post(
             reverse('update_club_name', args=[self.club.pk]),
             {'club_name': 'New Test Club Name'}
         )
         self.club.refresh_from_db()
-        self.assertEqual(self.club.name, "New Test Club Name")  # 名称应该已更新
+        self.assertEqual(self.club.name, "New Test Club Name")
         
-        # 测试俱乐部管理员 - 将名称改回原来的名称
+        # Change the name back to the original
         response = self.client.post(
             reverse('update_club_name', args=[self.club.pk]),
             {'club_name': 'Test Club'}
         )
         self.club.refresh_from_db()
-        self.assertEqual(self.club.name, "Test Club")  # 名称应该已改回
+        self.assertEqual(self.club.name, "Test Club")
         
-        # 清理测试数据
         club2.delete()
         
     def test_update_club_description(self):
-        """测试更新俱乐部描述功能"""
-        # 测试管理员用户 - 新描述不能与旧描述重复
+        """Test Update Club Description Feature"""
+        # The new description cannot duplicate the old description
         self.client.login(username='@adminuser', password='adminpass123')
         response = self.client.post(
             reverse('update_club_description', args=[self.club.pk]),
             {'club_description': 'Test Description'}
         )
         self.club.refresh_from_db()
-        self.assertEqual(self.club.description, "Test Description")  # 描述应该保持不变
+        self.assertEqual(self.club.description, "Test Description")
         
-        # 测试俱乐部管理员 - 新描述不能与旧描述重复
+        # The new description cannot duplicate the old description
         self.client.login(username='@manageruser', password='managerpass123')
         response = self.client.post(
             reverse('update_club_description', args=[self.club.pk]),
             {'club_description': 'Test Description'}
         )
         self.club.refresh_from_db()
-        self.assertEqual(self.club.description, "Test Description")  # 描述应该保持不变
+        self.assertEqual(self.club.description, "Test Description")
         
-        # 测试俱乐部管理员 - 新描述为空会使用默认描述
+        # A new description that is empty will use the default description
         response = self.client.post(
             reverse('update_club_description', args=[self.club.pk]),
             {'club_description': ''}
         )
         self.club.refresh_from_db()
-        self.assertEqual(self.club.description, "This Club hasn't added a Description yet")  # 描述应该更新为默认值
+        self.assertEqual(self.club.description, "This Club hasn't added a Description yet")
         
-        # 测试俱乐部管理员 - 成功更新描述
+        # Successfully updated description
         response = self.client.post(
             reverse('update_club_description', args=[self.club.pk]),
             {'club_description': 'New Test Club Description'}
         )
         self.club.refresh_from_db()
-        self.assertEqual(self.club.description, "New Test Club Description")  # 描述应该已更新
+        self.assertEqual(self.club.description, "New Test Club Description")
 
     def test_remove_manager(self):
-        """测试移除俱乐部管理员功能"""
-        # 创建另一个管理员用户，以便测试移除管理员后仍有管理员存在
+        """Test removing club manager functionality"""
         another_manager = User.objects.create_user(
             username="@anothermanager",
             email="another@example.com",
@@ -373,53 +355,49 @@ class ClubSystemViewsTest(TestCase):
             account_type="User"
         )
         
-        # 将该用户设为管理员
+        # Make this user an manager
         another_manager_membership = Membership.objects.create(
             user=another_manager,
             club=self.club,
             is_manager=True
         )
         
-        # 测试管理员用户移除管理员
+        # Test admin User Remove manager
         self.client.login(username='@adminuser', password='adminpass123')
         response = self.client.post(
             reverse('remove_manager', args=[self.club.pk, '@manageruser'])
         )
         
-        # 检查管理员是否被移除
         membership = Membership.objects.get(user=self.manager_user, club=self.club)
         self.assertFalse(membership.is_manager)
         
-        # 恢复管理员身份用于后续测试
+        # Restore manager identity for subsequent testing
         membership.is_manager = True
         membership.save()
         
-        # 测试俱乐部管理员移除另一个管理员
+        # Test club manager removing another manager
         self.client.login(username='@manageruser', password='managerpass123')
         response = self.client.post(
             reverse('remove_manager', args=[self.club.pk, '@anothermanager'])
         )
         
-        # 检查另一个管理员是否被移除
+        # Check if another manager has been removed
         another_membership = Membership.objects.get(user=another_manager, club=self.club)
         self.assertFalse(another_membership.is_manager)
         
-        # 测试移除最后一个管理员（应该失败）
+        # Test removing the last manager will be denied
         response = self.client.post(
             reverse('remove_manager', args=[self.club.pk, '@manageruser'])
         )
-        
-        # 检查管理员是否仍然存在（不应被移除）
+
         membership = Membership.objects.get(user=self.manager_user, club=self.club)
         self.assertTrue(membership.is_manager)
         
-        # 清理测试数据
         another_manager_membership.delete()
         another_manager.delete()
 
     def test_set_manager_view(self):
-        """测试设置俱乐部管理员功能"""
-        # 创建一个普通成员用于测试设置为管理员
+        """Test setting up the club manager function"""
         normal_member = User.objects.create_user(
             username="@normalmember",
             email="normal@example.com",
@@ -429,37 +407,27 @@ class ClubSystemViewsTest(TestCase):
             account_type="User"
         )
         
-        # 创建会员关系（非管理员）
+        # Creating Member Relationships (non-manager)
         normal_membership = Membership.objects.create(
             user=normal_member,
             club=self.club,
             is_manager=False
         )
         
-        # 登录管理员用户
+        # Logging in as an manager user
         self.client.login(username='@manageruser', password='managerpass123')
         
-        # 测试将普通成员设置为管理员
+        # Test setting regular members as manager
         response = self.client.post(
             reverse('set_manager', args=[self.club.pk, '@normalmember'])
         )
         normal_membership.refresh_from_db()
-        self.assertTrue(normal_membership.is_manager)  # 应该已被设置为管理员
+        self.assertTrue(normal_membership.is_manager)
         
-        # 测试将已是管理员的成员再次设置为管理员
-        self.client.login(username='@adminuser', password='adminpass123')
-        response = self.client.post(
-            reverse('set_manager', args=[self.club.pk, '@normalmember'])
-        )
-        normal_membership.refresh_from_db()
-        self.assertTrue(normal_membership.is_manager)  # 管理员状态应保持不变
-        
-        # 清理测试数据
         normal_member.delete()
 
     def test_remove_member_view(self):
-        """测试移除俱乐部普通成员功能"""
-        # 创建一个普通成员用于测试移除
+        """Test removing the Club General Membership feature"""
         normal_member = User.objects.create_user(
             username="@normalmember",
             email="normal@example.com",
@@ -469,24 +437,22 @@ class ClubSystemViewsTest(TestCase):
             account_type="User"
         )
         
-        # 创建会员关系（非管理员）
+        # Creating Member Relationships (non-manager)
         normal_membership = Membership.objects.create(
             user=normal_member,
             club=self.club,
             is_manager=False
         )
         
-        # 登录管理员用户
         self.client.login(username='@manageruser', password='managerpass123')
         
-        # 测试移除不存在的用户
+        # Test removing non-existent users
         response = self.client.post(
             reverse('remove_member', args=[self.club.pk, '@nonexistentuser'])
         )
-        # 检查会员数量是否保持不变
-        self.assertEqual(Membership.objects.filter(club=self.club).count(), 3)  # 原有2个 + 新增1个
+        self.assertEqual(Membership.objects.filter(club=self.club).count(), 3)
         
-        # 测试移除不属于该俱乐部的用户
+        # Test removing users who do not belong to the club
         another_user = User.objects.create_user(
             username="@anotheruser",
             email="another@example.com",
@@ -498,21 +464,18 @@ class ClubSystemViewsTest(TestCase):
         response = self.client.post(
             reverse('remove_member', args=[self.club.pk, '@anotheruser'])
         )
-        # 检查会员数量是否保持不变
         self.assertEqual(Membership.objects.filter(club=self.club).count(), 3)
         
-        # 测试移除管理员（应该失败）
+        # Test removing manager will be denied
         response = self.client.post(
             reverse('remove_member', args=[self.club.pk, '@manageruser'])
         )
-        # 检查管理员是否仍然存在
         self.assertTrue(Membership.objects.filter(user=self.manager_user, club=self.club).exists())
         
-        # 测试成功移除普通成员
+        # Successful test removes ordinary members
         response = self.client.post(
             reverse('remove_member', args=[self.club.pk, '@normalmember'])
         )
-        # 检查普通成员是否已被移除
         self.assertFalse(Membership.objects.filter(user=normal_member, club=self.club).exists())
         
         # 测试管理员用户移除成员

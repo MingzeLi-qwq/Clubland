@@ -14,7 +14,7 @@ class Club(models.Model):
 
     """This section is used to implement the logic for incrementing association IDs"""
     def save(self, *args, **kwargs):
-        if not self.club_id:  # 当未分配 club_id 时
+        if not self.club_id:  # When club_id is not assigned
             last_club = Club.objects.order_by('-club_id').first()
             if last_club:
                 self.club_id = last_club.club_id + 1
