@@ -4,7 +4,6 @@
 {% block content %}
 <div id="app">
     <div class="chat-container">
-        <!-- 左侧消息列表 -->
         <div class="sidebar">
             <h5>消息中心</h5>
             <ul class="chat-list">
@@ -18,7 +17,6 @@
             </ul>
         </div>
 
-        <!-- 右侧聊天框 -->
         <div class="chat-content">
             <div class="chat-header">
                 <strong>{{ currentChat.name }}</strong>
@@ -45,9 +43,9 @@ const app = Vue.createApp({
     data() {
         return {
             chatList: [
-                { name: "无畏契约赛事", avatar: "https://via.placeholder.com/40", lastMessage: "🔥 快来看比赛", messages: [{ text: "你好！", sender: "other" }] },
-                { name: "崩坏星穹铁道", avatar: "https://via.placeholder.com/40", lastMessage: "全新世界开启！", messages: [{ text: "你好呀！", sender: "other" }] },
-                { name: "哔哩哔哩晚会", avatar: "https://via.placeholder.com/40", lastMessage: "直播开始提醒", messages: [{ text: "今晚看直播吗？", sender: "other" }] }
+                { name: "chat1", avatar: "https://via.placeholder.com/40", lastMessage: "hi", messages: [{ text: "hi", sender: "other" }] },
+                { name: "chat2", avatar: "https://via.placeholder.com/40", lastMessage: "hi", messages: [{ text: "hi", sender: "other" }] },
+                { name: "chat3", avatar: "https://via.placeholder.com/40", lastMessage: "hi", messages: [{ text: "hi", sender: "other" }] }
             ],
             currentChatIndex: 0,
             newMessage: "",
