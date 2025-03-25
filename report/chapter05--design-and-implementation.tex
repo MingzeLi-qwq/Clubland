@@ -50,18 +50,33 @@ In our technology selection process, we fully considered the project requirement
     \item \textbf{CORS Middleware}: Enabling cross-origin resource sharing support
 \end{itemize}
 
-\subsubsection{Why Not Use a Full CMS?}
-We considered using a full CMS solution (like WordPress) to handle rich text posts. 
-However, the assignment requires a custom-coded implementation of core functionality. 
-Instead of relying on a pre-built CMS, we chose \textbf{Django Summernote} as our RTE, 
-allowing us to store media files and properly render rich text content in HTML blocks, 
-while still meeting the requirement of writing our own implementation.
+\section{Alternative Design Options and Justifications}
+During the planning phase, we carefully evaluated the following alternative approaches and their pros and cons:
+
+\begin{itemize}
+    \item \textbf{Full CMS Solutions (e.g., WordPress) vs. Custom-coded Implementation} \\
+    We considered using a full CMS solution (like WordPress) to handle rich text posts. However, the assignment requires a custom-coded implementation of core functionality. Instead of relying on a pre-built CMS, we chose Django Summernote as our RTE, which allows us to store media files and properly render rich text content in HTML blocks, while still meeting the requirement of writing our own implementation.
+
+    \item \textbf{Other Web Frameworks (e.g., Flask, Node.js)} \\
+    While some frameworks offer more flexibility or a lighter footprint, Django’s built-in features 
+    (ORM, authentication, etc.) resulted in more efficient development given our project’s timeline 
+    and the team’s familiarity with Django.
+
+    \item \textbf{Monolithic vs. Microservices Architecture} \\
+    Microservices can provide higher scalability for large-scale projects, but our current scope 
+    is better suited to a monolithic architecture. We opted not to introduce microservices in order 
+    to keep the system straightforward and manage complexity.
+
+    \item \textbf{Developing a Custom Rich Text Editor vs. Using a Third-Party Plugin} \\
+    We considered implementing our own basic rich text features, but in terms of development 
+    efficiency and stability, Django Summernote offered a reliable out-of-the-box solution.
+\end{itemize}
+
 
 \subsection{Frontend Technologies}
 \begin{itemize}
     \item \textbf{Bootstrap}: Provides responsive UI components
     \item \textbf{JavaScript/jQuery}: Implements client-side interaction functionality
-    \item \textbf{CSS3}: Custom styles and responsive design
     \item \textbf{React}: Some modules (such as personal dashboard) are built using React
 \end{itemize}
 
