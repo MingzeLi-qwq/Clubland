@@ -26,11 +26,16 @@ class BlogPostListView(ListView):
             queryset = queryset.filter(Q(title__icontains=q) | Q(content__icontains=q))
         club_filter = self.request.GET.get('club', '')
         if club_filter:
-            queryset = queryset.filter(club_id=club_filter)
+            queryset = queryset.filter(club__pk=club_filter)
         order = self.request.GET.get('order', 'desc')
         if order == 'asc':
-            return queryset.order_by('created_at')
-        return queryset.order_by('-created_at')
+            queryset = queryset.order_by('created_at')
+        else:
+            queryset = queryset.order_by('-created_at')
+        return queryset
+
+    def get_paginate_by(self, queryset):
+        return get_paginate_by_request(self.request)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
