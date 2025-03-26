@@ -43,7 +43,8 @@ const PublicView = () => {
     useEffect(() => {
         const checkIfManager = async () => {
             try {
-                const response = await axios.get(`/api/clubs/${club_id}/is_manager/`);
+                console.log("Checking admin status...");
+                const response = await axios.get(`http://51.21.191.188:8000/api/clubs/api/clubs/${club_id}/is_manager/`);
                 setIsManager(response.data.is_manager);  // Set the manager status based on the response
             } catch (error) {
                 console.error("Error checking admin status", error);
@@ -64,19 +65,6 @@ const PublicView = () => {
         }, 1000);
         return () => clearInterval(timer);
     }, []);
-
-    useEffect(() => {
-        if (event_id && club_id) {
-          axios
-            .get(`/api/clubs/${club_id}/events/${event_id}/`)
-            .then((response) => {
-              setEvent(response.data);
-            })
-            .catch((error) => {
-              console.error('Error fetching event details', error);
-            });
-        }
-      }, [club_id, event_id]);
 
     useEffect(() => {
         if (!club_id || isNaN(Number(club_id))) return;
