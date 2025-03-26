@@ -104,6 +104,3 @@ class EventViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-@login_required
-def club_dashboard(request, club_id):
-    return render(request, "club_hub/dashboard.html", {"club_id": club_id})
