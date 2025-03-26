@@ -439,7 +439,6 @@ class ClubSystemViewsTest(TestCase):
         self.assertFalse(Membership.objects.filter(user=normal_member, club=self.club).exists())
         
         normal_member.delete()
-        another_user.delete()
 
     def test_club_manager_event_general_view(self):
         """Test Club manager events General information page view"""
