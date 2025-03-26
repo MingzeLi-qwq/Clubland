@@ -10,8 +10,6 @@ const Dashboard = () => {
     const { club_id } = useParams();
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
     const [clubName, setClubName] = useState<string | null>(null);
-    const [currentTime, setCurrentTime] = useState(new Date());
-    const [selectedEvent, setSelectedEvent] = useState<any>(null);
     const [time, setTime] = useState({
         hours: 0,
         minutes: 0,
@@ -20,12 +18,10 @@ const Dashboard = () => {
     const widgetConfig = {
         clock: { w: 2, h: 3, resizable: false },
         calendar: { w: 3, h: 3, resizable: false },
+        event_selector: { w: 4, h: 4, resizable: true },
         default: { w: 2, h: 2, resizable: true }
     };
-    const handleEventSelect = (event: any) => {
-        setSelectedEvent(event); 
-        console.log(event); 
-      };
+
     useEffect(() => {
         const updateClock = () => {
             const now = new Date();
@@ -41,9 +37,6 @@ const Dashboard = () => {
     
     useEffect(() => {
         if (!club_id || isNaN(Number(club_id))) return;
-        const timer = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
         
         const loadData = async () => {
             try {
