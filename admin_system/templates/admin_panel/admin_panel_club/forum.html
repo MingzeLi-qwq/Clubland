@@ -1,0 +1,17 @@
+{% extends "admin_panel/admin_panel_club/admin_panel_club_base.html" %}
+
+{% block panel_content %}
+
+<h4>Forum</h4>
+<p>Go to Forum page to view and change</p>
+
+<hr class="my-4 mb-4">
+
+<div class="mt-3">
+    <a href="{% url 'forum_system:blog_list' %}?order=desc&per_page=10&club={{ club_id }}" 
+       class="btn btn-primary  rounded-pill px-4">
+        Go to Forum →
+    </a>
+</div>
+
+{% endblock %}

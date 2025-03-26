@@ -14,6 +14,7 @@ urlpatterns = [
     path('clubs/general/<int:club_id>', views.AdminPanelClubsGeneral.as_view(), name='admin_panel_club_general'),
     path('clubs/members/<int:club_id>', views.AdminPanelClubsMembers.as_view(), name='admin_panel_club_members'),
     path('clubs/news/<int:club_id>', views.AdminPanelClubsNews.as_view(), name='admin_panel_club_news'),
+    path('clubs/forum/<int:club_id>', views.AdminPanelClubsForum.as_view(), name='admin_panel_club_forum'),
     path('clubs/events/<int:club_id>', views.AdminPanelClubsEvents.as_view(), name='admin_panel_club_events'),
     path('clubs/dashboard/<int:club_id>', views.AdminPanelClubsDashboard.as_view(), name='admin_panel_club_dashboard'),
     path('clubs/general/delete/<int:club_id>', views.AdminDeleteClub.as_view(), name='admin_delete_club'),
