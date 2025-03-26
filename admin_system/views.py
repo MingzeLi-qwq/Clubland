@@ -92,6 +92,41 @@ class AdminPanelAdminUsers(LoginRequiredMixin, UserTypeRequiredMixin, View):
             'admin_user_count': user_count,
             'search_query': search_query,
         })
+
+    def post(self, request, *args, **kwargs):
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+
+        if password1 != password2:
+            messages.error(request, "Passwords do not match")
+            return redirect('admin_panel_admin_users')
+            
+        if User.objects.filter(username=username).exists():
+            messages.error(request, f"Username {username} already exists")
+            return redirect('admin_panel_admin_users')
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, f"Email {email} is already registered")
+            return redirect('admin_panel_admin_users')
+
+        try:
+            User.objects.create_user(
+                username=username,
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                password=password1,
+                account_type=User.ACCOUNT_TYPE_ADMIN
+            )
+            messages.success(request, f"Admin user {username} created successfully")
+        except IntegrityError as e:
+                messages.error(request, "Error creating user")
+        
+        return redirect('admin_panel_admin_users')
     
 class AdminPanelRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
