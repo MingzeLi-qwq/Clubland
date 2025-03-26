@@ -17,20 +17,22 @@ class SignUpForm(UserCreationForm):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your last name'}),
         label="Last Name"
     )
-    account_type = forms.ChoiceField(
-        choices=User.ACCOUNT_TYPE_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label="Account Type"
-    )
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'first_name', 'last_name', 'account_type', 'password1', 'password2']
+        fields = ['email', 'username', 'first_name', 'last_name', 'password1', 'password2']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your username'}),
             'password1': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter password'}),
             'password2': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm password'}),
         }
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.account_type = User.ACCOUNT_TYPE_USER  # 自动设置账户类型
+        if commit:
+            user.save()
+        return user
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(

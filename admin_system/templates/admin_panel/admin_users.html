@@ -37,6 +37,44 @@
     </div>
 </div>
 
+<div class="card p-3 mb-3 shadow-sm">
+    <h5>Create A New Admin User</h5>
+    <form method="post" action="{% url 'admin_panel_admin_users' %}">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" required 
+                    pattern="@\w{3,}" 
+                    title="Username must start with @ and have at least 3 characters">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">First Name</label>
+                <input type="text" name="first_name" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="last_name" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Password</label>
+                <input type="password" name="password1" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" name="password2" class="form-control" required>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Create Admin User</button>
+            </div>
+        </div>
+    </form>
+</div>
+
 {% endblock %}
 
 
