@@ -2,10 +2,11 @@
   "name": "frontend",
   "version": "1.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0", 
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview --host 0.0.0.0"
   },
+
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
