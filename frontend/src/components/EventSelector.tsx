@@ -7,16 +7,13 @@ interface EventSelectorProps {
 }
 
 const EventSelector = ({ clubId, onEventSelect }: EventSelectorProps) => {
-  const [events, setEvents] = useState<any[]>([]);  // Ensure events is an array
+  const [events, setEvents] = useState<any[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
-
-  console.log(clubId);
-  console.log(selectedEvent);
 
   useEffect(() => {
     if (clubId) {
       axios
-        .get(`/api/clubs/${clubId}/events/`)
+        .get(`http://51.21.191.188:8000/api/clubs/${clubId}/events/`)
         .then((response) => {
           if (Array.isArray(response.data)) {
             setEvents(response.data);  // Only set if it's an array
@@ -42,15 +39,11 @@ const EventSelector = ({ clubId, onEventSelect }: EventSelectorProps) => {
       <label>Select an Event:</label>
       <select value={selectedEvent || ''} onChange={handleChange}>
         <option value="">Select an event</option>
-        {events && Array.isArray(events) && events.length > 0 ? (
-          events.map((event: any) => (
-            <option key={event.id} value={event.id}>
-              {event.name} - {new Date(event.start_time).toLocaleString()}
-            </option>
-          ))
-        ) : (
-          <option disabled>No events available</option>
-        )}
+        {events.map((event: any) => (
+          <option key={event.id} value={event.id}>
+            {event.name} - {new Date(event.start_time).toLocaleString()}
+          </option>
+        ))}
       </select>
     </div>
   );
