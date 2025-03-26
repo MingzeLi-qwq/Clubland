@@ -7,14 +7,15 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Widget
 from .serializers import WidgetSerializer, EventSerializer
 from club_system.helpers.mixins import ClubMemberRequiredMixin
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, redirect
+from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.core.files.storage import default_storage
 from club_system.models import Club
 from event_system.models import Event
 from .serializers import EventSerializer
+
 
 def get_csrf_token(request):
     return JsonResponse({"csrfToken": get_token(request)})
