@@ -3,20 +3,20 @@
 
 {% block body %}
 <style>
-    /* 为所有控件添加圆角样式 */
+    /* Add rounded corners to all controls */
     .card, .form-control, .list-group {
       border-radius: 12px;
     }
 </style>
 
 <div class="container mt-5 mb-4">
-    <!-- 标题 -->
+    <!-- title -->
     <div class="d-flex justify-content-between align-items-center">
         <h2>Club Management - {{ club.name }}</h2>
     </div>
 
     <div class="row mt-4 gy-3">
-        <!-- 侧边菜单栏 -->
+        <!-- Side menu bar -->
         <div class="col-md-3">
             <div class="list-group" style="border-radius: 12px;">
                 <a href="{% url 'club_manager_general' club_id=club_id %}" class="list-group-item list-group-item-action">
@@ -32,14 +32,14 @@
                     Events
                 </a>
                 <a href="{% url 'club_manager_dashboard' club_id=club_id %}" class="list-group-item list-group-item-action">
-                    Dashboard
+                    Hub
                 </a>
             </div>
         </div>
 
-        <!-- 主内容 -->
+        <!-- main content -->
         <div class="col-md-9">
-            <!-- 错误信息框样式  -->
+            <!-- Error message box  -->
             <style>
                 .alert-error {
                     background-color: #f8d7da;

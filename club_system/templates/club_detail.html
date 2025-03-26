@@ -4,33 +4,59 @@
 {% block body %}
 <div class="container">
     <div class="row">
-        <!-- 社团名称 -->
+        <!-- Club name -->
         <h1 class="my-4">{{ club.name }}</h1>
 
-        <!-- 左侧主要内容 -->
+        <!-- Left main content -->
         <div class="col-md-8">
             
-            <!-- Club 描述 -->
+            <!-- Club description -->
             <p>{{ club.description }}</p >
 
-            <!-- Club hub card -->
+            <!-- Club Operations card -->
             {% if user.is_authenticated and is_member or user.account_type == 'Admin' %}
                 <div class="card mb-4 shadow-sm border-0">
                     <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="bi bi-flag"></i> Club hub    
+                            <i class="bi bi-flag"></i> Club Operations    
                         </h5>
                     </div>
-                    <div class="card-body text-center">
-                        <a href="{% url 'club_dashboard' club_id=club.club_id %}" 
-                           class="btn btn-outline-success btn-lg rounded-pill w-100 hover-effect">
-                            Access {{ club.name }} Hub →
-                        </a>
+                    <div class="card-body">
+                        {% if is_manager %}
+                        <h6 class="mb-3">You are a manager of this club, check more at <strong>Club Hub</strong>; or manage members, events and more at <strong>Club Manager Page</strong>:</h6>
+                        {% elif user.account_type == 'Admin' %}
+                        <h6 class="mb-3">You are an administrator, check more at <strong>Admin Panel</strong>:</h6>
+                        {% else %}
+                        <h6 class="mb-3">You are a member of this club, check more at <strong>Club Hub</strong>:</h6>
+                        {% endif %}
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <a href="{% url 'club_dashboard' club_id=club.club_id %}" 
+                                   class="btn btn-outline-success btn-lg rounded-pill w-100 hover-effect">
+                                    Access {{ club.name }} Hub →
+                                </a>
+                            </div>
+                            {% if is_manager %}
+                            <div class="col-12 col-md-6">
+                                <a href="{% url 'club_manager_general' club_id=club.club_id %}" 
+                                   class="btn btn-outline-secondary btn-lg rounded-pill w-100 hover-effect">
+                                    Club Manager Page <i class="bi bi-gear"></i>
+                                </a>
+                            </div>
+                            {% elif user.account_type == 'Admin' %}
+                            <div class="col-12 col-md-6">
+                                <a href="{% url 'admin_panel_club_general' club_id=club.club_id %}" 
+                                   class="btn btn-outline-secondary btn-lg rounded-pill w-100 hover-effect">
+                                    Admin Panel Club <i class="bi bi-gear"></i>
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             {% endif %}
 
-            <!-- 最近事件卡片 -->
+            <!-- recent event -->
             <div class="card mb-4 shadow-sm border-0">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
@@ -64,7 +90,7 @@
                 </div>
             </div>
 
-            <!-- 最近新闻卡片 -->
+            <!-- recent news -->
             <div class="card mb-4 shadow-sm border-0">
                 <div class="card-header bg-secondary text-white">
                     <h5 class="mb-0"><i class="bi bi-newspaper me-2"></i> Recent News</h5>
@@ -72,11 +98,11 @@
                 <div class="card-body">
                     {% if recent_news %}
                         {% for news_item in recent_news|slice:":2" %}
-                            <!-- 单条新闻展示 -->
+                            <!-- Individual News Display -->
                             <a href="{% url 'news_system:news_detail' news_item.id %}" 
                                class="text-decoration-none text-dark">
                                 <div class="d-flex mb-3 pb-3 border-bottom">
-                                    <!-- 左侧内容区 -->
+                                    <!-- Left content area -->
                                     <div class="flex-grow-1 me-3">
                                         <div class="d-flex w-100 justify-content-between flex-column flex-sm-row">
                                             <h5 class="mb-1 text-break">{{ news_item.title }}</h5>
@@ -93,7 +119,7 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- 右侧图片展示区 -->
+                                    <!-- Right side photo display area -->
                                     <div class="d-none d-sm-block flex-shrink-0" 
                                          style="margin: 0; padding: 0; aspect-ratio: 4/3; width: 150px;">
                                         {% if news_item.first_image_url %}
@@ -119,9 +145,9 @@
 
         </div>
 
-        <!-- 右侧信息栏 -->
+        <!-- right message box -->
         <div class="col-md-4">
-            <!-- Club Information 卡片 -->
+            <!-- Club Information card -->
             <div class="card bg-light mb-3">
                 <div class="card-header">Club Information</div>
                 <div class="card-body">
@@ -149,27 +175,23 @@
 
                     <div class="d-flex justify-content-center mt-5">
                         {% if user.is_authenticated %}
-                            <!-- 当前用户登录时 -->
+                            <!-- When the current user is logged in -->
                             {% if user.account_type == 'Admin' %}
                                 <p>
                                     You are the administrator, you can manage this club in <a href="{% url 'admin_panel_club_general' club_id=club.club_id %}" class="btn btn-link p-0">admin panel page</a>.
                                 </p>
                             {% elif user in club.members.all %}
-                                <!-- 如果此用户是club成员 -->
-                                    {% if is_manager %}
-                                    <p>
-                                        You are the club manager, you can manage this club in <a href="{% url 'club_manager_general' club_id=club.club_id %}" class="btn btn-link p-0">club manager page</a>.
-                                    </p>
-                                    {% else %}
-                                    <p>
-                                        You are already a club member. Check your membership at <a href="{% url 'dashboard_my_club_detail' club_id=club.club_id %}" class="btn btn-link p-0">dashboard</a>.
-                                    </p>
-                                    {% endif %}
+                                <!-- If this user is a club member -->
+                                <p>
+                                    You are already a club member. Check your membership at <a href="{% url 'dashboard_my_club_detail' club_id=club.club_id %}" class="btn btn-link p-0">dashboard</a>.
+                                </p>
                             {% else %}
-                                <!-- 如果此用户不是club成员 -->
+                                <!-- If this user is not a club member -->
                                 <a href="{% url 'register_membership' club_id=club.club_id %}" class="btn btn-primary btn-lg rounded-pill w-100">Register Membership</a>
                             {% endif %}
                         {% else %}
+
+                            <!-- When the current user is not logged in -->
                             <p>
                                 <a href="{% url 'login' %}" class="btn btn-link p-0">Login</a> or 
                                 <a href="{% url 'signup' %}" class="btn btn-link p-0">registration</a> is required before registering for membership.

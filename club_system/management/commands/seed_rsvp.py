@@ -11,34 +11,33 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Add RSVP records ensuring each Event has at least 4 RSVPs."""
-        self.stdout.write("🚀 开始生成 RSVP 记录...")
+        self.stdout.write("Start generating RSVP records...")
 
-        events = list(Event.objects.all())  # 获取所有活动
+        events = list(Event.objects.all()
 
         if not events:
-            self.stdout.write(self.style.ERROR("❌ 没有可用的活动，请先添加活动数据！"))
+            self.stdout.write(self.style.ERROR("There are no available campaigns, please add campaign data first!"))
             return
 
         for event in events:
             existing_rsvp_count = RSVP.objects.filter(event=event).count()
 
             if existing_rsvp_count >= 4:
-                self.stdout.write(self.style.SUCCESS(f"✅ 活动 {event.name} 已有 {existing_rsvp_count} 个 RSVP，跳过..."))
+                self.stdout.write(self.style.SUCCESS(f"Event {event.name} Have {existing_rsvp_count} RSVPs..."))
                 continue
 
-            # 获取社团成员
             club_members = list(User.objects.filter(membership__club=event.club))
 
             if not club_members:
-                self.stdout.write(self.style.WARNING(f"⚠️ 活动 {event.name} 所属社团 {event.club.name} 没有成员，无法报名！"))
+                self.stdout.write(self.style.WARNING(f"{event.name} belongs to {event.club.name} with no members, skipping..."))
                 continue
 
-            required_rsvp = 4 - existing_rsvp_count  # 需要额外添加的 RSVP 数量
-            random_users = random.sample(club_members, k=min(len(club_members), required_rsvp))  # 随机选择社团成员
+            required_rsvp = 4 - existing_rsvp_count  # Number of additional RSVPs to be added
+            random_users = random.sample(club_members, k=min(len(club_members), required_rsvp))  # Random selection of club members
 
             for user in random_users:
-                if not RSVP.objects.filter(user=user, event=event).exists():  # 避免重复 RSVP
+                if not RSVP.objects.filter(user=user, event=event).exists():  # Avoid duplicate RSVPs
                     RSVP.objects.create(user=user, event=event)
-                    self.stdout.write(f"📌 {user.username} 预定了 {event.name}（社团 {event.club.name}）")
+                    self.stdout.write(f"{user.username} participant event: {event.name}（club: {event.club.name}）")
 
-        self.stdout.write(self.style.SUCCESS("🎉 RSVP 预定数据创建完成！"))
+        self.stdout.write(self.style.SUCCESS("seed RSVPs finished！"))

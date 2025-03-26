@@ -27,7 +27,7 @@
     }
 </style>
 
-<!-- 返回按钮 -->
+<!-- Back button -->
 <div class="mb-3">
     <a href="{% url 'club_manager_events' club_id=club_id %}" class="text-decoration-none text-primary">
         <i class="bi bi-arrow-left-short"></i> Events
@@ -88,17 +88,17 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 设置最小日期为今天
+    // Set the minimum date to today
     var today = new Date().toISOString().split('T')[0];
     document.getElementById('start_time').min = today + "T00:00";
     document.getElementById('end_time').min = today + "T00:00";
 
-    // 监听开始时间的变化
+    // Listening for changes in the start time
     document.getElementById('start_time').addEventListener('change', function() {
         document.getElementById('end_time').min = this.value;
     });
 
-    // 表单验证
+    // Form Validation
     var form = document.querySelector('.needs-validation');
     form.addEventListener('submit', function(event) {
         if (!form.checkValidity()) {
