@@ -4,6 +4,7 @@ import GridLayout from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import axios from "axios";
+import Cookies from 'js-cookie';
 
 interface WidgetType {
     id: number;
@@ -23,6 +24,7 @@ interface WidgetType {
 const PublicView = () => {
     const { club_id } = useParams();
     const { event_id } = useParams();
+    const [isAdmin, setIsAdmin] = useState(false);
     const [event, setEvent] = useState<any>(null);
     const [widgets, setWidgets] = useState<WidgetType[]>([]);
     const [layout, setLayout] = useState<{ i: string; x: number; y: number; w: number; h: number }[]>([]);
@@ -39,6 +41,11 @@ const PublicView = () => {
         default: { w: 2, h: 2, resizable: true }
     };
     
+    useEffect(() => {
+        // 从 Cookie 中获取 is_admin 信息
+        const adminStatus = Cookies.get('is_admin') === 'true';
+        setIsAdmin(adminStatus);
+      }, []);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -320,25 +327,27 @@ const PublicView = () => {
                 
 
             </GridLayout>
-            <button 
-                onClick={() => window.location.href = `/club-dashboard/${club_id}`}
-                style={{
-                    background: '#1890ff',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    height: '40px',
-                    transition: 'background 0.3s',
-                    ':hover': {
-                        background: '#40a9ff'
-                    }
-                }}
-            >
-                Edit
-            </button>
+            {isAdmin && (
+                <button 
+                        onClick={() => window.location.href = `/club-dashboard/${club_id}`}
+                        style={{
+                            background: '#1890ff',
+                            color: 'white',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            height: '40px',
+                            transition: 'background 0.3s',
+                            ':hover': {
+                                background: '#40a9ff'
+                            }
+                        }}
+                    >
+                    Edit
+                </button>
+            )}
         </div>
         
     );

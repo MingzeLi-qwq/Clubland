@@ -107,4 +107,8 @@ class EventViewSet(viewsets.ModelViewSet):
 
 @login_required
 def club_hub_view(request, club_id):
-    return redirect(f'http://51.21.191.188:3000/club-view/{club_id}/')
+    user = request.user
+    is_admin = user.account_type == 'Admin'
+    response = redirect(f'http://51.21.191.188:3000/club-view/{club_id}/')
+    response.set_cookie('is_admin', is_admin)
+    return response
