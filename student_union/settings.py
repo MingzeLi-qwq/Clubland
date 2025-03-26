@@ -170,7 +170,11 @@ if DEBUG:
     # DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-    CSRF_TRUSTED_ORIGINS = ['https://localhost:8000']
+    CSRF_TRUSTED_ORIGINS = [
+        "http://51.21.191.188:3000",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000"]
 else:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
