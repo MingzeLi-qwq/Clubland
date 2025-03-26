@@ -13,6 +13,7 @@ urlpatterns = [
     path('manager/general/<int:club_id>/', views.ClubManagerGeneral.as_view(), name='club_manager_general'),
     path('manager/members/<int:club_id>/', views.ClubManagerMembers.as_view(), name='club_manager_members'),
     path('manager/news/<int:club_id>/', views.ClubManagerNews.as_view(), name='club_manager_news'),
+    path('manager/forum/<int:club_id>/', views.ClubManagerForum.as_view(), name='club_manager_forum'),
     path('manager/events/<int:club_id>/', views.ClubManagerEvents.as_view(), name='club_manager_events'),
     path('manager/dashboard/<int:club_id>/', views.ClubManagerDashboard.as_view(), name='club_manager_dashboard'),
 
