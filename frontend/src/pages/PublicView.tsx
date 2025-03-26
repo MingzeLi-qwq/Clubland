@@ -25,7 +25,8 @@ interface PublicViewProps {
     selectedEvent: any;  // 从父组件 (Dashboard) 接收 selectedEvent
   }
 
-const PublicView = ({ club_id, selectedEvent }: PublicViewProps) => {
+const PublicView = ({selectedEvent }: PublicViewProps) => {
+    const { club_id } = useParams();
     const [eventDetails, setEventDetails] = useState<any>(null);
     const [widgets, setWidgets] = useState<WidgetType[]>([]);
     const [layout, setLayout] = useState<{ i: string; x: number; y: number; w: number; h: number }[]>([]);
@@ -259,7 +260,7 @@ const PublicView = ({ club_id, selectedEvent }: PublicViewProps) => {
           
                 
             default:
-                return <div>Undefined Widget</div>;
+                return <div>Undefined Wdiget</div>;
         }
     };
 
