@@ -5,9 +5,6 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
-// 修正导入路径，使用相对路径
-import EventSelector from '../components/EventSelector';
-
 
 const Dashboard = () => {
     const { club_id } = useParams();
@@ -161,7 +158,7 @@ const Dashboard = () => {
                         description: eventRes.data.description
                     };
                 } catch (error) {
-                    console.error('获取活动详情失败:', error);
+                    console.error('Failed to get Event:', error);
                     return;
                 }
             }
@@ -314,7 +311,6 @@ const Dashboard = () => {
     
         setWidgets(updatedWidgets);
     
-        // Make sure to use the updated data
         const updatedWidgetData = updatedWidgets.find(w => w.id === id);
     
         if (!updatedWidgetData) {
@@ -400,13 +396,10 @@ const Dashboard = () => {
                 {widgets.map((widget) => {
                     <div key={widget.id} data-grid={layout.find(l => l.i === String(widget.id))} />
                         
-                    // 获取当前 widget 类型的配置，默认为 'default' 配置
                     const widgetConfigItem = widgetConfig[widget.widget_type as keyof typeof widgetConfig] || widgetConfig.default;
 
-                    // 判断当前 widget 是否可以调整大小
                     const isResizable = widgetConfigItem.resizable;
 
-                    // 设置 widget 的 layout 数据
                     const widgetLayout = layout.find((l) => l.i === String(widget.id));
                     
                     return (

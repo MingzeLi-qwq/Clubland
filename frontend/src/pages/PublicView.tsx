@@ -4,8 +4,7 @@ import GridLayout from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import axios from "axios";
-import EventSelector from '../components/EventSelector';
-// 定义组件类型接口
+
 interface WidgetType {
     id: number;
     name: string;
@@ -99,14 +98,13 @@ const PublicView = () => {
                     setDashboardBg(fullUrl);
                 }
             } catch (error) {
-                console.error("加载组件或背景失败：", error);
+                console.error("Loading Error", error);
             }
         };
 
         fetchClubData();
     }, [club_id]);
 
-    // 在renderWidgetContent函数中添加时钟渲染逻辑
     const renderWidgetContent = (widget: WidgetType) => {
         switch (widget.widget_type) {
             case 'text':
@@ -123,7 +121,7 @@ const PublicView = () => {
                         >
                             <img
                                 src={`http://51.21.191.188:8000${widget.data.url}`}
-                                alt="社团图片"
+                                alt="Photo"
                                 style={{
                                     width: '100%',
                                     height: '100%',
@@ -133,12 +131,12 @@ const PublicView = () => {
                                 }}
                             />
                         </div>
-                    ) : <div style={{ padding: 10 }}>暂无图片</div>;
+                    ) : <div style={{ padding: 10 }}>No Photo</div>;
 
             case 'notice':
                 return <div style={{ padding: 10 }}>
-                    <div style={{ color: '#666', fontSize: 18 }}>最新公告：</div>
-                    <div>{widget.data?.content || '暂无公告'}</div>
+                    <div style={{ color: '#666', fontSize: 18 }}>Lastest Notice</div>
+                    <div>{widget.data?.content || 'No Notice'}</div>
                 </div>;
 
             case 'countdown':
@@ -169,7 +167,6 @@ const PublicView = () => {
                         margin: '0 auto',
                         position: 'relative'
                     }}>
-                        {/* 表盘刻度 */}
                         <div style={{
                             width: '80%',
                             height: '80%',
@@ -193,7 +190,6 @@ const PublicView = () => {
                             ))}
                         </div>
                         
-                        {/* 时钟指针 */}
                         <div style={{
                             position: 'absolute',
                             left: '50%',
@@ -228,7 +224,6 @@ const PublicView = () => {
                             transition: 'transform 0.3s cubic-bezier(0.4, 2.3, 0.6, 1)'
                         }} />
                         
-                        {/* 中心点 */}
                         <div style={{
                             position: 'absolute',
                             left: '50%',
@@ -243,10 +238,9 @@ const PublicView = () => {
                 </div>;
             case 'event_selector':
                 if (!widget.data?.event_id) {
-                    return <div>请选择活动</div>;
+                    return <div>No Event Info</div>;
                 }
                 
-                // Remove useState/useEffect from here and use existing data
                 return (
                     <div style={{ padding: 10 }}>
                         <h3>Event Detail</h3>
@@ -258,14 +252,14 @@ const PublicView = () => {
                                 <p><strong>Descriptioon:</strong> {widget.data.description}</p>
                             </>
                         ) : (
-                            <div>加载中...</div>
+                            <div>Loading...</div>
                         )}
                     </div>
                 );
           
                 
             default:
-                return <div>未知组件类型</div>;
+                return <div>Undefined Widget</div>;
         }
     };
 
