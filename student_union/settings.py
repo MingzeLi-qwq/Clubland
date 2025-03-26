@@ -28,7 +28,11 @@ SECRET_KEY = 'django-insecure-pgs68)47-z#uhn8t288el0co1dx#9@r0n%n77ep4t@mv8)u7lg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    '51.21.191.188',
+]
 
 
 # Application definition
@@ -67,6 +71,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'user_system.middleware.CSRFRefreshMiddleware',
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://51.21.191.188:4173",
+    "http://localhost:5173",
+    "https://51.21.191.188",
 ]
 
 ROOT_URLCONF = 'student_union.urls'
@@ -197,14 +209,12 @@ SUMMERNOTE_CONFIG = {
         # ],
     },
 
-    # 附件相关配置，若不需要附件上传可保持默认，不作修改
     'attachment_require_authentication': True,
     'disable_attachment': False,
     'attachment_absolute_uri': False,
 
-    # 延迟加载（若想在页面底部初始化 summernote 可启用）
     'lazy': True,
-    # 使用 CMS_mixins 的上传路径生成函数
+
     'attachment_upload_to': CMS_utils.RTEUploadUtils.upload_img_func,
 }
 
