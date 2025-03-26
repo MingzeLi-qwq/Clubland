@@ -30,9 +30,15 @@ const EventSelector = ({ clubId, onEventSelect }: EventSelectorProps) => {
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const eventId = event.target.value;
     setSelectedEvent(eventId);
-    const selectedEvent  = events.find((e: any) => e.id === eventId);
-    onEventSelect(selectedEvent ); // Pass the selected event to parent component
-  };
+
+    // Find the selected event in the list of events and pass it to the parent component
+    const selectedEvent = events.find((e: any) => e.id === parseInt(eventId, 10));  // Convert eventId to number for comparison
+    if (selectedEvent) {
+        onEventSelect(selectedEvent); // Pass the selected event to parent component
+    } else {
+        console.error("Selected event not found in events list.");
+    }
+};
 
   return (
     <div>
