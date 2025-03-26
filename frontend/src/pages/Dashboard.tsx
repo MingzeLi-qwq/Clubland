@@ -603,6 +603,7 @@ const Dashboard = () => {
                                         width: '100%',
                                         height: '100%',
                                         objectFit: 'cover',
+                                        overflow: 'hidden'
                                     }}>
                                     <h3>Event Detail</h3>
                                     {widget.data ? (
