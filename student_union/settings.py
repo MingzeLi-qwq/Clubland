@@ -74,7 +74,7 @@ MIDDLEWARE = [
     'user_system.middleware.CSRFRefreshMiddleware',  # 添加新的中间件
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
 
 CORS_ALLOWED_ORIGINS = [
     "http://51.21.191.188:3000",
@@ -172,6 +172,8 @@ if DEBUG:
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
     CSRF_TRUSTED_ORIGINS = ['https://localhost:8000']
 else:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 #     # 生产环境下使用 Amazon S3 存储
 #     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 #     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
@@ -180,7 +182,10 @@ else:
 #     AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
 #     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 #     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
-    CSRF_TRUSTED_ORIGINS = ['https://example.com']
+    CSRF_TRUSTED_ORIGINS = [
+        "http://51.21.191.188:3000",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000"]
 
 
 # SUMMERNOTE_THEME = 'bs5'  # Show summernote with Bootstrap 5 theme
