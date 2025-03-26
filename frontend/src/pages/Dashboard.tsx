@@ -287,25 +287,54 @@ const Dashboard = () => {
         const getCsrfToken = () => {
             const csrfToken = document.cookie
                 .split('; ')
-                .find(row => row.startsWith('csrftoken='))
-                ?.split('=')[1];
+                .find(row => row.startsWith('csrftoken='))?.split('=')[1];
+            
+            if (!csrfToken) {
+                console.error('CSRF token not found!');
+                return null;
+            }
             return csrfToken;
         };
-        const updatedWidgets = widgets.map(w => {
-        if (w.id === id) {
-        return { ...w, data: { ...w.data, [key]: value } };
+    
+        const csrfToken = getCsrfToken();
+        if (!csrfToken) {
+            console.error('CSRF token is missing');
+            return;
         }
-        return w;
+    
+        const updatedWidgets = widgets.map(w => {
+            if (w.id === id) {
+                return { ...w, data: { ...w.data, [key]: value } };
+            }
+            return w;
         });
+    
         setWidgets(updatedWidgets);
-        
-        await axios.patch(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/${id}/`, {
-        data: updatedWidgets.find(w => w.id === id)?.data
-        }, {
-        headers: { "X-CSRFToken": getCsrfToken() },
-        withCredentials: true
+    
+        // Make sure to use the updated data
+        const updatedWidgetData = updatedWidgets.find(w => w.id === id);
+    
+        if (!updatedWidgetData) {
+            console.error('Widget not found!');
+            return;
+        }
+    
+        await axios.patch(
+            `http://51.21.191.188:8000/api/clubs/${club_id}/widgets/${id}/`, 
+            { data: updatedWidgetData.data }, 
+            {
+                headers: { "X-CSRFToken": csrfToken },
+                withCredentials: true
+            }
+        )
+        .then(response => {
+            console.log('Widget updated successfully', response.data);
+        })
+        .catch(error => {
+            console.error('Error updating widget', error.response?.data || error.message);
         });
     };
+    
 
     return (
             <div 
