@@ -15,7 +15,7 @@ from django.core.files.storage import default_storage
 from club_system.models import Club
 from event_system.models import Event
 from .serializers import EventSerializer
-
+from club_system.models import Membership
 
 
 def get_csrf_token(request):
@@ -118,9 +118,15 @@ class ManagerCheckView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, club_id):
-        is_manager = Membership.objects.filter(
-            user=request.user,
-            club_id=club_id,
-            is_manager=True
-        ).exists()
-        return Response({"is_manager": is_manager})
+        try:
+            club = Club.objects.get(pk=club_id)  # 验证社团是否存在
+            is_manager = Membership.objects.filter(
+                user=request.user,
+                club=club,
+                is_manager=True
+            ).exists()
+            return Response({"is_manager": is_manager})
+        except Club.DoesNotExist:
+            return Response({"error": "Club not found"}, status=404)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
