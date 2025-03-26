@@ -119,7 +119,8 @@ class ManagerCheckView(APIView):
     
     def get(self, request, club_id):
         try:
-            club = Club.objects.get(pk=club_id)  # 验证社团是否存在
+            club = Club.objects.get(pk=club_id)
+            console.log(club)
             is_manager = Membership.objects.filter(
                 user=request.user,
                 club=club,
