@@ -80,7 +80,8 @@ const Dashboard = () => {
                 );
         
                 if (clubRes.data.background_image) {
-                    setDashboardBg(clubRes.data.background_image);
+                    const fullUrl = `http://51.21.191.188:8000/media/${clubRes.data.background_image}`;
+                    setDashboardBg(fullUrl);
                 }
                 if (clubRes.data.name) {
                     setClubName(clubRes.data.name);
