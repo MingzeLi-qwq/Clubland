@@ -507,7 +507,8 @@ const Dashboard = () => {
                                                                 withCredentials: true
                                                             });
 
-                                                            const uploadedUrl = `/media/${res.data.file_url}`;
+                                                            const uploadedUrl = `/media/uploads${res.data.file_url}`;
+                                                            console.log(uploadedUrl);   
                                                             await updateWidgetData(widget.id, 'url', uploadedUrl);
                                                         } catch (err) {
                                                             alert("上传失败");
