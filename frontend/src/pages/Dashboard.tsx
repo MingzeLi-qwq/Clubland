@@ -507,7 +507,7 @@ const Dashboard = () => {
                                                                 withCredentials: true
                                                             });
 
-                                                            const uploadedUrl = `/media/uploads${res.data.file_url}`;
+                                                            const uploadedUrl = `/media${res.data.file_url}`;
                                                             console.log(uploadedUrl);   
                                                             await updateWidgetData(widget.id, 'url', uploadedUrl);
                                                         } catch (err) {
@@ -518,8 +518,9 @@ const Dashboard = () => {
                                                 />
                                             </>
                                         ) : (
+                                            
                                             <img
-                                                src={widget.data.url}
+                                                src={`http://51.21.191.188:8000${widget.data.url}`}
                                                 alt="上传图片"
                                                 style={{
                                                     width: '100%',
