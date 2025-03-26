@@ -284,21 +284,27 @@ const Dashboard = () => {
     
 
     const updateWidgetData = async (id: number, key: string, value: any) => {
-    const csrfToken = await getCsrfToken();
-    const updatedWidgets = widgets.map(w => {
-    if (w.id === id) {
-    return { ...w, data: { ...w.data, [key]: value } };
-    }
-    return w;
-    });
-    setWidgets(updatedWidgets);
-    
-    await axios.patch(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/${id}/`, {
-    data: updatedWidgets.find(w => w.id === id)?.data
-    }, {
-    headers: { "X-CSRFToken": csrfToken },
-    withCredentials: true
-    });
+        const getCsrfToken = () => {
+            const csrfToken = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+            return csrfToken;
+        };
+        const updatedWidgets = widgets.map(w => {
+        if (w.id === id) {
+        return { ...w, data: { ...w.data, [key]: value } };
+        }
+        return w;
+        });
+        setWidgets(updatedWidgets);
+        
+        await axios.patch(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/${id}/`, {
+        data: updatedWidgets.find(w => w.id === id)?.data
+        }, {
+        headers: { "X-CSRFToken": getCsrfToken() },
+        withCredentials: true
+        });
     };
 
     return (
