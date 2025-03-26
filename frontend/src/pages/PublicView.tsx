@@ -4,8 +4,6 @@ import GridLayout from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import axios from "axios";
-import Cookies from 'js-cookie';
-import { useLocation } from "react-router-dom";
 
 interface WidgetType {
     id: number;
@@ -25,9 +23,6 @@ interface WidgetType {
 const PublicView = () => {
     const { club_id } = useParams();
     const { event_id } = useParams();
-    const [isAdmin, setIsAdmin] = useState(false);
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
     const [event, setEvent] = useState<any>(null);
     const [widgets, setWidgets] = useState<WidgetType[]>([]);
     const [layout, setLayout] = useState<{ i: string; x: number; y: number; w: number; h: number }[]>([]);
@@ -44,10 +39,6 @@ const PublicView = () => {
         default: { w: 2, h: 2, resizable: true }
     };
     
-    useEffect(() => {
-        const adminStatus = Cookies.get('is_admin') === 'true';
-        setIsAdmin(adminStatus);
-      }, []);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -329,9 +320,8 @@ const PublicView = () => {
                 
 
             </GridLayout>
-            {isAdmin && (
-                <button
-                onClick={() => window.location.href = `/club-dashboard/${clubId}`}
+            <button 
+                onClick={() => window.location.href = `/club-dashboard/${club_id}`}
                 style={{
                     background: '#1890ff',
                     color: 'white',
@@ -342,11 +332,13 @@ const PublicView = () => {
                     fontSize: '14px',
                     height: '40px',
                     transition: 'background 0.3s',
+                    ':hover': {
+                        background: '#40a9ff'
+                    }
                 }}
-                >
+            >
                 Edit
-                </button>
-            )}
+            </button>
         </div>
         
     );
