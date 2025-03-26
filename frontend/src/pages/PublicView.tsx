@@ -44,6 +44,7 @@ const PublicView = () => {
         // 新增权限检查
         const checkManagerStatus = async () => {
             try {
+                console.log('开始:');
                 const response = await api.get(`clubs/${club_id}/check_manager/`);
                 setIsManager(response.data.is_manager);
             } catch (error) {
