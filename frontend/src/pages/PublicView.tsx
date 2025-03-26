@@ -45,7 +45,7 @@ const PublicView = () => {
         const checkManagerStatus = async () => {
             try {
                 console.log('开始:');
-                const response = await api.get(`clubs/${club_id}/check_manager/`);
+                const response = await axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/check_manager/`);
                 setIsManager(response.data.is_manager);
             } catch (error) {
                 if (axios.isAxiosError(error)) {
@@ -81,7 +81,7 @@ const PublicView = () => {
     useEffect(() => {
         if (event_id && club_id) {
           axios
-            .get(`/api/clubs/${club_id}/events/${event_id}/`)
+            .get(`http://51.21.191.188:8000/api/clubs/${club_id}/events/${event_id}/`)
             .then((response) => {
               setEvent(response.data);
             })
