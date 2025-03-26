@@ -122,7 +122,7 @@ const PublicView = () => {
                             }}
                         >
                             <img
-                                src={widget.data.url}
+                                src={`http://51.21.191.188:8000${widget.data.url}`}
                                 alt="社团图片"
                                 style={{
                                     width: '100%',
