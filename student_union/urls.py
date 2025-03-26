@@ -93,6 +93,7 @@ urlpatterns = [
 
 
     path('api/', include('club_hub.urls')),
+    path("club-view/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
 
     # Message related / 消息相关
     path('messages/message_dashboard', message_system.views.message_dashboard, name='message_dashboard'),
