@@ -120,7 +120,7 @@ urlpatterns = [
 
     path("api/", include("club_hub.urls")),
     path("api/upload-image/", ImageUploadView.as_view(), name="upload-image"),
-    path('api/clubs/<int:club_id>/check_manager/', ManagerCheckView.as_view(), name='check-manager'),
+    path('api/clubs/<int:club_id>/is_manager/', ManagerCheckView.as_view(), name='check-manager'),
 ]
 
 
