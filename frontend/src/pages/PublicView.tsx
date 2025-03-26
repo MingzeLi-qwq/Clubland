@@ -121,7 +121,7 @@ const PublicView = () => {
         const checkIfManager = async () => {
             try {
                 const response = await axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/memberships/`, {
-                    params: { user_id:  }
+                    params: { user_id: localStorage.getItem('userId') }
                 });
 
                 const membership = response.data;
