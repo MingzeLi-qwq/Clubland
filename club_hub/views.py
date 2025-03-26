@@ -9,7 +9,7 @@ from .serializers import WidgetSerializer, EventSerializer
 from club_system.helpers.mixins import ClubMemberRequiredMixin
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, redirect
 from django.middleware.csrf import get_token
 from django.core.files.storage import default_storage
 from club_system.models import Club
