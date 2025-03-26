@@ -23,8 +23,8 @@ interface WidgetType {
 const PublicView = () => {
     const { club_id } = useParams();
     const { event_id } = useParams();
-    const [isManager, setIsManager] = useState(false);
     const [event, setEvent] = useState<any>(null);
+    const [isManager, setIsManager] = useState<boolean | null>(null);
     const [widgets, setWidgets] = useState<WidgetType[]>([]);
     const [layout, setLayout] = useState<{ i: string; x: number; y: number; w: number; h: number }[]>([]);
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
@@ -40,6 +40,18 @@ const PublicView = () => {
         default: { w: 2, h: 2, resizable: true }
     };
     
+    useEffect(() => {
+        const checkIfManager = async () => {
+            try {
+                const response = await axios.get(`/api/clubs/${club_id}/is_manager/`);
+                setIsManager(response.data.is_manager);  // Set the manager status based on the response
+            } catch (error) {
+                console.error("Error checking admin status", error);
+            }
+        };
+
+        checkIfManager();
+    }, [club_id]);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -56,7 +68,7 @@ const PublicView = () => {
     useEffect(() => {
         if (event_id && club_id) {
           axios
-            .get(`http://51.21.191.188:8000/api/clubs/${club_id}/events/${event_id}/`)
+            .get(`/api/clubs/${club_id}/events/${event_id}/`)
             .then((response) => {
               setEvent(response.data);
             })
@@ -321,20 +333,30 @@ const PublicView = () => {
                 
 
             </GridLayout>
-            {hasEditPermission && <EditButton />}
+            {isManager && (
+            <button 
+                onClick={() => window.location.href = `/club-dashboard/${club_id}`}
+                style={{
+                    background: '#1890ff',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    height: '40px',
+                    transition: 'background 0.3s',
+                    ':hover': {
+                        background: '#40a9ff'
+                    }
+                }}
+            >
+                Edit
+            </button>
+            )}
         </div>
         
     );
 };
-
-// 独立按钮组件
-const EditButton = () => (
-    <button 
-        onClick={() => window.location.href = `/club-dashboard/${club_id}`}
-        style={{/* 原有样式 */}}
-    >
-        Edit
-    </button>
-);
 
 export default PublicView;

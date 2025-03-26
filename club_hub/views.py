@@ -16,7 +16,6 @@ from club_system.models import Club
 from event_system.models import Event
 from .serializers import EventSerializer
 from club_system.models import Membership
-from club_system.helpers.mixins import ClubManagerRequiredMixin
 
 
 def get_csrf_token(request):
@@ -115,7 +114,19 @@ def club_hub_view(request, club_id):
     return response
 
 
-class ManagerCheckView(ClubManagerRequiredMixin, APIView):
-    """复用现有权限检查机制"""
+class ManagerCheckView(APIView):
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request, club_id):
-        return Response({"is_manager": True})  # 通过mixin验证的用户自动拥有权限
+        try:
+            club = Club.objects.get(pk=club_id)  # 验证社团是否存在
+            is_manager = Membership.objects.filter(
+                user=request.user,
+                club=club,
+                is_manager=True
+            ).exists()
+            return Response({"is_manager": is_manager})
+        except Club.DoesNotExist:
+            return Response({"error": "Club not found"}, status=404)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
