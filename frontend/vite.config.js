@@ -1,7 +1,11 @@
 export default {
   server: {
     proxy: {
-      '/api': 'http://127.0.0.1:8000',
+      '/api': {
+        target: 'http://51.21.191.188:8000',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 };
