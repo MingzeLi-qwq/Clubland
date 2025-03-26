@@ -17,6 +17,7 @@ from event_system.models import Event
 from .serializers import EventSerializer
 
 
+
 def get_csrf_token(request):
     return JsonResponse({"csrfToken": get_token(request)})
 class WidgetViewSet(viewsets.ModelViewSet):

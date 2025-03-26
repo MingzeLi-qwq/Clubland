@@ -6,10 +6,10 @@ import "react-resizable/css/styles.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+
 const Dashboard = () => {
     const { club_id } = useParams();
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
-    const [isAdmin, setIsAdmin] = useState(false);
     const [clubName, setClubName] = useState<string | null>(null);
     const [time, setTime] = useState({
         hours: 0,
