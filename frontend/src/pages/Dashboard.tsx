@@ -81,7 +81,6 @@ const Dashboard = () => {
         
                 if (clubRes.data.background_image) {
                     setDashboardBg(clubRes.data.background_image);
-                    console.log(clubRes.data.background_image);
                 }
                 if (clubRes.data.name) {
                     setClubName(clubRes.data.name);
@@ -251,7 +250,7 @@ const Dashboard = () => {
             );
     
             const imageUrl = response.data.file_url;
-            const fullUrl = `/media/${imageUrl}`;
+            const fullUrl = `/media/uploads/${imageUrl}`;
     
             const img = new Image();
             img.src = fullUrl;
