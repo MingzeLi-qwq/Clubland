@@ -8,7 +8,7 @@
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <!-- 响应式设置：手机上垂直排列且左对齐，桌面上水平排列左右对齐 -->
+    <!-- Responsive settings: vertically aligned and left-aligned on mobile phones, horizontally aligned and left-aligned on desktops -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center w-100">
         <ul class="navbar-nav mb-0 flex-column flex-lg-row me-lg-auto">
@@ -115,14 +115,14 @@
               </ul>
             </li>
           {% else %}
-            <!-- 未登录状态：Messages -->
+            <!-- Not logged in: Messages -->
             <li class="nav-item">
               <a class="nav-link d-flex align-items-center rounded px-2 py-1" href="{% url 'login' %}">
                 <i class="fas fa-envelope text-white fs-5" style="position: relative; top: 2px;"></i>
                 <span class="d-lg-none ms-2">Messages</span>
               </a>
             </li>
-            <!-- 未登录状态：Account -->
+            <!-- Not logged in: Account -->
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle rounded px-2 py-1 d-flex align-items-center" href="#" id="navbarDropdown" role="button" 
                  data-bs-toggle="dropdown" aria-expanded="false">

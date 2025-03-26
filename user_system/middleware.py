@@ -3,11 +3,11 @@ from django.middleware.csrf import get_token
 
 class CSRFRefreshMiddleware(MiddlewareMixin):
     """
-    中间件确保每个响应都包含一个新的CSRF令牌
+    Middleware to ensure every response includes a refreshed CSRF token
     """
     
     def process_response(self, request, response):
-        # 所有GET请求和提交表单后的重定向请求刷新CSRF令牌
+        # Refresh the CSRF token for all GET requests and POST requests followed by a redirect
         if request.method == 'GET' or (request.method == 'POST' and response.status_code == 302):
             get_token(request)
         return response

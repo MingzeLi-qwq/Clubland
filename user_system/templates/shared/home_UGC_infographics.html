@@ -2,13 +2,13 @@
 <link rel="stylesheet" href="{% static 'css/home_style.css' %}">
 <section class="py-4">
   <div class="container">
-    <!-- 桌面视图标题和按钮 -->
+    <!-- Desktop view title and buttons -->
     <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
       <h2 class="mb-0">New Clubs Coming!</h2>
       <a href="{% url 'clubs' %}" class="btn btn-outline-primary btn-sm">View All</a>
     </div>
     
-    <!-- 移动视图标题和折叠按钮 -->
+    <!-- Mobile view title and collapse button -->
     <div class="d-md-none mb-3">
       <div class="text-center mb-2">
         <h2 class="mb-0">New Clubs Coming!</h2>
@@ -25,7 +25,7 @@
       </div>
     </div>
     
-    <!-- 折叠内容区域 - 默认展开 -->
+    <!-- Collapse content area - expanded by default -->
     <div id="newClubsCollapse" class="collapse show d-md-block">
     {% if new_clubs %}
     <div class="row g-4" id="clubs-container">
@@ -58,13 +58,13 @@
 
 <section class="py-4">
   <div class="container">
-    <!-- 桌面视图标题和按钮 -->
+    <!-- Desktop view title and buttons -->
     <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
       <h2 class="mb-0">Recent News</h2>
       <a href="{% url 'news_system:news_list' %}" class="btn btn-outline-primary btn-sm">View All</a>
     </div>
     
-    <!-- 移动视图标题和折叠按钮 -->
+    <!-- Mobile view title and collapse button -->
     <div class="d-md-none mb-3">
       <div class="text-center mb-2">
         <h2 class="mb-0">Recent News</h2>
@@ -81,7 +81,7 @@
       </div>
     </div>
     
-    <!-- 折叠内容区域 - 默认展开 -->
+    <!-- Collapse content area - expanded by default -->
     <div id="recentNewsCollapse" class="collapse show d-md-block">
     <div class="row g-4">
       {% for news in recent_news %}
@@ -119,7 +119,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // 初始化各区域折叠功能
+    // Initialize the folding function of each area
     initCollapsible('toggleNewClubsBtn', 'newClubsCollapse');
     initCollapsible('toggleNewsBtn', 'recentNewsCollapse');
     
@@ -130,14 +130,14 @@
         if (collapseButton && collapseElement) {
             const toggleText = collapseButton.querySelector('.toggle-text');
             
-            // 检查初始状态
+            // Check initial status
             if (collapseElement.classList.contains('show')) {
                 toggleText.textContent = 'Fold';
             } else {
                 toggleText.textContent = 'Expand';
             }
             
-            // 监听折叠状态变化
+            // Checking for folding state changes
             collapseElement.addEventListener('shown.bs.collapse', function () {
                 toggleText.textContent = 'Fold';
             });
@@ -146,7 +146,7 @@
                 toggleText.textContent = 'Expand';
             });
             
-            // 额外添加按钮点击事件处理
+            // Add additional button click event processing
             collapseButton.addEventListener('click', function() {
                 setTimeout(function() {
                     if (collapseElement.classList.contains('show')) {

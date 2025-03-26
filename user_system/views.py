@@ -39,13 +39,13 @@ def home(request):
         start_time__gte=timezone.now()
     ).order_by('start_time')
     
-    # 查询最新的社团 - 按照创建时间倒序排列，取最近的3个
+    # Query the latest communities - sort by creation time in reverse order, and select the most recent 3
     new_clubs = Club.objects.order_by('-club_id')[:3]
     
-    # 查询最新的新闻 - 按照创建时间倒序排列，取最新的3条
+    # Query the latest news - sort in reverse order of creation time, and take the latest 3
     news_items = News.objects.order_by('-created_at')[:3]
     
-    # 使用news_system中的函数增强新闻数据
+    # Use functions in the news_system to enhance news data
     enhanced_news = [enhance_news_with_image(news) for news in news_items]
     
     paginator = Paginator(upcoming_events_list, events_per_page)
@@ -56,9 +56,9 @@ def home(request):
     except EmptyPage:
         events = paginator.page(paginator.num_pages)
     
-    # 处理 AJAX 请求
+    # Handling AJAX Requests
     if request.GET.get('ajax'):
-        # 渲染部分模板
+        # Rendering a partial template
         events_html = render_to_string('shared/events_list.html', {'events': events})
         pagination_html = render_to_string('shared/pagination.html', {'events': events})
         
@@ -119,28 +119,28 @@ class LogInView(View):
 def LogOutView(request):
     logout(request)
     messages.success(request, "You have successfully logged out.")
-    # 直接重定向到登录页面, 不是首页!
+    # Redirect directly to the login page, not the home page!
     return redirect('login')
 
 
 # def societies(request):
-#     """社团列表视图"""
+#     """Societies List View"""
 #     return render(request, 'shared/societies.html')
 
 def events(request):
-    """活动视图"""
+    """Events List View"""
     return render(request, 'shared/events.html')
     
 
-"""此方法用来处理来自User Dashboard的密码修改请求"""
+"""This method is used to handle password change requests from User Dashboard"""
 def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
-            update_session_auth_hash(request, user)  # 防止用户被登出
+            update_session_auth_hash(request, user)  # Preventing users from being logged out
             messages.success(request, 'Your password was successfully updated!')
-            return redirect('dashboard_personal_information') # 重定向到个人资料页
+            return redirect('dashboard_personal_information') # Redirect to profile page
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
@@ -149,7 +149,7 @@ def change_password(request):
     return render(request, 'user_system/dashboard/personal_information.html', {'form': form})
 
 
-"""以下内容负责渲染Personal Dashboard"""
+"""The following content is responsible for rendering the Personal Dashboard"""
 class DashboardPersonalInformation(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'user_system/dashboard/personal_information.html')
@@ -159,9 +159,9 @@ class DashboardMyClub(LoginRequiredMixin, UserTypeRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        # 获取用户作为管理员的社团
+        # Get the communities that the user is an administrator of
         managed_clubs = Membership.objects.filter(user=user, is_manager=True)
-        # 获取用户作为普通成员的社团
+        # Get the communities of which the user is a regular member
         member_clubs = Membership.objects.filter(user=user, is_manager=False)
         
         return render(request, 'user_system/dashboard/my_club.html', {
@@ -176,7 +176,7 @@ class DashboardMyRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
         return render(request, 'user_system/dashboard/requests/my_requests.html')
 
 
-"""以下内容用来处理Personal Dashboard查看New Club Requests的请求"""
+"""The following content is used to process the request to view New Club Requests in Personal Dashboard"""
 class NewClubRequestsView(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['User']
 
@@ -192,20 +192,20 @@ class NewClubRequestsView(LoginRequiredMixin, UserTypeRequiredMixin, View):
         }
         return render(request, 'user_system/dashboard/requests/new_club_requests.html', context)
     
-"""以下内容用来渲染personal dashboard查看club memebership detail的请求"""
+"""The following content is used to render the request to view the club membership detail in the personal dashboard"""
 class ClubMembershipDetail(LoginRequiredMixin, ClubExistsRequiredMixin, UserTypeRequiredMixin, ClubMemberRequiredMixin, View):
     allowed_types = ['User']
     
     def get(self, request, club_id):
         try:
-            # 尝试获取当前用户在指定俱乐部的会员资格
+            # Try to get the current user's membership in the specified club
             membership = Membership.objects.get(user=request.user, club_id=club_id)
         except Membership.DoesNotExist:
-            # 如果会员资格不存在，添加错误消息并重定向
+            # If membership does not exist, add error message and redirect
             messages.error(request, "The specified membership does not exist.")
             return redirect('dashboard_my_club')
 
-        # 如果会员资格存在，渲染详情页面
+        # If the membership exists, render the details page
         context = {
             'membership': membership
         }
@@ -256,26 +256,26 @@ def Mine(request):
         })
 
 def about_us(request):
-    """关于我们页面"""
+    """about_us Page"""
     return render(request, 'shared/about_us.html')
 
-# CSRF失败处理视图
+# CSRF failure handling view
 def csrf_failure(request, reason=""):
     """
-    自定义CSRF错误处理视图，用于改善用户体验
-    - 对于AJAX请求，返回JSON错误
-    - 对于普通请求，显示弹窗并重定向回上一页
+    Custom CSRF error handling view to improve user experience
+    - For AJAX requests, return JSON error
+    - For normal requests, display a popup window and redirect back to the previous page
     """
     error_message = "You may have switched between different accounts too quickly.\nPlease wait a short moment and try again. (CSRF validation)"
     
-    # 判断是否为AJAX请求
+    # Determine whether it is an AJAX request
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({
             'status': 'error',
             'message': error_message
         }, status=403)
     
-    # 对于普通请求，返回带有弹窗和返回上一页的脚本的响应
+    # For normal requests, return a response with a popup window and a script to return to the previous page
     response = HttpResponse("""
     <html>
     <head><title>Account Security Verification Notice</title></head>
