@@ -177,6 +177,15 @@ class ClubManagerNews(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRe
             'club': club,
         })
     
+class ClubManagerForum(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, *args, **kwargs):
+        club = Club.objects.get(pk=club_id)
+
+        return render(request, 'club_manager/forum.html', {
+            'club_id': club_id,
+            'club': club,
+        })
+    
 class ClubManagerEvents(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = get_object_or_404(Club, club_id=club_id)
