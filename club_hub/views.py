@@ -104,3 +104,6 @@ class EventViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
+@login_required
+def club_hub_view(request, club_id):
+    return redirect(f'http://51.21.191.188:3000/club-view/{club_id}/')
