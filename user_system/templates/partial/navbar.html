@@ -38,9 +38,9 @@
                 <ul class="dropdown-menu mobile-dropdown-drawer" aria-labelledby="clubDropdown" id="clubMenu">
                   {% for membership in request.user.membership_set.all %}
                     <li>
-                      <Link class="dropdown-item" to={`/club-view/{{ membership.club.club_id }}`}>
+                      <a class="dropdown-item" href="{% url 'club_hub_view' club_id=membership.club.club_id %}">
                         {{ membership.club.name }}
-                      </Link>
+                      </a>
                     </li>
                   {% empty %}
                     <li>
