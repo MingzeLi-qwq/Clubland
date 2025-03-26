@@ -44,7 +44,9 @@ const PublicView = () => {
         // 新增权限检查
         const checkManagerStatus = async () => {
             try {
-                const response = await api.get(`clubs/${club_id}/check_manager/`);
+                const response = await axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/check_manager/`, {
+                    withCredentials: true
+                });
                 setIsManager(response.data.is_manager);
             } catch (error) {
                 console.error('权限检查失败:', error);
