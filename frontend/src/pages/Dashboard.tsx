@@ -142,7 +142,7 @@ const Dashboard = () => {
         
         let widgetData = {};
     if (typeMap[widgetType] === 'event_selector') {
-        // 获取活动详情
+        const eventId = prompt('Enter the event ID:');
         try {
                 const eventRes = await axios.get(
                     `http://51.21.191.188:8000/api/clubs/${club_id}/events/${eventId}/`,
