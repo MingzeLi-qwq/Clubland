@@ -73,10 +73,10 @@ const PublicView = () => {
         const fetchClubData = async () => {
             try {
                 const [widgetsRes, clubRes] = await Promise.all([
-                    axios.get(`http://127.0.0.1:8000/api/clubs/${club_id}/widgets/`, {
+                    axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/`, {
                         withCredentials: true
                     }),
-                    axios.get(`http://127.0.0.1:8000/api/clubs/${club_id}/info/`, {
+                    axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/info/`, {
                         withCredentials: true
                     })
                 ]);

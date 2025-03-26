@@ -52,7 +52,7 @@ const Dashboard = () => {
         const loadData = async () => {
             try {
                 const response = await axios.get(
-                    `http://127.0.0.1:8000/api/clubs/${club_id}/widgets/`,
+                    `http://51.21.191.188:8000/api/clubs/${club_id}/widgets/`,
                     { 
                         withCredentials: true,
                         headers: { "Content-Type": "application/json" }
@@ -75,7 +75,7 @@ const Dashboard = () => {
                 })));
 
                 const clubRes = await axios.get(
-                    `http://127.0.0.1:8000/api/clubs/${club_id}/info/`,
+                    `http://51.21.191.188:8000/api/clubs/${club_id}/info/`,
                     { withCredentials: true }
                 );
         
@@ -121,7 +121,7 @@ const Dashboard = () => {
         
         if (cookieToken) return cookieToken;
         
-        const response = await axios.get("http://127.0.0.1:8000/api/csrf/");
+        const response = await axios.get("http://51.21.191.188:8000/api/csrf/");
         return response.data.csrfToken;
     };
     
@@ -147,7 +147,7 @@ const Dashboard = () => {
         // 获取活动详情
         try {
                 const eventRes = await axios.get(
-                    `http://127.0.0.1:8000/api/clubs/${club_id}/events/${eventId}/`,
+                    `http://51.21.191.188:8000/api/clubs/${club_id}/events/${eventId}/`,
                     { withCredentials: true }
                 );
                 widgetData = {
@@ -163,7 +163,7 @@ const Dashboard = () => {
                 return;
             }
         }
-        axios.post(`http://127.0.0.1:8000/api/clubs/${club_id}/widgets/`, {
+        axios.post(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/`, {
         name: `${widgets.length + 1}`,
         widget_type: typeMap[widgetType],
         x: 0, 
@@ -190,7 +190,7 @@ const Dashboard = () => {
     
     const removeWidget = async (id: number) => {
         const csrfToken = await getCsrfToken();
-        await axios.delete(`http://127.0.0.1:8000/api/clubs/${club_id}/widgets/${id}/`, {
+        await axios.delete(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/${id}/`, {
             headers: { "X-CSRFToken": csrfToken },
             withCredentials: true
         });
@@ -214,7 +214,7 @@ const Dashboard = () => {
     
         try {
             await axios.post(
-                `http://127.0.0.1:8000/api/clubs/${club_id}/widgets/update_layout/`,
+                `http://51.21.191.188:8000/api/clubs/${club_id}/widgets/update_layout/`,
                 payload, 
                 { 
                     withCredentials: true, 
@@ -238,7 +238,7 @@ const Dashboard = () => {
         try {
             const csrfToken = await getCsrfToken();
             const response = await axios.post(
-                'http://127.0.0.1:8000/api/upload-image/',
+                'http://51.21.191.188:8000/api/upload-image/',
                 formData,
                 {
                     headers: {
@@ -258,7 +258,7 @@ const Dashboard = () => {
                 setDashboardBg(fullUrl);
     
                 await axios.patch(
-                    `http://127.0.0.1:8000/api/clubs/${club_id}/background/`,
+                    `http://51.21.191.188:8000/api/clubs/${club_id}/background/`,
                     { background_image: imageUrl },
                     {
                         headers: {
@@ -293,7 +293,7 @@ const Dashboard = () => {
     });
     setWidgets(updatedWidgets);
     
-    await axios.patch(`http://127.0.0.1:8000/api/clubs/${club_id}/widgets/${id}/`, {
+    await axios.patch(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/${id}/`, {
     data: updatedWidgets.find(w => w.id === id)?.data
     }, {
     headers: { "X-CSRFToken": csrfToken },
@@ -462,7 +462,7 @@ const Dashboard = () => {
                                                         formData.append("file", file);
 
                                                         try {
-                                                            const res = await axios.post("http://127.0.0.1:8000/api/upload-image/", formData, {
+                                                            const res = await axios.post("http://51.21.191.188:8000/api/upload-image/", formData, {
                                                                 headers: {
                                                                     "X-CSRFToken": csrfToken,
                                                                     "Content-Type": "multipart/form-data"
