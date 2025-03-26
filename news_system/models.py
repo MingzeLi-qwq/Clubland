@@ -1,10 +1,10 @@
 from django.db import models
-from CMS_mixins.CMS_models import TimestampMixin, AuthorshipMixin, BasicPost  # 修改为 BasicPost
+from CMS_mixins.CMS_models import TimestampMixin, AuthorshipMixin, BasicPost
 from user_system.models import User
 from club_system.models import Club
 from event_system.models import Event
 
-class News(BasicPost):  # 改为继承 BasicPost
+class News(BasicPost):
     title = models.CharField(max_length=200)
     event = models.ForeignKey(
         Event,
@@ -18,7 +18,6 @@ class News(BasicPost):  # 改为继承 BasicPost
         null=True,
         related_name='news'
     )
-    # author 和 content 已由 BasicPost 包含
 
     class Meta:
         ordering = ['-created_at']

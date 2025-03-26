@@ -15,10 +15,9 @@ class NewsForm(forms.ModelForm):
         max_length=200,
         min_length=1,
         widget=forms.TextInput(attrs={
-            'class': 'form-control w-100'  # 修改：使用 w-100 让输入框占满整行
+            'class': 'form-control w-100'
         })
     )
-    # 修改: 将字段名称从 category 改为 club，显示名称保持不变
     club = forms.ModelChoiceField(
         queryset=Club.objects.none(), 
         widget=forms.Select(attrs={
@@ -39,7 +38,6 @@ class NewsForm(forms.ModelForm):
     
     class Meta:
         model = News
-        # 修改: 调整字段顺序
         fields = ['title', 'club', 'event', 'content']
         labels = {
             'title': '标题',
@@ -58,7 +56,7 @@ class NewsForm(forms.ModelForm):
         cleaned_data = super().clean()
         club = cleaned_data.get('club')
         event = cleaned_data.get('event')
-        # 修改: 未选择社团则不允许选择活动
+        # 未选择社团则不允许选择活动
         if not club and event:
             self.add_error('event', forms.ValidationError("未选择社团时，不允许选择活动"))
         # 如果同时选择了社团和活动，校验活动所属社团是否与所选一致
@@ -71,12 +69,12 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ['text']
         labels = {
-            'text': '评论内容',
+            'text': 'Comment',
         }
         widgets = {
             'text': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
-                'placeholder': '请输入评论内容...'
+                'placeholder': 'Please add your comment...'
             }),
         }

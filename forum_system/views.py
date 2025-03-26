@@ -26,11 +26,16 @@ class BlogPostListView(ListView):
             queryset = queryset.filter(Q(title__icontains=q) | Q(content__icontains=q))
         club_filter = self.request.GET.get('club', '')
         if club_filter:
-            queryset = queryset.filter(club_id=club_filter)
+            queryset = queryset.filter(club__pk=club_filter)
         order = self.request.GET.get('order', 'desc')
         if order == 'asc':
-            return queryset.order_by('created_at')
-        return queryset.order_by('-created_at')
+            queryset = queryset.order_by('created_at')
+        else:
+            queryset = queryset.order_by('-created_at')
+        return queryset
+
+    def get_paginate_by(self, queryset):
+        return get_paginate_by_request(self.request)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -55,10 +60,10 @@ class BlogPostDetailView(FormMixin, DetailView):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             context['form'] = self.get_form()
-        # 新增讨论的排序和分页
+
         from django.core.paginator import Paginator
         threadposts_qs = self.object.thread_posts.all()
-        order_thread = self.request.GET.get('order_thread', 'asc')  # 修改默认值为 'asc'
+        order_thread = self.request.GET.get('order_thread', 'asc')
         if order_thread == 'asc':
             threadposts_qs = threadposts_qs.order_by('created_at')
         else:
@@ -100,7 +105,6 @@ class BlogPostCreateView(LoginRequiredMixin, UserFormMixin, CreateView):
     template_name = 'blogpost_form.html'
     success_url = reverse_lazy('forum_system:blog_list')  # 提交成功后重定向到列表页
 
-    # ...existing代码已被抽象到 UserFormMixin 中...
     
 
 
@@ -111,7 +115,7 @@ class ThreadPostCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        # 假设评论关联的 BlogPost 是通过 URL 参数传递的 blog_post_id
+
         form.instance.blog_post_id = self.kwargs.get('blog_post_id')
         return super().form_valid(form)
     
@@ -121,7 +125,6 @@ class ThreadPostCreateView(LoginRequiredMixin, CreateView):
 
 class BlogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = BlogPost
-    # 删除模板引用，因为我们不再使用确认页面
     success_url = reverse_lazy('forum_system:blog_list')
 
     def test_func(self):
@@ -134,13 +137,11 @@ class BlogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
-        # 不再渲染确认页面，直接重定向到博客列表
         return redirect(self.success_url)
 
 
 class ThreadPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = ThreadPost
-    # 删除模板引用，因为我们不再使用确认页面
 
     def get_success_url(self):
         return reverse('forum_system:blog_detail', kwargs={'pk': self.get_object().blog_post.pk})
@@ -155,7 +156,6 @@ class ThreadPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
-        # 不再渲染确认页面，直接重定向回博客详情页
         return redirect(self.get_success_url())
 
 

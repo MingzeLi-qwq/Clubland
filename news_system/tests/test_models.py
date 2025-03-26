@@ -71,7 +71,6 @@ class NewsModelTest(TestCase):
     def test_news_str_method(self):
         """测试新闻的字符串表示"""
         # 由于News模型没有定义__str__方法，它会使用默认的对象表示
-        # 这里我们只是确保它不会引发错误
         self.assertTrue(str(self.news))
     
     def test_news_ordering(self):
@@ -131,7 +130,6 @@ class CommentModelTest(TestCase):
     def test_comment_str_method(self):
         """测试评论的字符串表示"""
         # 由于Comment模型没有定义__str__方法，它会使用默认的对象表示
-        # 这里我们只是确保它不会引发错误
         self.assertTrue(str(self.comment))
     
     def test_comment_news_relationship(self):
