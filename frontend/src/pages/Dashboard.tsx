@@ -176,6 +176,7 @@ const Dashboard = () => {
                     w: widgetConfigItem.w,
                     h: widgetConfigItem.h,
                 }]);
+                saveLayout();
             });
         };
     
