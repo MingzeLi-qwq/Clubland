@@ -110,5 +110,5 @@ class EventViewSet(viewsets.ModelViewSet):
 def club_hub_view(request, club_id):
     user = request.user
     is_admin = user.account_type == 'Admin'
-    response = redirect(f'http://51.21.191.188:3000/club-view/{club_id}/?is_admin={is_admin}')
+    response = redirect(f'http://51.21.191.188:3000/club-view/{club_id}')
     return response
