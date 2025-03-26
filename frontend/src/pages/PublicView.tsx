@@ -4,7 +4,6 @@ import GridLayout from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
 
 
 interface WidgetType {
@@ -25,9 +24,8 @@ interface WidgetType {
 const PublicView = () => {
     const { club_id } = useParams();
     const { event_id } = useParams();
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
-    const isAdmin = queryParams.get('is_admin') === 'True';
+    const [isManager, setIsManager] = useState(false);
+    const [clubData, setClubData] = useState(null);
     const [event, setEvent] = useState<any>(null);
     const [widgets, setWidgets] = useState<WidgetType[]>([]);
     const [layout, setLayout] = useState<{ i: string; x: number; y: number; w: number; h: number }[]>([]);
@@ -107,6 +105,36 @@ const PublicView = () => {
         };
 
         fetchClubData();
+    }, [club_id]);
+
+    useEffect(() => {
+        const fetchClubData = async () => {
+            try {
+                const response = await axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/info/`);
+                setClubData(response.data);
+            } catch (error) {
+                console.error("Error fetching club data", error);
+            }
+        };
+
+        // 检查用户是否是管理员
+        const checkIfManager = async () => {
+            try {
+                const response = await axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/memberships/`, {
+                    params: { user_id:  }
+                });
+
+                const membership = response.data;
+                if (membership && membership.is_manager) {
+                    setIsManager(true);
+                }
+            } catch (error) {
+                console.error("Error checking admin status", error);
+            }
+        };
+
+        fetchClubData();
+        checkIfManager();
     }, [club_id]);
 
     const renderWidgetContent = (widget: WidgetType) => {
@@ -326,7 +354,7 @@ const PublicView = () => {
 
             </GridLayout>
             <div>
-            {isAdmin && (
+                {isManager && (
                 <button
                 onClick={() => window.location.href = `/club-dashboard/${clubId}`}
                 style={{
@@ -343,7 +371,7 @@ const PublicView = () => {
                 >
                 Edit
                 </button>
-            )}
+                )}
             </div>
         </div>
         
