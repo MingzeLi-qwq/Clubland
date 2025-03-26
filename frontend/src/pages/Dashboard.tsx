@@ -141,51 +141,54 @@ const Dashboard = () => {
         const newY = widgets.length > 0 ? Math.max(...widgets.map(w => w.y)) + 1 : 0;
         
         let widgetData = {};
-    if (typeMap[widgetType] === 'event_selector') {
-        const eventId = prompt('Enter the event ID:');
-        // 获取活动详情
-        try {
-                const eventRes = await axios.get(
-                    `http://51.21.191.188:8000/api/clubs/${club_id}/events/${eventId}/`,
-                    { withCredentials: true }
-                );
-                widgetData = {
-                    event_id: eventId,
-                    name: eventRes.data.name,
-                    start_time: eventRes.data.start_time,
-                    end_time: eventRes.data.end_time,
-                    location: eventRes.data.location,
-                    description: eventRes.data.description
-                };
-            } catch (error) {
-                console.error('获取活动详情失败:', error);
-                return;
+        if (typeMap[widgetType] === 'event_selector') {
+            const eventId = prompt('Enter the event ID:');
+            try {
+                    const eventRes = await axios.get(
+                        `http://51.21.191.188:8000/api/clubs/${club_id}/events/${eventId}/`,
+                        { withCredentials: true }
+                    );
+                    if (!eventRes.data || !eventRes.data.id) {
+                        alert('Invalid event ID');
+                        return;
+                    }
+                    widgetData = {
+                        event_id: eventId,
+                        name: eventRes.data.name,
+                        start_time: eventRes.data.start_time,
+                        end_time: eventRes.data.end_time,
+                        location: eventRes.data.location,
+                        description: eventRes.data.description
+                    };
+                } catch (error) {
+                    console.error('获取活动详情失败:', error);
+                    return;
+                }
             }
-        }
-        axios.post(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/`, {
-        name: `${widgets.length + 1}`,
-        widget_type: typeMap[widgetType],
-        x: 0, 
-        y: newY, 
-        width: 2, 
-        height: 2, 
-        club: club_id,
-        data: widgetData
-        }, 
-        { withCredentials: true, headers: { "X-CSRFToken": csrfToken } }
-        ).then(res => {
-            const widgetConfigItem = widgetConfig[res.data.widget_type as keyof typeof widgetConfig] || widgetConfig.default;
+            axios.post(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/`, {
+            name: `${widgets.length + 1}`,
+            widget_type: typeMap[widgetType],
+            x: 0, 
+            y: newY, 
+            width: 2, 
+            height: 2, 
+            club: club_id,
+            data: widgetData
+            }, 
+            { withCredentials: true, headers: { "X-CSRFToken": csrfToken } }
+            ).then(res => {
+                const widgetConfigItem = widgetConfig[res.data.widget_type as keyof typeof widgetConfig] || widgetConfig.default;
 
-            setWidgets([...widgets, res.data]);
-            setLayout([...layout, { 
-                i: String(res.data.id), 
-                x: 0, 
-                y: newY, 
-                w: widgetConfigItem.w,
-                h: widgetConfigItem.h,
-            }]);
-        });
-    };
+                setWidgets([...widgets, res.data]);
+                setLayout([...layout, { 
+                    i: String(res.data.id), 
+                    x: 0, 
+                    y: newY, 
+                    w: widgetConfigItem.w,
+                    h: widgetConfigItem.h,
+                }]);
+            });
+        };
     
     const removeWidget = async (id: number) => {
         const csrfToken = await getCsrfToken();
@@ -475,7 +478,7 @@ const Dashboard = () => {
                                             height: '90%',
                                             border: '0px solid #ddd',
                                         }}
-                                        placeholder="输入公告内容..."
+                                        placeholder="Input content..."
                                         value={widget.data.content || ''}
                                         onChange={(e) => updateWidgetData(widget.id, 'content', e.target.value)}
                                     />
@@ -509,7 +512,7 @@ const Dashboard = () => {
                                                             console.log(uploadedUrl);   
                                                             await updateWidgetData(widget.id, 'url', uploadedUrl);
                                                         } catch (err) {
-                                                            alert("上传失败");
+                                                            alert("Upload failed");
                                                             console.error(err);
                                                         }
                                                     }}
@@ -519,7 +522,7 @@ const Dashboard = () => {
                                             
                                             <img
                                                 src={`http://51.21.191.188:8000${widget.data.url}`}
-                                                alt="上传图片"
+                                                alt="Uploaded Image"
                                                 style={{
                                                     width: '100%',
                                                     height: '100%',
@@ -528,42 +531,6 @@ const Dashboard = () => {
                                                 }}
                                             />
                                         )}
-                                    </div>
-                                )}
-
-                                {widget.widget_type === 'countdown' && (
-                                    <div style={{ 
-                                        height: '100%',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        padding: '8px'
-                                    }}>
-                                        <input
-                                            type="date"
-                                            value={widget.data.date?.split('T')[0] || ''}
-                                            onChange={(e) => updateWidgetData(widget.id, 'date', e.target.value + 'T00:00:00')}
-                                            style={{
-                                                marginBottom: '8px',
-                                                padding: '4px',
-                                                border: '1px solid #ddd',
-                                                borderRadius: '4px'
-                                            }}
-                                        />
-                                        <div style={{ 
-                                            flex: 1,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontSize: '1.2em',
-                                            color: '#666'
-                                        }}>
-                                            {widget.data.date ? (
-                                                `剩余天数: ${Math.ceil(
-                                                    (new Date(widget.data.date).getTime() - Date.now()) / 
-                                                    (1000 * 60 * 60 * 24)
-                                                )}`
-                                            ) : '请设置目标日期'}
-                                        </div>
                                     </div>
                                 )}
 
@@ -656,7 +623,7 @@ const Dashboard = () => {
                                             <p><strong>Descriptioon:</strong> {widget.data.description}</p>
                                         </>
                                     ) : (
-                                        <div>加载中...</div>
+                                        <div>Loading...</div>
                                     )}
                                 </div>
                                 )}
