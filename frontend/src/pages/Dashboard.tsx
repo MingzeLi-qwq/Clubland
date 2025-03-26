@@ -142,9 +142,6 @@ const Dashboard = () => {
         
         let widgetData = {};
     if (typeMap[widgetType] === 'event_selector') {
-        const eventId = prompt('请输入要关联的活动ID（在PublicView展示）:');
-        if (!eventId) return;
-        
         // 获取活动详情
         try {
                 const eventRes = await axios.get(
