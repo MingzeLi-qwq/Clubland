@@ -162,12 +162,7 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://51.21.191.188:3000",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    'https://localhost:8000'
-]
+CSRF_COOKIE_SECURE = False
 
 if DEBUG:
     # 开发环境下使用本地存储
