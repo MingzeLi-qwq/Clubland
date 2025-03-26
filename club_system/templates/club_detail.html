@@ -190,6 +190,7 @@
                                 <a href="{% url 'register_membership' club_id=club.club_id %}" class="btn btn-primary btn-lg rounded-pill w-100">Register Membership</a>
                             {% endif %}
                         {% else %}
+
                             <!-- When the current user is not logged in -->
                             <p>
                                 <a href="{% url 'login' %}" class="btn btn-link p-0">Login</a> or 

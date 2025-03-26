@@ -353,7 +353,7 @@ class SearchUsersView(LoginRequiredMixin, View):
             Q(first_name__icontains=query) |
             Q(last_name__icontains=query),
             account_type=User.ACCOUNT_TYPE_USER
-        ).exclude(membership__club_id=club_id)  # Exclusion of existing members
+        ).exclude(membership__club_id=club_id)
 
         results = [{
             'username': user.username,

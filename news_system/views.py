@@ -6,11 +6,11 @@ from django.http import HttpResponseRedirect, JsonResponse
 from .models import News, Comment
 from .forms import NewsForm, CommentForm
 from event_system.models import Event
-from club_system.models import Club  # 新增导入以获取所有社团
-from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request  # 修改：导入通用函数
-from CMS_mixins.CMS_utils import RTEUploadUtils  # 新增导入
+from club_system.models import Club
+from CMS_mixins.CMS_utils import UserFormMixin, get_paginate_by_request
+from CMS_mixins.CMS_utils import RTEUploadUtils
 from django.db.models import Q
-from bs4 import BeautifulSoup  # 确保导入BeautifulSoup
+from bs4 import BeautifulSoup
 
 def get_first_image_url(content):
     """从内容中提取第一张图片的URL
@@ -53,8 +53,8 @@ def enhance_news_with_image(news_item):
 # 新闻列表页：显示所有新闻文章
 class NewsListView(ListView):
     model = News
-    template_name = 'news_list.html'  # 模板文件名称
-    context_object_name = 'posts'         # 在模板中通过 'posts' 变量访问查询结果
+    template_name = 'news_list.html'
+    context_object_name = 'posts'
 
     def get_queryset(self):
         queryset = News.objects.all()
@@ -64,7 +64,7 @@ class NewsListView(ListView):
         club_filter = self.request.GET.get('club', '')
         if club_filter:
             queryset = queryset.filter(club__pk=club_filter)
-        # 默认以时间倒序排列新闻；当 GET 参数 order 缺省或不为 'asc' 时，按降序排序
+
         order = self.request.GET.get('order', 'desc')
         if order == 'asc':
             queryset = queryset.order_by('created_at')
@@ -77,9 +77,9 @@ class NewsListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['clubs'] = Club.objects.all()  # 增加 clubs 上下文变量
+        context['clubs'] = Club.objects.all()
         
-        # 为每个新闻添加first_image_url属性
+        # 每个新闻的first_image_url属性
         for post in context['posts']:
             post.first_image_url = get_first_image_url(post.content)
             
@@ -150,7 +150,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        # 假设评论关联的 News 是通过 URL 参数传递的 news_id
+
         form.instance.news_id = self.kwargs.get('news_id')
         return super().form_valid(form)
     
@@ -160,7 +160,6 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
 class NewsDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = News
-    # 移除模板引用，我们不再使用确认删除页面
     success_url = reverse_lazy('news_system:news_list')
 
     def test_func(self):
@@ -168,7 +167,7 @@ class NewsDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == self.get_object().author or self.request.user.is_admin
 
     def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()  # 确保设置 self.object
+        self.object = self.get_object()
         RTEUploadUtils.delete_associated_images(self.object)
         success_url = self.get_success_url()
         self.object.delete()
@@ -179,16 +178,14 @@ class NewsDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def post(self, request, *args, **kwargs):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return self.delete(request, *args, **kwargs)
-        self.object = self.get_object()  # 确保设置 self.object
+        self.object = self.get_object()
         return super().post(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        # 如果是直接访问删除URL，重定向到列表页
         return HttpResponseRedirect(self.get_success_url())
 
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
-    # 移除模板引用，我们不再使用确认删除页面
 
     def get_success_url(self):
         # 需要确保先设置 self.object
@@ -201,7 +198,7 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == self.get_object().author or self.request.user.is_admin
 
     def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()  # 确保设置 self.object
+        self.object = self.get_object()
         RTEUploadUtils.delete_associated_images(self.object)
         success_url = self.get_success_url()
         self.object.delete()
@@ -212,7 +209,7 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def post(self, request, *args, **kwargs):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return self.delete(request, *args, **kwargs)
-        self.object = self.get_object()  # 确保设置 self.object
+        self.object = self.get_object()
         return super().post(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):

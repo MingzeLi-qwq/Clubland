@@ -3,25 +3,209 @@
 
 \defaultInstructions
 
-\begin{length}
-There are no strict length requirements for this chapter.  However, it is important that the writing is clear and concise.  Avoid repeating yourself.  Make sure to clearly signpost evidence for claims.  It should be possible for a reader to understand this chapter without consulting other sources.  It is expected that a typical project needs 3--6 pages, but this can vary considerably from project to project.
-\end{length}
+\section{System Architecture}
 
-\begin{expectations}
-In this chapter, the team should discuss the key design and implementation decisions made during the project, and how these are reflected in the end product.  Design refers to the way the software system is organised into smaller components and the way in which they are related.  We are \emph{not} looking for a discussion of a series of screenshots of your application.
+In the development process of our student association management system, we adopted a modular and extensible architecture design to achieve high cohesion and low coupling. The system is built using the Django framework, following the MVT (Model-View-Template) design pattern.
 
-Normally, all teams should present the overall architecture of the software.  The remainder of the chapter will depend on the type of system that is built.  To decide what to cover, consider the following to aspects of the project:
+The system architecture adopts Django's MVT pattern, which includes:
 \begin{itemize}
-\item What design and implementation decisions did you make to improve software quality?
-\item What design and implementation decisions did you make to achieve challenging functional and non-functional specifications
+    \item \textbf{Model layer}: Defines data structures and database interactions
+    \item \textbf{View layer}: Handles business logic and request responses
+    \item \textbf{Template layer}: Responsible for interface rendering and display
 \end{itemize}
-Depending on your answers to these questions, you may cover the design an implementation specific components, interfaces, the overall class structure, the database design, algorithms, business processes, etc.
 
-A good report considers alternative options for key decisions and includes sound justifications for the decisions made.  If applicable, you may reflect on changes made during the project.  Ideally, key decisions are rooted in Software Engineering theory.
-\end{expectations}
+These three layers work closely together, forming a complete web application process while maintaining the relative independence of each layer.
 
-\section{Architecture}
-\label{sect:architecture}
-\begin{expectations}
-Add other sections and sub-sections as necessary.
-\end{expectations}
+The system architecture is primarily divided into the following subsystems:
+
+\begin{enumerate}
+    \item \textbf{User System}: Responsible for user authentication, registration, and personal profile management
+    \item \textbf{Club System}: Manages student club creation, member management, and activities
+    \item \textbf{Event System}: Handles event creation, registration, and management
+    \item \textbf{Notification System}: Provides real-time notification functionality to users
+    \item \textbf{News System}: Publishes and manages news for each club's activities
+    \item \textbf{Forum System}: Provides a platform for student communication and can be categorized by different topics
+    \item \textbf{Admin System}: Provides backend management functionality for administrators
+    \item \textbf{Message System}: Private messaging functionality between users
+\end{enumerate}
+
+Each subsystem is designed as a separate Django application. This modular design allows us to:
+\begin{itemize}
+    \item Implement clear separation of functionality
+    \item Simplify team collaborative development
+    \item Improve code maintainability
+    \item Facilitate future functional expansion
+\end{itemize}
+
+\section{Technology Stack Selection}
+
+In our technology selection process, we fully considered the project requirements, development efficiency, and team capabilities, ultimately deciding on the following technology stack:
+
+\subsection{Backend Technologies}
+\begin{itemize}
+    \item \textbf{Django Framework}: As the main web application framework, providing ORM, authentication, and routing
+    \item \textbf{Django REST Framework}: Used to build RESTful API interfaces
+    \item \textbf{Django Summernote}: Integrating rich text editing functionality
+    \item \textbf{SQLite}: Lightweight database used in the development environment
+    \item \textbf{CORS Middleware}: Enabling cross-origin resource sharing support
+\end{itemize}
+
+\section{Alternative Design Options and Justifications}
+During the planning phase, we carefully evaluated the following alternative approaches and their pros and cons:
+
+\subsection{Full CMS Solutions vs. Custom-coded Implementation}
+We considered using a full CMS solution (like WordPress) to handle rich text posts. However, the assignment requires a custom-coded implementation of core functionality. Instead of relying on a pre-built CMS, we chose Django Summernote as our rich text editor (RTE), which allows us to store media files and properly render rich text content in HTML blocks, while still meeting the requirement of writing our own implementation.
+
+\subsection{Other Web Frameworks}
+While some frameworks offer more flexibility or a lighter footprint, Django's built-in features 
+(ORM, authentication, etc.) resulted in more efficient development given our project's timeline 
+and the team's familiarity with Django.
+
+\subsection{Monolithic vs. Microservices Architecture}
+Microservices can provide higher scalability for large-scale projects, but our current scope 
+is better suited to a monolithic architecture. We opted not to introduce microservices in order 
+to keep the system straightforward and manage complexity.
+
+
+\subsection{Frontend Technologies}
+\begin{itemize}
+    \item \textbf{Bootstrap}: Provides responsive UI components
+    \item \textbf{JavaScript/jQuery}: Implements client-side interaction functionality
+    \item \textbf{React}: Some modules (such as personal dashboard) are built using React
+\end{itemize}
+
+\subsection{Storage Solutions}
+We designed a flexible storage solution for the project that uses local storage in the development environment and can be configured to use cloud storage (such as Amazon S3) in the production environment. This design simplifies the workflow during the development phase while providing scalability for production deployment.
+
+\section{Data Model Design}
+
+The system's data model design follows database normalization principles, ensuring data consistency and integrity. Key model designs include:
+
+\subsection{User Model}
+We extended Django's default user model to meet the specific requirements of the student association management system.
+
+\subsection{Event Model}
+The event model adopts a many-to-many relationship design, supporting flexible user participation mechanisms.
+
+\subsection{RSVP Model}
+To track user participation status for events, we designed a dedicated RSVP model. This design ensures that each user can have only one RSVP record for each event, while also recording the timestamp of status changes.
+
+\section{Security Mechanism Implementation}
+
+Security is an important consideration in our system design. We implemented multi-layered security measures:
+
+\subsection{Authentication and Authorization}
+Using Django's authentication system combined with custom middleware. At the view level, we used various mixins to ensure access control.
+
+\subsection{CSRF Protection}
+To prevent cross-site request forgery attacks, we strengthened the CSRF protection mechanism and configured trusted origins for both development and production environments.
+
+\subsection{Password Policy}
+We adopted Django's recommended set of password validators to ensure users create strong passwords, including similarity validators, minimum length requirements, common password checks, and numeric password validation.
+
+\section{User Interface Design}
+
+\subsection{Design Style and Principles}
+We designed a modern, unified, and consistent UI style for the system, adhering to the following design principles:
+\begin{itemize}
+    \item \textbf{User-Centered Design}: All interface elements are designed to enhance user experience.
+    \item \textbf{Consistency}: Ensure visual, interactive, and brand consistency throughout the system, reflecting the student association's unique brand colors and style.
+    \item \textbf{Simplicity}: Keep interface elements simple to reduce cognitive load and highlight key functions.
+    \item \textbf{Visual Hierarchy}: Establish clear visual hierarchy through color, size, and spacing.
+    \item \textbf{Accessibility}: Ensure sufficient contrast and proper element dimensions for accessibility.
+\end{itemize}
+
+\subsection{Visual Design System}
+We developed a unified visual design system that includes the following elements:
+\begin{itemize}
+    \item \textbf{Color Scheme}: Mainly blue (\#0071e3) as the primary color, complemented by white, gray, and accent colors to ensure a cohesive look.
+    \item \textbf{Typography}: Hierarchical font sizes and weights to improve readability and content structure.
+    \item \textbf{Rounded Corners}: Cards, buttons, and input fields feature 12px rounded corners to create a modern and friendly look.
+    \item \textbf{Shadow Effects}: Subtle shadow effects provide depth and differentiate interface layers.
+    \item \textbf{Icon System}: Utilizing Bootstrap icons and custom icons to ensure a unified icon language.
+\end{itemize}
+
+\subsection{Component Design}
+We designed a series of reusable interface components:
+\begin{itemize}
+    \item \textbf{Card Components}: Primary containers for displaying content with subtle shadow and hover effects to enhance interactivity.
+    \item \textbf{Button System}: Hierarchical design of primary, secondary, and text buttons based on their functionality.
+    \item \textbf{Form Elements}: Optimized input fields, selectors, and checkboxes to enhance the form filling experience.
+    \item \textbf{Navigation Elements}: Carefully designed navigation bars and side menus to provide clear website navigation.
+    \item \textbf{Notification Components}: Prominent yet non-intrusive notification design for system feedback.
+\end{itemize}
+
+\subsection{Responsive Design Implementation}
+In addition to basic responsive layouts, we paid special attention to:
+\begin{itemize}
+    \item \textbf{Mobile-First Approach}: Designing for the smallest screen first, then progressively enhancing for larger screens.
+    \item \textbf{Flexible Layouts}: Using Flexbox and CSS Grid to achieve dynamic element alignment.
+    \item \textbf{Conditional Display}: Showing or hiding specific content based on screen size.
+    \item \textbf{Touch Optimization}: Optimizing interactive element dimensions and spacing for touch devices.
+    \item \textbf{Performance Considerations}: Optimizing image resources and reducing complex animations to ensure smooth performance on mobile devices.
+\end{itemize}
+
+\subsection{Interaction Design Patterns}
+To enhance user experience, we implemented various interaction design patterns:
+\begin{itemize}
+    \item \textbf{Immediate Feedback}: Provide visual and state feedback after user actions to enhance confidence.
+    \item \textbf{Progressive Disclosure}: Present complex information through collapsible panels and tabs to avoid information overload.
+    \item \textbf{Microinteractions}: Add subtle animations and transitions to enrich interface liveliness and responsiveness.
+    \item \textbf{State Transitions}: Clearly display system state changes, such as button loading states and form validation states.
+    \item \textbf{Guided Forms}: Use multi-step form design to lower filling difficulty for complex forms.
+\end{itemize}
+
+
+\section{Performance Optimization}
+
+To improve system performance and user experience, we implemented multiple optimization measures:
+
+\subsection{Static Resource Handling}
+We configured mechanisms for collecting and serving static files efficiently.
+
+\subsection{Caching Strategy}
+We implemented caching mechanisms in key selector components to reduce DOM operations and improve interface responsiveness.
+
+\subsection{Lazy Loading}
+For complex components and interface elements, we implemented delayed initialization mechanisms to optimize page load performance.
+
+\section{Extensibility Design}
+
+Considering future expansion needs of the system, we particularly focused on the following aspects in our architecture:
+
+\subsection{Modular Plugin System}
+Through Django's application mechanism, we implemented a modular plugin system that allows for easy addition of new functionality.
+
+\subsection{API Interface Design}
+We built extensible API interfaces using Django REST Framework, facilitating future integration with other systems.
+
+\subsection{Internationalization Support}
+Our system design considered internationalization support, making it easier to add multilingual functionality in the future.
+
+\section{Challenges and Solutions}
+
+During the project development process, we encountered several technical challenges and successfully overcame them:
+
+\subsection{Event Management System}
+Implementing complex event filtering and categorization functionality to allow users to easily find events by date and category.
+
+\subsection{Dynamic Form Handling}
+Using JavaScript to implement dynamic form addition and validation for a more interactive user experience.
+
+\subsection{Notification System Integration}
+Seamlessly integrating the notification system with other modules through context processors to provide real-time updates to users.
+
+\section{Testing Strategy}
+
+To ensure system quality, we adopted a comprehensive testing strategy:
+
+\begin{enumerate}
+    \item \textbf{Unit Testing}: Targeting core functional modules
+    \item \textbf{Integration Testing}: Verifying interactions between subsystems
+    \item \textbf{User Interface Testing}: Ensuring UI responsiveness and usability
+    \item \textbf{Security Testing}: Checking for potential security vulnerabilities
+\end{enumerate}
+
+\section{Conclusion}
+
+Through careful architecture design, technology selection, and implementation strategies, we successfully built a feature-rich, user-friendly, and extensible student association management system. The system's modular design ensures code maintainability, responsive interface design provides a good user experience, and the implementation of security mechanisms safeguards the security of the system and user data. Future extensibility has also been fully considered in the architecture, laying a solid foundation for the system's continuous development.

@@ -5,7 +5,7 @@
 <style>
   .description-truncate {
     display: -webkit-box;
-    -webkit-line-clamp: 3; 
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -24,11 +24,17 @@
   <div class="container">
     <h1 class="text-center my-4">Club List</h1>
     
+
     <!-- Add search box -->
     <div class="row justify-content-center mb-4">
       <div class="col-md-8"> 
           <form method="get" action="{% url 'clubs' %}">
               <div class="input-group "> 
+
+    <div class="row justify-content-center mb-4">
+      <div class="col-md-8">
+          <form method="get" action="{% url 'clubs' %}">
+              <div class="input-group ">
                   <input type="text" 
                          class="form-control py-2 border-end-0" 
                          name="search"

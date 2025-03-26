@@ -10,7 +10,7 @@
               {{ comment.author.first_name }} {{ comment.author.last_name }}&nbsp;&nbsp;
               <small class="text-muted">{{ comment.author.username }}</small>
             {% else %}
-              用户不存在
+              Unknown author
             {% endif %}
             &nbsp;
             <small class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</small>

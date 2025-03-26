@@ -26,7 +26,6 @@ class ClubMemberRequiredMixin(AccessMixin):
             </body>
             </html>
             """
-            # Add 403 status code
             return HttpResponse(mark_safe(message), status=403)
         return super().dispatch(request, *args, **kwargs)
 

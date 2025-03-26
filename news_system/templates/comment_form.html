@@ -1,5 +1,5 @@
 {% if user.is_authenticated %}
-  <h4>添加评论</h4>
+  <h4>Add a comment</h4>
   <form method="post" id="comment-form">
     {% csrf_token %}
     <div class="mb-3">
@@ -30,7 +30,7 @@
     
     // 表单提交前处理
     $("#comment-form").submit(function() {
-      // 如果使用了富文本编辑器，确保内容已同步
+      // 若使用了富文本编辑器，确保内容已同步
       if (typeof $('#id_text').summernote === 'function') {
         $('#id_text').summernote('update');
       }
