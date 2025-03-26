@@ -20,14 +20,11 @@ interface WidgetType {
         date?: string;
     };
 }
-interface PublicViewProps {
-    club_id: string;
-    selectedEvent: any;  // 从父组件 (Dashboard) 接收 selectedEvent
-  }
 
-const PublicView = ({selectedEvent }: PublicViewProps) => {
+const PublicView = () => {
     const { club_id } = useParams();
-    const [eventDetails, setEventDetails] = useState<any>(null);
+    const { event_id } = useParams();
+    const [event, setEvent] = useState<any>(null);
     const [widgets, setWidgets] = useState<WidgetType[]>([]);
     const [layout, setLayout] = useState<{ i: string; x: number; y: number; w: number; h: number }[]>([]);
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
@@ -58,10 +55,17 @@ const PublicView = ({selectedEvent }: PublicViewProps) => {
     }, []);
 
     useEffect(() => {
-        if (selectedEvent) {
-          setEventDetails(selectedEvent);  // 更新 eventDetails
+        if (event_id && club_id) {
+          axios
+            .get(`/api/clubs/${club_id}/events/${event_id}/`)
+            .then((response) => {
+              setEvent(response.data);
+            })
+            .catch((error) => {
+              console.error('Error fetching event details', error);
+            });
         }
-      }, [selectedEvent]);
+      }, [club_id, event_id]);
 
     useEffect(() => {
         if (!club_id || isNaN(Number(club_id))) return;
@@ -238,29 +242,30 @@ const PublicView = ({selectedEvent }: PublicViewProps) => {
                     </div>
                 </div>;
             case 'event_selector':
-                if (!selectedEvent) {
-                    return <div>Choose Event</div>;
+                if (!widget.data?.event_id) {
+                    return <div>请选择活动</div>;
                 }
+                
+                // Remove useState/useEffect from here and use existing data
                 return (
                     <div style={{ padding: 10 }}>
                         <h3>Event Detail</h3>
-                        {selectedEvent ? (
+                        {widget.data ? (
                             <>
-                                <p><strong>Event Name:</strong> {selectedEvent.name}</p>
-                                <p><strong>Time:</strong> {new Date(selectedEvent.start_time).toLocaleString()} - {new Date(selectedEvent.end_time).toLocaleString()}</p>
-                                <p><strong>Location:</strong> {selectedEvent.location}</p>
-                                <p><strong>Description:</strong> {selectedEvent.description}</p>
+                                <p><strong>Event Name:</strong> {widget.data.name}</p>
+                                <p><strong>TIme:</strong> {new Date(widget.data.start_time).toLocaleString()} - {new Date(widget.data.end_time).toLocaleString()}</p>
+                                <p><strong>Location:</strong> {widget.data.location}</p>
+                                <p><strong>Descriptioon:</strong> {widget.data.description}</p>
                             </>
                         ) : (
                             <div>加载中...</div>
                         )}
                     </div>
                 );
-            
           
                 
             default:
-                return <div>Undefined Wdiget</div>;
+                return <div>未知组件类型</div>;
         }
     };
 

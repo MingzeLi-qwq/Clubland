@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 // 修正导入路径，使用相对路径
 import EventSelector from '../components/EventSelector';
 
+
 const Dashboard = () => {
     const { club_id } = useParams();
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
@@ -142,6 +143,7 @@ const Dashboard = () => {
         let widgetData = {};
     if (typeMap[widgetType] === 'event_selector') {
         const eventId = prompt('Enter the event ID:');
+        // 获取活动详情
         try {
                 const eventRes = await axios.get(
                     `http://51.21.191.188:8000/api/clubs/${club_id}/events/${eventId}/`,
@@ -644,28 +646,27 @@ const Dashboard = () => {
                                     </div>
                                 )}
                                 {widget.widget_type === "event_selector" && (
-                                    <div>
-                                    <h2>Event Selector</h2>
-                                    <EventSelector clubId={club_id} onEventSelect={handleEventSelect} />
-                                    
-                                    {selectedEvent && (
-                                      <div>
-                                        <h3>Selected Event Details:</h3>
-                                        <p><strong>Name:</strong> {selectedEvent.name}</p>
-                                        <p><strong>Start Time:</strong> {new Date(selectedEvent.start_time).toLocaleString()}</p>
-                                        <p><strong>Location:</strong> {selectedEvent.location}</p>
-                                        <p><strong>Description:</strong> {selectedEvent.description}</p>
-                                      </div>
+                                    <div style={{ padding: 10 }}>
+                                    <h3>Event Detail</h3>
+                                    {widget.data ? (
+                                        <>
+                                            <p><strong>Event Name:</strong> {widget.data.name}</p>
+                                            <p><strong>TIme:</strong> {new Date(widget.data.start_time).toLocaleString()} - {new Date(widget.data.end_time).toLocaleString()}</p>
+                                            <p><strong>Location:</strong> {widget.data.location}</p>
+                                            <p><strong>Descriptioon:</strong> {widget.data.description}</p>
+                                        </>
+                                    ) : (
+                                        <div>加载中...</div>
                                     )}
-                                  </div>
+                                </div>
                                 )}
                             </div>
                         </div>
                     );
                 })}
             </GridLayout>
+
         </div>
-        
     );
 };
 
