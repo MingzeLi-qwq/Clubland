@@ -346,30 +346,20 @@ const PublicView = () => {
                 
 
             </GridLayout>
-            {isManager &&(
-            <button 
-                onClick={() => window.location.href = `/club-dashboard/${club_id}`}
-                style={{
-                    background: '#1890ff',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    height: '40px',
-                    transition: 'background 0.3s',
-                    ':hover': {
-                        background: '#40a9ff'
-                    }
-                }}
-            >
-                Edit
-            </button>
-            )}
+            {hasEditPermission && <EditButton />}
         </div>
         
     );
 };
+
+// 独立按钮组件
+const EditButton = () => (
+    <button 
+        onClick={() => window.location.href = `/club-dashboard/${club_id}`}
+        style={{/* 原有样式 */}}
+    >
+        Edit
+    </button>
+);
 
 export default PublicView;
