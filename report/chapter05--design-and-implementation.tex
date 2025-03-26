@@ -105,11 +105,56 @@ We adopted Django's recommended set of password validators to ensure users creat
 
 \section{User Interface Design}
 
-\subsection{Responsive Design}
-We adopted responsive design principles to ensure the system provides a good user experience across different devices, with specific styles for mobile and tablet devices.
+\subsection{Design Style and Principles}
+We designed a modern, unified, and consistent UI style for the system, adhering to the following design principles:
+\begin{itemize}
+    \item \textbf{User-Centered Design}: All interface elements are designed to enhance user experience.
+    \item \textbf{Consistency}: Ensure visual, interactive, and brand consistency throughout the system, reflecting the student association's unique brand colors and style.
+    \item \textbf{Simplicity}: Keep interface elements simple to reduce cognitive load and highlight key functions.
+    \item \textbf{Visual Hierarchy}: Establish clear visual hierarchy through color, size, and spacing.
+    \item \textbf{Accessibility}: Ensure sufficient contrast and proper element dimensions for accessibility.
+\end{itemize}
 
-\subsection{Form and Component Design}
-To enhance the user interaction experience, we paid special attention to the design of forms and selector components, creating flexible and user-friendly interfaces.
+\subsection{Visual Design System}
+We developed a unified visual design system that includes the following elements:
+\begin{itemize}
+    \item \textbf{Color Scheme}: Mainly blue (\#0071e3) as the primary color, complemented by white, gray, and accent colors to ensure a cohesive look.
+    \item \textbf{Typography}: Hierarchical font sizes and weights to improve readability and content structure.
+    \item \textbf{Rounded Corners}: Cards, buttons, and input fields feature 12px rounded corners to create a modern and friendly look.
+    \item \textbf{Shadow Effects}: Subtle shadow effects provide depth and differentiate interface layers.
+    \item \textbf{Icon System}: Utilizing Bootstrap icons and custom icons to ensure a unified icon language.
+\end{itemize}
+
+\subsection{Component Design}
+We designed a series of reusable interface components:
+\begin{itemize}
+    \item \textbf{Card Components}: Primary containers for displaying content with subtle shadow and hover effects to enhance interactivity.
+    \item \textbf{Button System}: Hierarchical design of primary, secondary, and text buttons based on their functionality.
+    \item \textbf{Form Elements}: Optimized input fields, selectors, and checkboxes to enhance the form filling experience.
+    \item \textbf{Navigation Elements}: Carefully designed navigation bars and side menus to provide clear website navigation.
+    \item \textbf{Notification Components}: Prominent yet non-intrusive notification design for system feedback.
+\end{itemize}
+
+\subsection{Responsive Design Implementation}
+In addition to basic responsive layouts, we paid special attention to:
+\begin{itemize}
+    \item \textbf{Mobile-First Approach}: Designing for the smallest screen first, then progressively enhancing for larger screens.
+    \item \textbf{Flexible Layouts}: Using Flexbox and CSS Grid to achieve dynamic element alignment.
+    \item \textbf{Conditional Display}: Showing or hiding specific content based on screen size.
+    \item \textbf{Touch Optimization}: Optimizing interactive element dimensions and spacing for touch devices.
+    \item \textbf{Performance Considerations}: Optimizing image resources and reducing complex animations to ensure smooth performance on mobile devices.
+\end{itemize}
+
+\subsection{Interaction Design Patterns}
+To enhance user experience, we implemented various interaction design patterns:
+\begin{itemize}
+    \item \textbf{Immediate Feedback}: Provide visual and state feedback after user actions to enhance confidence.
+    \item \textbf{Progressive Disclosure}: Present complex information through collapsible panels and tabs to avoid information overload.
+    \item \textbf{Microinteractions}: Add subtle animations and transitions to enrich interface liveliness and responsiveness.
+    \item \textbf{State Transitions}: Clearly display system state changes, such as button loading states and form validation states.
+    \item \textbf{Guided Forms}: Use multi-step form design to lower filling difficulty for complex forms.
+\end{itemize}
+
 
 \section{Performance Optimization}
 
