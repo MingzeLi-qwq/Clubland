@@ -36,7 +36,6 @@ const PublicView = () => {
     const widgetConfig = {
         clock: { w: 2, h: 3, resizable: false },
         calendar: { w: 3, h: 3, resizable: false },
-        event_selector: { w: 4, h: 4, resizable: true },
         default: { w: 2, h: 2, resizable: true }
     };
     
