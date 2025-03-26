@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
-# 改为绝对导入, 从 CMS_mixins 文件夹中导入 CMS_utils
 from CMS_mixins import CMS_utils
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -71,7 +70,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'user_system.middleware.CSRFRefreshMiddleware',  # 添加新的中间件
+    'user_system.middleware.CSRFRefreshMiddleware',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
@@ -224,7 +223,11 @@ SUMMERNOTE_CONFIG = {
     'attachment_absolute_uri': False,
 
     'lazy': True,
+
     'attachment_upload_to': CMS_utils.RTEUploadUtils.upload_img_func,
 }
 
 LOGIN_URL = '/login/'
+
+# 自定义CSRF失败视图
+CSRF_FAILURE_VIEW = 'user_system.views.csrf_failure'

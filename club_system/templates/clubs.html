@@ -5,7 +5,7 @@
 <style>
   .description-truncate {
     display: -webkit-box;
-    -webkit-line-clamp: 3;  /* 显示的行数，可以根据需要调整 */
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -24,11 +24,12 @@
   <div class="container">
     <h1 class="text-center my-4">Club List</h1>
     
-    <!-- 添加搜索框 -->
+
+    <!-- Add search box -->
     <div class="row justify-content-center mb-4">
-      <div class="col-md-8"> <!-- 加宽搜索栏容器 -->
+      <div class="col-md-8"> 
           <form method="get" action="{% url 'clubs' %}">
-              <div class="input-group "> <!-- 添加阴影 -->
+              <div class="input-group "> 
                   <input type="text" 
                          class="form-control py-2 border-end-0" 
                          name="search"
@@ -46,7 +47,7 @@
       </div>
   </div>
 
-    <!-- This section is responsible for traversing the data in the Club database and displaying the / 这一部分负责将Club数据库中的数据遍历出来并展示 -->
+    <!-- This section is responsible for traversing the data in the Club database and displaying the -->
     <div class="row">
       {% for club in clubs %}
       <a href="{% url 'club_detail' club_id=club.club_id %}" class="text-decoration-none">
@@ -67,9 +68,8 @@
     {% endif %}
 
     
-    <!-- 申请新社团的部分 -->
+    <!-- Part of applying for a new club -->
     {% if user.account_type == 'User' %} 
-      <!-- 添加分割线 -->
       <hr class="my-5">
         <div class="text-center mb-5">
           <h4 class="mb-3">Didn't find your Club?</h4>

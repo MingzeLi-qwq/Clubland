@@ -18,10 +18,6 @@ class ModelsTestCase(TestCase):
             password='testpass123',
             account_type=User.ACCOUNT_TYPE_USER
         )
-
-        # 视你的 Club 是否字符串或整数主键而定，如果是字符串主键:
-        #   club = Club.objects.create(club_id='club_1', name='Test Club')
-        # 如果是整数主键(默认 AutoField)，就这样:
         self.club = Club.objects.create(
             name='Test Club'
         )
@@ -68,13 +64,12 @@ class ModelsTestCase(TestCase):
         self.assertEqual(event_obj.club, self.club)
         # 检查关联的分类
         self.assertIn(self.category1, event_obj.categories.all())
-        self.assertNotIn(self.category2, event_obj.categories.all())  # 还没加category2
+        self.assertNotIn(self.category2, event_obj.categories.all())
         self.assertEqual(str(event_obj), f"Test Event by {self.club.name}")
 
     def test_event_participants_relation(self):
         """
         测试 Event 的 ManyToMany 参加者 participants
-        (默认为空 unless 你手动添加)
         """
         self.assertFalse(self.user in self.event.participants.all())
 
@@ -84,7 +79,7 @@ class ModelsTestCase(TestCase):
 
     def test_rsvp_creation(self):
         """
-        测试 RSVP 模型的创建和 __str__ (如果你加了的话)
+        测试 RSVP 模型的创建
         """
         self.assertTrue(RSVP.objects.filter(user=self.user, event=self.event).exists())
         rsvp_obj = RSVP.objects.get(user=self.user, event=self.event)

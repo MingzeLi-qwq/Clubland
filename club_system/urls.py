@@ -13,6 +13,7 @@ urlpatterns = [
     path('manager/general/<int:club_id>/', views.ClubManagerGeneral.as_view(), name='club_manager_general'),
     path('manager/members/<int:club_id>/', views.ClubManagerMembers.as_view(), name='club_manager_members'),
     path('manager/news/<int:club_id>/', views.ClubManagerNews.as_view(), name='club_manager_news'),
+    path('manager/forum/<int:club_id>/', views.ClubManagerForum.as_view(), name='club_manager_forum'),
     path('manager/events/<int:club_id>/', views.ClubManagerEvents.as_view(), name='club_manager_events'),
     path('manager/dashboard/<int:club_id>/', views.ClubManagerDashboard.as_view(), name='club_manager_dashboard'),
 
@@ -24,14 +25,14 @@ urlpatterns = [
     path('manager/remove_manager/<int:club_id>/<str:username>/', views.RemoveManagerView.as_view(), name='remove_manager'),
     path('manager/set_manager/<int:club_id>/<str:username>/', views.SetManagerView.as_view(), name='set_manager'),
 
-    # js搜索用户
+    # js user search box
     path('manager/search_users/', views.SearchUsersView.as_view(), name='search_users'),
 
-    # 添加与删除member
+    # Adding and deleting members
     path('manager/add_member/<int:club_id>/<str:username>/', views.AddMemberView.as_view(), name='add_member'),
     path('manager/remove_member/<int:club_id>/<str:username>/', views.RemoveMemberView.as_view(), name='remove_member'),
 
-    # 创建新的Club
+    # Create a new Club
     path('apply-new-club/', views.ApplyNewClubView.as_view(), name='apply_new_club'),
 
     # event 

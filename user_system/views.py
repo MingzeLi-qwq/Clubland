@@ -113,14 +113,13 @@ class LogInView(View):
             login(request, user)
             return redirect("home")
         else:
-            # 添加错误提示
             messages.error(request, "Invalid username or password.")
         return render(request, self.template_name, {"form": form})
 
 def LogOutView(request):
     logout(request)
     messages.success(request, "You have successfully logged out.")
-    # 直接重定向到登录页面，而不是首页
+    # 直接重定向到登录页面, 不是首页!
     return redirect('login')
 
 
@@ -141,7 +140,7 @@ def change_password(request):
             user = form.save()
             update_session_auth_hash(request, user)  # 防止用户被登出
             messages.success(request, 'Your password was successfully updated!')
-            return redirect('dashboard_personal_information')  # 这里要确保你的 URL 名称正确
+            return redirect('dashboard_personal_information') # 重定向到个人资料页
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
@@ -259,6 +258,38 @@ def Mine(request):
 def about_us(request):
     """关于我们页面"""
     return render(request, 'shared/about_us.html')
+
+# CSRF失败处理视图
+def csrf_failure(request, reason=""):
+    """
+    自定义CSRF错误处理视图，用于改善用户体验
+    - 对于AJAX请求，返回JSON错误
+    - 对于普通请求，显示弹窗并重定向回上一页
+    """
+    error_message = "You may have switched between different accounts too quickly.\nPlease wait a short moment and try again. (CSRF validation)"
+    
+    # 判断是否为AJAX请求
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'status': 'error',
+            'message': error_message
+        }, status=403)
+    
+    # 对于普通请求，返回带有弹窗和返回上一页的脚本的响应
+    response = HttpResponse("""
+    <html>
+    <head><title>Account Security Verification Notice</title></head>
+    <body>
+        <script>
+            alert("{}");
+            history.back();
+        </script>
+    </body>
+    </html>
+    """.format(error_message))
+    
+    response.status_code = 403
+    return response
 
 
 

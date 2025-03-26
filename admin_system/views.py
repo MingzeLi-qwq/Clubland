@@ -18,7 +18,7 @@ def verifyAdminPassword(request):
         password = request.POST.get('password')
         user = authenticate(username=request.user.username, password=password)
         if user is not None:
-            # 密码验证成功
+            # Password Verification Successful
             request.session['password_verified'] = True
             if request.session.get('pending_action') == 'delete_club':
                 club_id = request.session.get('club_id')
@@ -34,7 +34,7 @@ def verifyAdminPassword(request):
     return render(request, 'verify_password.html')
 
 
-"""-----------------------------------------以下内容负责渲染Admin Panel---------------------------------------------------"""
+"""-----------------------------------------The following are responsible for rendering the Admin Panel---------------------------------------------------"""
 class AdminPanelClubs(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
     def get(self, request, *args, **kwargs):
@@ -98,14 +98,14 @@ class AdminPanelRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):        
         return render(request, 'admin_panel/requests.html')
-"""-----------------------------------------以上内容负责渲染Admin Panel---------------------------------------------------"""
+"""-----------------------------------------The above is responsible for rendering Admin Panel---------------------------------------------------"""
 
 
 
 
 
 
-"""-----------------------------------------以下内容负责渲染Admin Panel Club---------------------------------------------------"""
+"""-----------------------------------------The following is responsible for rendering Admin Panel Club---------------------------------------------------"""
 class AdminPanelClubsGeneral(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
     def get(self, request, club_id, *args, **kwargs):
@@ -162,6 +162,16 @@ class AdminPanelClubsNews(LoginRequiredMixin, UserTypeRequiredMixin, View):
             'club':club,
             'club_id':club_id,
         })
+
+class AdminPanelClubsForum(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    allowed_types = ['Admin']
+    def get(self, request, club_id, *args, **kwargs):
+        club = Club.objects.get(pk=club_id)
+        return render(request, "admin_panel/admin_panel_club/forum.html", {
+            'club':club,
+            'club_id':club_id,
+        })
+
     
 class AdminPanelClubsDashboard(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
@@ -198,8 +208,8 @@ class AdminPanelClubsEvents(LoginRequiredMixin, UserTypeRequiredMixin, View):
         return render(request, 'admin_panel/admin_panel_club/events.html', context)
     
 
-# 以下内容负责处理删除club的请求
 class AdminDeleteClub(LoginRequiredMixin, UserTypeRequiredMixin, View):
+    """Processing requests to delete clubs"""
     allowed_types = ['Admin']
 
     def get(self, request, club_id):
@@ -209,7 +219,7 @@ class AdminDeleteClub(LoginRequiredMixin, UserTypeRequiredMixin, View):
             club_name = club.name
             managers = Membership.objects.filter(club=club, is_manager=True).select_related('user')
 
-            # 向所有管理员发送通知
+            # Send notifications to all administrators
             for membership in managers:
                 Notification.objects.create(
                     user=membership.user,
@@ -233,20 +243,20 @@ class AdminDeleteClub(LoginRequiredMixin, UserTypeRequiredMixin, View):
             return redirect('verify_admin_password')
         else:
             return self.get(request, club_id)
-"""-----------------------------------------以上内容负责渲染Admin Panel Club---------------------------------------------------"""
+"""-----------------------------------------The above is Responsible for rendering Admin Panel Club---------------------------------------------------"""
 
 
 
-"""-----------------------------------------以下内容负责渲染Admin Panel Club Event---------------------------------------------------"""
+"""-----------------------------------------The following is responsible for rendering the Admin Panel Club Event---------------------------------------------------"""
 class AdminPanelClubsEventGeneral(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
     def get(self, request, club_id, event_id, *args, **kwargs):
         club = get_object_or_404(Club, pk=club_id)
-        event = get_object_or_404(Event, pk=event_id)  # 新增event对象获取
+        event = get_object_or_404(Event, pk=event_id)
         all_categories = Category.objects.all()
         return render(request, "admin_panel/admin_panel_club/admin_panel_club_event/general.html", {
             'club': club,
-            'event': event,  # 传递event到模板
+            'event': event,
             'club_id': club_id,
             'event_id': event_id,
             'all_categories': all_categories,
@@ -258,7 +268,7 @@ class AdminPanelClubsEventRSVPs(LoginRequiredMixin, UserTypeRequiredMixin, View)
         club = get_object_or_404(Club, pk=club_id)
         event = get_object_or_404(Event, pk=event_id)
         
-        # 处理搜索
+        # search functionality
         search_query = request.GET.get('search', '')
         rsvps = RSVP.objects.filter(event=event).select_related('user')
         
@@ -277,7 +287,7 @@ class AdminPanelClubsEventRSVPs(LoginRequiredMixin, UserTypeRequiredMixin, View)
             'search_query': search_query,
         }
         return render(request, "admin_panel/admin_panel_club/admin_panel_club_event/RSVPs.html", context)
-"""-----------------------------------------以上内容负责渲染Admin Panel Club Event---------------------------------------------------"""
+"""-----------------------------------------The above is Responsible for rendering Admin Panel Club Event---------------------------------------------------"""
 
 
 
@@ -285,7 +295,7 @@ class AdminPanelClubsEventRSVPs(LoginRequiredMixin, UserTypeRequiredMixin, View)
 
 
 
-"""-----------------------------------------以下内容负责渲染Admin Panel User---------------------------------------------------"""
+"""-----------------------------------------The following are responsible for rendering Admin Panel User---------------------------------------------------"""
 class AdminPanelUserInformation(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
     def get(self, request, username, *args, **kwargs):
@@ -302,7 +312,6 @@ class AdminPanelUserMemberships(LoginRequiredMixin, UserTypeRequiredMixin, View)
         panel_user = get_object_or_404(User, username=username)
         search_query = request.GET.get('search', '')
         
-        # 分离管理者和普通成员查询集
         memberships = Membership.objects.filter(user=panel_user)
         if search_query:
             memberships = memberships.filter(
@@ -335,10 +344,10 @@ class AdminPanelRemoveMemberships(LoginRequiredMixin, UserTypeRequiredMixin, Vie
         messages.success(request, f"Removed membership from {club_name}")
         return redirect('admin_panel_user_memberships', username=username)
 
-"""-----------------------------------------以上内容负责渲染Admin Panel User---------------------------------------------------"""
+"""-----------------------------------------The above is responsible for rendering Admin Panel User---------------------------------------------------"""
 
 
-"""-----------------------------------------以下内容负责渲染Admin Panel Request---------------------------------------------------"""
+"""-----------------------------------------The following is responsible for rendering the Admin Panel Request---------------------------------------------------"""
 class AdminPanelNewClubRequests(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['Admin']
 
@@ -427,4 +436,4 @@ class AdminReviewNewClubRequest(LoginRequiredMixin, UserTypeRequiredMixin, View)
         return redirect('admin_panel_new_club_requests')
 
     
-"""-----------------------------------------以上内容负责渲染Admin Panel Request---------------------------------------------------"""
+"""-----------------------------------------The above is responsible for rendering Admin Panel Request---------------------------------------------------"""

@@ -2,7 +2,6 @@ import os
 import uuid
 from datetime import datetime
 
-# 将上传路径函数封装到一个类中
 class RTEUploadUtils:
     @staticmethod
     def upload_img_func(instance, filename):
@@ -22,7 +21,6 @@ class RTEUploadUtils:
             if os.path.exists(image_path):
                 os.remove(image_path)
 
-# 新增 UserFormMixin 封装表单常用方法
 class UserFormMixin:
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

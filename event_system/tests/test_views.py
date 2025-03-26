@@ -132,8 +132,7 @@ class EventsViewsTest(TestCase):
         try:
             # 创建测试数据
             club = Club.objects.create(name="Test event list filters club")
-            # 修改重复的 "Sports" 为唯一名称
-            category3 = Category.objects.create(name="Test Sports")  # 修改此处
+            category3 = Category.objects.create(name="Test Sports")
             future_event = Event.objects.create(
                 club=self.club,
                 name="Future Event",
@@ -162,7 +161,7 @@ class EventsViewsTest(TestCase):
             self.assertContains(response, 'Past Event')
             self.assertNotContains(response, 'Sample Event')
             # 测试分类过滤
-            response = self.client.get(reverse('events'), {'category': 'Test Sports'})  # 修改此处
+            response = self.client.get(reverse('events'), {'category': 'Test Sports'})   
             self.assertContains(response, 'Future Event')
             self.assertNotContains(response, 'Sample Event')
         finally:

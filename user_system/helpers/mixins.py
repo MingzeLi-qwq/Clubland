@@ -30,7 +30,7 @@ class UserTypeRequiredMixin(AccessMixin):
                 <script>
                     setTimeout(function() {
                         window.location.href = '/';
-                    }, 3000);  // Jump in 3 seconds / 3秒后跳转
+                    }, 3000);  // Jump in 3 seconds / Jump in 3 seconds
                 </script>
             </head>
             <body>

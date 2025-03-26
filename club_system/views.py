@@ -24,7 +24,6 @@ import json
 
 """------------------------------------------------------Checks if a string is a duplicate of an existing club name.---------------------------------------------------------"""
 """This method is used to render the Club list page"""
-"""此方法用来渲染Club列表页"""
 def clubs(request):
     search_query = request.GET.get('search', '')
     if search_query:
@@ -38,7 +37,6 @@ def clubs(request):
 
 
 """This method checks for duplicate Club names, and more importantly, ignores case and spaces."""
-"""此方法用于检查Club name是否重复, 更重要的是忽略了大小写和空格"""
 def isSameClubNameExist(name):
     normalized_name = ''.join(name.split()).lower()
     clubs = Club.objects.all()
@@ -48,6 +46,7 @@ def isSameClubNameExist(name):
             return True
     return False
 
+"""This method checks for duplicate Club names on requirement, and more importantly, ignores case and spaces."""
 def isSameClubNameExistInRequest(name):
     normalized_name = ''.join(name.split()).lower()
     requests = NewClubRequest.objects.all()
@@ -62,7 +61,6 @@ def isSameClubNameExistInRequest(name):
 
 """--------------------------------------------------------------------Club Details Page-------------------------------------------------------------------------------"""
 """This method is used to render the Club details page"""
-"""此方法用来渲染Club详情页"""
 class ClubDetailView(ClubExistsRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = get_object_or_404(Club, pk=club_id)
@@ -72,15 +70,12 @@ class ClubDetailView(ClubExistsRequiredMixin, View):
         is_manager=False
         is_member=False
         
-        # 获取与此俱乐部相关的新闻
         recent_news = None
         if hasattr(club, 'news'):
             recent_news = club.news.all().order_by('-created_at')
             
-            # 为每个新闻添加first_image_url
             from bs4 import BeautifulSoup
             for news_item in recent_news:
-                # 提取第一张图片URL
                 first_image_url = None
                 if news_item.content:
                     soup = BeautifulSoup(news_item.content, 'html.parser')
@@ -99,11 +94,10 @@ class ClubDetailView(ClubExistsRequiredMixin, View):
             'is_manager': is_manager,
             'is_member': is_member,
             'events': events,
-            'recent_news': recent_news,  # 添加recent_news到上下文
+            'recent_news': recent_news,
         })
     
 """This method is used to handle member registration from user itself"""
-"""此方法用来处理来自用户的注册会员"""
 class RegisterMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, UserTypeRequiredMixin, NonClubMemberRequiredMixin, View):
     allowed_types = ['User']
 
@@ -114,7 +108,6 @@ class RegisterMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, UserTy
 
         
 """"This method is used to handle membership cancelation from user it self"""
-"""此方法用来处理来自用户自己的取消会员"""
 class CancelMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, UserTypeRequiredMixin, ClubMemberRequiredMixin, NonClubManagerRequiredMixin, View):
     allowed_types = ['User']
 
@@ -124,30 +117,10 @@ class CancelMembershipView(LoginRequiredMixin, ClubExistsRequiredMixin, UserType
         messages.success(request, f"You have successfully cancelled your membership in {club.name}.")
         return redirect('dashboard_my_club')
 """------------------------------------------------------------------------End-------------------------------------------------------------------------------"""
-
-
-# class ClubWebView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMemberRequiredMixin, View):
-#     template_name = 'club_website/club_dashboard.html'
-
-#     def get(self, request, club_id):
-#         club = get_object_or_404(Club, club_id=club_id)
         
-#         # 验证用户是否是该 club 的成员
-#         if not Membership.objects.filter(club=club, user=request.user, club__isnull=False).exists():
-#             return render(request, '403.html', status=403)
-
-#         membership = Membership.objects.get(club=club, user=request.user)
-
-#         return render(request, self.template_name, {
-#             'club': club,
-#             'widgets': club.widgets.all(),
-#             'customization': club.customization,
-#             'membership': membership
-#         })
-        
-
 
 """---------------------------------------------------Club Manager Side Bar------------------------------------------------------------"""
+"""Those method is used to render the Club Manager Side Bar"""
 class ClubManagerGeneral(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = Club.objects.get(pk=club_id)
@@ -204,6 +177,15 @@ class ClubManagerNews(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRe
             'club': club,
         })
     
+class ClubManagerForum(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
+    def get(self, request, club_id, *args, **kwargs):
+        club = Club.objects.get(pk=club_id)
+
+        return render(request, 'club_manager/forum.html', {
+            'club_id': club_id,
+            'club': club,
+        })
+    
 class ClubManagerEvents(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, *args, **kwargs):
         club = get_object_or_404(Club, club_id=club_id)
@@ -242,14 +224,12 @@ class ClubManagerDashboard(LoginRequiredMixin, ClubManagerRequiredMixin, View):
 
 """----------------------------------------------------------------Club Manager General-------------------------------------------------------------------"""
 """This method is used to handle name update requests from the club manager general and admin panel."""
-"""此方法用于处理来自club manager general, admin panel更新club name请求"""
 class UpdateClubName(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id):
         club = get_object_or_404(Club, pk=club_id)
         new_name = request.POST.get('club_name', '').strip()
 
         # If the request to access this view came from the admin panel, the redirection url is the admin panel.
-        # 如果访问此view的请求是来自admin panel的, 重新定向url就是admin panel
         if request.user.account_type == 'Admin':
             redirect_url = 'admin_panel_club_general'
         else:
@@ -281,14 +261,12 @@ class UpdateClubName(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerReq
         return redirect(redirect_url, club_id=club_id)
 
 """This method is used to handle description update requests from the club manager general and admin panel."""
-"""此方法用于处理来自club manager general, admin panel更新club description请求"""
 class UpdateClubDescription(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id):
         club = get_object_or_404(Club, pk=club_id)
         new_description = request.POST.get('club_description', '').strip()
 
         # If the request to access this view came from the admin panel, the redirection url is the admin panel.
-        # 如果访问此view的请求是来自admin panel的, 重新定向url就是admin panel
         if request.user.account_type == 'Admin':
             redirect_url = 'admin_panel_club_general'
         else:
@@ -313,7 +291,6 @@ class UpdateClubDescription(LoginRequiredMixin, ClubExistsRequiredMixin, ClubMan
 
 """-------------------------------------------------------------Club Manager Members-------------------------------------------------------------------------"""
 """This section is used to process requests from club manager remove manager"""
-"""此部分用于处理来自club manager, admin panel 移除 manager的请求"""
 class RemoveManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, username):
         club = get_object_or_404(Club, pk=club_id)
@@ -321,14 +298,13 @@ class RemoveManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManager
         membership = get_object_or_404(Membership, club=club, user=user)
 
         # If the request to access this view came from the admin panel, the redirection url is the admin panel.
-        # 如果访问此view的请求是来自admin panel的, 重新定向url就是admin panel
         if request.user.account_type == 'Admin':
             redirect_url = 'admin_panel_club_members'
         else:
             redirect_url = 'club_manager_members'
 
 
-        # 检查是否是最后一个管理员
+        # Check if it is the last administrator
         if Membership.objects.filter(club=club, is_manager=True).count() <= 1:
             messages.error(request, "At least one manager is required.")
             return redirect(redirect_url, club_id=club_id)
@@ -341,14 +317,13 @@ class RemoveManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManager
             url=reverse('dashboard_my_club_detail', args=[club_id]),
         )
 
-        # 移除管理员资格
+        # Remove administrator status
         membership.is_manager = False
         membership.save()
         messages.success(request, f"{user.get_full_name} is no longer a manager.")
         return redirect(redirect_url, club_id=club_id)
 
 """This section is used to process requests from the club manager and admin panel to add a new manager."""
-"""此部分用于处理来自club manager, admin panel 新增 manager的请求"""
 class SetManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, username):
         club = get_object_or_404(Club, pk=club_id)
@@ -356,7 +331,6 @@ class SetManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerReq
         membership = get_object_or_404(Membership, club=club, user=user)
 
         # If the request to access this view came from the admin panel, the redirection url is the admin panel.
-        # 如果访问此view的请求是来自admin panel的, 重新定向url就是admin panel
         if request.user.account_type == 'Admin':
             redirect_url = 'admin_panel_club_members'
         else:
@@ -370,13 +344,13 @@ class SetManagerView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerReq
             url=reverse('dashboard_my_club_detail', args=[club_id]),
         )
 
-        # 设置为管理员
+        # Set as manager
         membership.is_manager = True
         membership.save()
         messages.success(request, f"{user.get_full_name} is now a manager.")
         return redirect(redirect_url, club_id=club_id)
 
-"""此部分用来实现club manager - Membership - Add members - 自动搜索框的自动搜索功能"""
+"""This section is used to implement the auto-search function of the club manager - Membership - Add members - auto-search box."""
 class SearchUsersView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         query = request.GET.get('q', '')
@@ -388,7 +362,7 @@ class SearchUsersView(LoginRequiredMixin, View):
             Q(first_name__icontains=query) |
             Q(last_name__icontains=query),
             account_type=User.ACCOUNT_TYPE_USER
-        ).exclude(membership__club_id=club_id)  # 添加排除现有成员的过滤
+        ).exclude(membership__club_id=club_id)
 
         results = [{
             'username': user.username,
@@ -398,31 +372,30 @@ class SearchUsersView(LoginRequiredMixin, View):
         
         return JsonResponse(results, safe=False)
     
-"""此部分用来实现club manager 移除 Membership 的功能"""
+"""This section is used to implement the club manager's ability to remove Memberships."""
 class RemoveMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, username, *args, **kwargs):
         club = get_object_or_404(Club, club_id=club_id)
         user_to_remove = User.objects.filter(username=username).first()
 
         # If the request to access this view came from the admin panel, the redirection url is the admin panel.
-        # 如果访问此view的请求是来自admin panel的, 重新定向url就是admin panel
         if request.user.account_type == 'Admin':
             redirect_url = 'admin_panel_club_members'
         else:
             redirect_url = 'club_manager_members'
         
-        # 检查用户是否存在
+        # Check if the user exists
         if not user_to_remove:
             messages.error(request, "User not exists")
             return redirect(redirect_url, club_id=club_id)
 
         membership = Membership.objects.filter(user=user_to_remove, club=club).first()
-        # 检查是否有此会员关系
+        # Check if you have this membership relationship
         if not membership:
             messages.error(request, "The user does not belong to this club")
             return redirect(redirect_url, club_id=club_id)
         
-        # 检查是否为管理员
+        # Check if you are an administrator
         if membership.is_manager:
             messages.error(request, "The user is an administrator and cannot be removed directly")
             return redirect(redirect_url, club_id=club_id)
@@ -438,11 +411,10 @@ class RemoveMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerR
         messages.success(request, f"{user_to_remove.username} has been removed from the club.")
         return redirect(redirect_url, club_id=club_id)
 
-"""此部分用来实现club manager - 添加member的功能"""
+"""This section is used to implement the club manager - add member functionality."""
 class AddMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequiredMixin, View):
     def post(self, request, club_id, username):
         # If the request to access this view came from the admin panel, the redirection url is the admin panel.
-        # 如果访问此view的请求是来自admin panel的, 重新定向url就是admin panel
         if request.user.account_type == 'Admin':
             redirect_url = 'admin_panel_club_members'
         else:
@@ -453,7 +425,7 @@ class AddMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequ
             user = User.objects.get(username=username)
             
             if Membership.objects.filter(user=user, club=club).exists():
-                messages.error(request, f"{user.username} 已是社团成员")
+                messages.error(request, f"{user.username} Already a member of this Club")
                 return redirect(redirect_url, club_id=club_id)
                 
             Membership.objects.create(user=user, club=club)
@@ -481,7 +453,7 @@ class AddMemberView(LoginRequiredMixin, ClubExistsRequiredMixin, ClubManagerRequ
 
 
     
-"""-------------------------------------------------------Club Manager Event 相关-------------------------------------------------------"""
+"""-------------------------------------------------------Club Manager Event Related-------------------------------------------------------"""
     
 class ClubManagerEventGeneral(LoginRequiredMixin, ClubManagerRequiredMixin, View):
     def get(self, request, club_id, event_id, *args, **kwargs ):
@@ -501,7 +473,6 @@ class ClubManagerEventRSVPs(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         club = get_object_or_404(Club, pk=club_id)
         event = get_object_or_404(Event, pk=event_id)
         
-        # 处理搜索
         search_query = request.GET.get('search', '')
         rsvps = RSVP.objects.filter(event=event).select_related('user')
         
@@ -521,13 +492,13 @@ class ClubManagerEventRSVPs(LoginRequiredMixin, ClubManagerRequiredMixin, View):
         }
         return render(request, 'club_manager/event/RSVPs.html', context)
     
-"""-------------------------------------------------------Club Manager Event 相关结束-------------------------------------------------------"""
+"""-------------------------------------------------------Club Manager Event Related end-------------------------------------------------------"""
 
 
 
 
-"""-------------------------------------------------------User New Club Requests 相关-------------------------------------------------------"""
-"""此方法用来渲染用户申请新Club的form"""
+"""-------------------------------------------------------User New Club Requests relate-------------------------------------------------------"""
+"""This method is used to render the user's form for requesting a new Club."""
 class ApplyNewClubView(LoginRequiredMixin, UserTypeRequiredMixin, View):
     allowed_types = ['User']
     template_name = 'apply_new_club.html'
@@ -541,12 +512,10 @@ class ApplyNewClubView(LoginRequiredMixin, UserTypeRequiredMixin, View):
         if form.is_valid():
             club_name = form.cleaned_data['name']
             
-            # 检查是否与现有Club重名
             if isSameClubNameExist(club_name):
                 messages.error(request, "A club with this name already exists.")
                 return render(request, self.template_name, {'form': form})
             
-            # 创建新的请求
             new_request = form.save(commit=False)
             new_request.creator = request.user
             new_request.save()
@@ -564,7 +533,6 @@ class ApplyNewClubView(LoginRequiredMixin, UserTypeRequiredMixin, View):
             messages.success(request, "Your club creation request has been submitted and is pending approval.")
             return redirect('dashboard_new_club_requests')
         
-        # 如果表单无效
         messages.error(request, "Please correct the errors below.")
         return render(request, self.template_name, {'form': form})
-"""-------------------------------------------------------User New Club Requests 相关结束-------------------------------------------------------"""
+"""-------------------------------------------------------User New Club Requests relate end-------------------------------------------------------"""
