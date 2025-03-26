@@ -250,6 +250,7 @@ const Dashboard = () => {
             );
     
             const imageUrl = response.data.file_url;
+            console.log(imageUrl);
             const fullUrl = `/media/${imageUrl}`;
     
             const img = new Image();
@@ -284,7 +285,8 @@ const Dashboard = () => {
     
 
     const updateWidgetData = async (id: number, key: string, value: any) => {
-        const getCsrfToken = () => {
+        const getCsrfToken =
+         () => {
             const csrfToken = document.cookie
                 .split('; ')
                 .find(row => row.startsWith('csrftoken='))?.split('=')[1];
