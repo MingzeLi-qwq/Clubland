@@ -31,7 +31,7 @@
                 {% for membership in managers %}
                 <tr>
                     <td>
-                        <a href=" 'admin_panel_club_members' club_id=membership.club.club_id %}" 
+                        <a href="{% url 'admin_panel_club_members' club_id=membership.club.club_id %}" 
                            class="btn btn-link p-0 text-decoration-none">
                             {{ membership.club.name }}
                         </a >
