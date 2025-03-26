@@ -27,7 +27,7 @@ const PublicView = () => {
     const { event_id } = useParams();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const isAdmin = queryParams.get('is_admin') === 'true';
+    const isAdmin = queryParams.get('is_admin') === 'True';
     const [event, setEvent] = useState<any>(null);
     const [widgets, setWidgets] = useState<WidgetType[]>([]);
     const [layout, setLayout] = useState<{ i: string; x: number; y: number; w: number; h: number }[]>([]);
