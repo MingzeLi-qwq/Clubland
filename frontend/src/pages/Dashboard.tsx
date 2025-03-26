@@ -599,7 +599,11 @@ const Dashboard = () => {
                                     </div>
                                 )}
                                 {widget.widget_type === "event_selector" && (
-                                    <div style={{ padding: 10 }}>
+                                    <div style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                    }}>
                                     <h3>Event Detail</h3>
                                     {widget.data ? (
                                         <>
