@@ -46,6 +46,7 @@ const PublicView = () => {
                 console.log("Checking admin status...");
                 const response = await axios.get(`/api/clubs/${club_id}/is_manager/`);
                 setIsManager(response.data.is_manager);  // Set the manager status based on the response
+                console.log("Admin status set to:", response.data.is_manager);
             } catch (error) {
                 console.error("Error checking admin status", error);
             }
