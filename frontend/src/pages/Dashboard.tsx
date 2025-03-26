@@ -28,7 +28,7 @@ const Dashboard = () => {
     };
     const handleEventSelect = (event: any) => {
         setSelectedEvent(event); 
-        console.log(selectedEvent); 
+        console.log(event); 
       };
     useEffect(() => {
         const updateClock = () => {
