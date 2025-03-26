@@ -4,7 +4,7 @@
 <style>
   .btn-danger {
       border-radius: 12px;
-      background-color: #e30000;  /* 红色背景 */
+      background-color: #e30000;
       border: none;
       padding: 12px 20px;
       font-weight: 600;
@@ -12,11 +12,11 @@
   }
   
   .btn-danger:hover {
-      background-color: #b50000;  /* 深红色悬停效果 */
+      background-color: #b50000;
   }
   
   .danger-card {
-      border: 1px solid #da4c4c;  /* 红色边框 */
+      border: 1px solid #da4c4c;
   }
 </style>
 
@@ -71,7 +71,7 @@
           </div>
         </div>
         
-        <!-- 恢复新分类输入 -->
+        <!-- Restore new category input -->
         <div class="mb-3">
             <label class="form-label">Add New Category</label>
             <input type="text" class="form-control" name="new_category" 
@@ -128,13 +128,13 @@
         var endTimeInput = document.getElementById('event_end_time');
         var form = document.getElementById('eventTimeForm');
     
-        // 设置最小日期为今天
+        // Set the minimum date to today
         var today = new Date();
         var todayString = today.toISOString().split('T')[0] + "T00:00";
         startTimeInput.min = todayString;
         endTimeInput.min = todayString;
     
-        // 更新开始时间时的限制
+        // Limitations when updating the start time
         startTimeInput.addEventListener('change', function() {
             var startDate = new Date(this.value);
             if (startDate < today) {
@@ -143,7 +143,7 @@
             endTimeInput.min = this.value;
         });
     
-        // 更新结束时间时的限制
+        // Limitations when updating the end time
         endTimeInput.addEventListener('change', function() {
             var endDate = new Date(this.value);
             var startDate = new Date(startTimeInput.value);
@@ -152,7 +152,7 @@
             }
         });
     
-        // 表单验证
+        // Form Validation
         form.addEventListener('submit', function(event) {
             var startTime = new Date(startTimeInput.value);
             var endTime = new Date(endTimeInput.value);

@@ -6,39 +6,38 @@ from faker import Faker
 
 
 class Command(BaseCommand):
-    help = 'Assigning members to Clubs. / 为Clubs分配成员'
+    help = 'Assigning members to Clubs.'
 
 
     def assign_members(self):
-        '''To ensure that the member-user relationship makes sense, I'll delete the existing member relationship before attempting to repeat assign member each time.'''
-        '''为了保证member与user关系的合理性, 我会在每次试图重复assign member之前删除已有的member关系'''
+        '''To ensure that the member-user relationship makes sense, delete the existing member relationship before attempting to repeat assign member each time.'''
         Membership.objects.all().delete()
 
         for club in self.clubs:
-            # 随机挑 40 个用户
+            # 40 randomly selected users
             selected_users = random.sample(self.all_regular_users, 40)
 
-            # 将前 2 个用户设置为管理员
+            # Set the first 2 users as managers
             for i, user in enumerate(selected_users):
-                # 检查是否已经存在相同的 user_id 和 club_id 组合
+                # Check if the same user_id and club_id combination already exists
                 if not Membership.objects.filter(user=user, club=club).exists():
                     Membership.objects.create(
                         user=user,
                         club=club,
-                        is_manager=(i < 2)  # 索引 0 和 1 为管理员
+                        is_manager=(i < 2)
                     )
 
-            self.stdout.write("Club member assignments are complete! / Club 成员分配完成！")
+            self.stdout.write("Club member assignments are complete!")
 
 
-        # 为 @john_doe 用户设定为 Book Club 的管理员
+        # Set up the @john_doe user as an manager for Book Club
         john_doe = User.objects.get(username='@john_doe')
         book_club = Club.objects.get(name='Book Club')
         membership, created = Membership.objects.get_or_create(user=john_doe, club=book_club)
         if created or not membership.is_manager:
             membership.is_manager = True
             membership.save()
-            self.stdout.write("Assigned @john_doe as manager of Book Club. / 将 @john_doe 设为 Book Club 的管理员。")
+            self.stdout.write("Assigned @john_doe as manager of Book Club.")
 
 
     
@@ -49,13 +48,13 @@ class Command(BaseCommand):
         self.clubs = list(Club.objects.all())
 
         if len(self.all_regular_users) < 50:   
-            self.stdout.write("Less than 50 available users, can not complete the random allocation! / 可用用户不足 50 人，无法完成随机分配！")
-            self.stdout.write("Please use the 'python3 manage.py seed_users' command first. / 请先使用'python3 manage.py seed_users'指令")
+            self.stdout.write("Less than 50 available users, can not complete the random allocation! ")
+            self.stdout.write("Please use the 'python3 manage.py seed_users' command first. ")
             return
         
         if len(self.clubs) < 1:
-            self.stdout.write("No available users, can not complete the random allocation! / 没有可用club无法完成随机分配！")
-            self.stdout.write("Please use the 'python3 manage.py seed_clubs' command first. / 请先使用'python3 manage.py seed_clubs'指令")
+            self.stdout.write("No available users, can not complete the random allocation! ")
+            self.stdout.write("Please use the 'python3 manage.py seed_clubs' command first. ")
             return
 
         self.assign_members()

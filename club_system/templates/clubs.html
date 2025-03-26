@@ -24,6 +24,13 @@
   <div class="container">
     <h1 class="text-center my-4">Club List</h1>
     
+
+    <!-- Add search box -->
+    <div class="row justify-content-center mb-4">
+      <div class="col-md-8"> 
+          <form method="get" action="{% url 'clubs' %}">
+              <div class="input-group "> 
+
     <div class="row justify-content-center mb-4">
       <div class="col-md-8">
           <form method="get" action="{% url 'clubs' %}">
@@ -45,7 +52,7 @@
       </div>
   </div>
 
-    <!-- This section is responsible for traversing the data in the Club database and displaying the / 这一部分负责将Club数据库中的数据遍历出来并展示 -->
+    <!-- This section is responsible for traversing the data in the Club database and displaying the -->
     <div class="row">
       {% for club in clubs %}
       <a href="{% url 'club_detail' club_id=club.club_id %}" class="text-decoration-none">
@@ -66,7 +73,7 @@
     {% endif %}
 
     
-    <!-- 申请新社团的部分 -->
+    <!-- Part of applying for a new club -->
     {% if user.account_type == 'User' %} 
       <hr class="my-5">
         <div class="text-center mb-5">

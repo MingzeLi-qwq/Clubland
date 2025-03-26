@@ -19,7 +19,7 @@ class NewClubRequestForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.label_suffix = ""  # 移除默认的冒号
+        self.label_suffix = ""  # Remove the default colon
 
     def clean_name(self):
         name = self.cleaned_data['name']

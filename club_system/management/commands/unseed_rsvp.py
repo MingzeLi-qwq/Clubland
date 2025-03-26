@@ -8,6 +8,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Delete all RSVP records from the database."""
-        self.stdout.write("正在删除所有 RSVP 记录...")
+        self.stdout.write("deleteing RSVPs...")
         deleted_count, _ = RSVP.objects.all().delete()
-        self.stdout.write(self.style.SUCCESS(f"删除完成，共删除 {deleted_count} 条 RSVP 记录！"))
+        self.stdout.write(self.style.SUCCESS(f"{deleted_count} RSVPs have been deleted."))
