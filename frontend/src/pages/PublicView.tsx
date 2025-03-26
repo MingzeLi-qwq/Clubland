@@ -42,7 +42,6 @@ const PublicView = () => {
     };
     
     useEffect(() => {
-        // 从 Cookie 中获取 is_admin 信息
         const adminStatus = Cookies.get('is_admin') === 'true';
         setIsAdmin(adminStatus);
       }, []);

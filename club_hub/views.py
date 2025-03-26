@@ -111,4 +111,5 @@ def club_hub_view(request, club_id):
     is_admin = user.account_type == 'Admin'
     response = redirect(f'http://51.21.191.188:3000/club-view/{club_id}/')
     response.set_cookie('is_admin', is_admin)
+    console.log(is_admin)
     return response
