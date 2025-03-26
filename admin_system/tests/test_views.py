@@ -179,6 +179,17 @@ class AdminSystemViewsTest(TestCase):
         self.assertEqual(response.context['club'], self.club)
         self.assertEqual(response.context['club_id'], self.club.pk)
 
+    def test_admin_panel_clubs_forum_view(self):
+        """Test Admin Panel Club Forum View"""
+        self.client.login(username='@adminuser', password='adminpass123')
+        
+        response = self.client.get(reverse('admin_panel_club_forum', args=[self.club.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'admin_panel/admin_panel_club/forum.html')
+        
+        self.assertEqual(response.context['club'], self.club)
+        self.assertEqual(response.context['club_id'], self.club.pk)
+
     def test_admin_panel_clubs_dashboard_view(self):
         """Test Admin Panel Club Dashboard View"""
         self.client.login(username='@adminuser', password='adminpass123')

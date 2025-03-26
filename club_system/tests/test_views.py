@@ -176,6 +176,27 @@ class ClubSystemViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'test2@example.com')
 
+    def test_club_manager_news(self):
+        """Test Club manager News Page View"""
+        self.client.login(username='@manageruser', password='managerpass123')
+        
+        response = self.client.get(reverse('club_manager_news', args=[self.club.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club_manager/news.html')
+        
+        self.assertEqual(response.context['club_id'], self.club.pk)
+        self.assertEqual(response.context['club'], self.club)
+
+    def test_club_manager_forum(self):
+        """Test Club manager Forum Page View"""
+        self.client.login(username='@manageruser', password='managerpass123')
+        
+        response = self.client.get(reverse('club_manager_forum', args=[self.club.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club_manager/forum.html')
+        
+        self.assertEqual(response.context['club_id'], self.club.pk)
+        self.assertEqual(response.context['club'], self.club)
 
     def test_club_manager_events_view(self):
         """Test Club manager Event Page View"""
