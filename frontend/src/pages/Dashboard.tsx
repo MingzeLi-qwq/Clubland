@@ -7,8 +7,6 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 // 修正导入路径，使用相对路径
 import EventSelector from '../components/EventSelector';
-import PublicView from './PublicView';
-
 
 const Dashboard = () => {
     const { club_id } = useParams();
@@ -666,11 +664,6 @@ const Dashboard = () => {
                     );
                 })}
             </GridLayout>
-            <PublicView 
-                club_id={club_id} 
-                selectedEvent={selectedEvent}
-            />
-            <EventSelector clubId={club_id} onEventSelect={handleEventSelect} />
         </div>
         
     );
