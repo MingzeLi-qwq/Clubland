@@ -76,7 +76,7 @@ const PublicView = () => {
                     axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/`, {
                         withCredentials: true
                     }),
-                    axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/info/`, {
+                    axios.get(`http://127.0.0.1:8000/api/clubs/${club_id}/info/`, {
                         withCredentials: true
                     })
                 ]);
@@ -94,7 +94,10 @@ const PublicView = () => {
                     h: widgetConfig[w.widget_type as keyof typeof widgetConfig]?.h || w.height,
                 })));
                 setClubName(clubRes.data.name);
-                setDashboardBg(clubRes.data.background_image);
+                if (clubRes.data.background_image) {
+                    const fullUrl = `http://51.21.191.188:8000${clubRes.data.background_image}`;
+                    setDashboardBg(fullUrl);
+                }
             } catch (error) {
                 console.error("加载组件或背景失败：", error);
             }
