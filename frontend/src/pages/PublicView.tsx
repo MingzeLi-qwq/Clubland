@@ -40,31 +40,6 @@ const PublicView = () => {
         default: { w: 2, h: 2, resizable: true }
     };
     
-    useEffect(() => {
-        // 新增权限检查
-        const checkManagerStatus = async () => {
-            try {
-                console.log('开始:');
-                const response = await axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/check_manager/`);
-                setIsManager(response.data.is_manager);
-            } catch (error) {
-                if (axios.isAxiosError(error)) {
-                    if (error.response?.status === 403) {
-                        window.location.href = `/login?next=/club-view/${club_id}`;
-                    } else if (error.response?.status === 404) {
-                        console.error('社团不存在');
-                        window.location.href = '/404';
-                    } else {
-                        console.error('权限检查失败:', error.message);
-                    }
-                }
-            }
-        };
-        
-        if (club_id) {
-            checkManagerStatus();
-        }
-    }, [club_id]);
 
     useEffect(() => {
         const timer = setInterval(() => {
