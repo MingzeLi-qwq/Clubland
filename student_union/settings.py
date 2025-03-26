@@ -77,9 +77,9 @@ MIDDLEWARE = [
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://51.21.191.188:4173",
-    "http://localhost:5173",
-    "https://51.21.191.188",
+    "http://51.21.191.188:3000",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 
 ROOT_URLCONF = 'student_union.urls'
