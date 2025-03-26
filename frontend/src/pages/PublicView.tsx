@@ -5,7 +5,6 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import axios from "axios";
 
-
 interface WidgetType {
     id: number;
     name: string;
@@ -25,7 +24,6 @@ const PublicView = () => {
     const { club_id } = useParams();
     const { event_id } = useParams();
     const [isManager, setIsManager] = useState(false);
-    const [clubData, setClubData] = useState(null);
     const [event, setEvent] = useState<any>(null);
     const [widgets, setWidgets] = useState<WidgetType[]>([]);
     const [layout, setLayout] = useState<{ i: string; x: number; y: number; w: number; h: number }[]>([]);
@@ -42,6 +40,21 @@ const PublicView = () => {
         default: { w: 2, h: 2, resizable: true }
     };
     
+    useEffect(() => {
+        // 新增权限检查
+        const checkManagerStatus = async () => {
+            try {
+                const response = await api.get(`clubs/${club_id}/check_manager/`);
+                setIsManager(response.data.is_manager);
+            } catch (error) {
+                console.error('权限检查失败:', error);
+            }
+        };
+        
+        if (club_id) {
+            checkManagerStatus();
+        }
+    }, [club_id]);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -105,36 +118,6 @@ const PublicView = () => {
         };
 
         fetchClubData();
-    }, [club_id]);
-
-    useEffect(() => {
-        const fetchClubData = async () => {
-            try {
-                const response = await axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/info/`);
-                setClubData(response.data);
-            } catch (error) {
-                console.error("Error fetching club data", error);
-            }
-        };
-
-        // 检查用户是否是管理员
-        const checkIfManager = async () => {
-            try {
-                const response = await axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/memberships/`, {
-                    params: { user_id: localStorage.getItem('userId') }
-                });
-
-                const membership = response.data;
-                if (membership && membership.is_manager) {
-                    setIsManager(true);
-                }
-            } catch (error) {
-                console.error("Error checking admin status", error);
-            }
-        };
-
-        fetchClubData();
-        checkIfManager();
     }, [club_id]);
 
     const renderWidgetContent = (widget: WidgetType) => {
@@ -353,10 +336,9 @@ const PublicView = () => {
                 
 
             </GridLayout>
-            <div>
-                {isManager && (
-                <button
-                onClick={() => window.location.href = `/club-dashboard/${clubId}`}
+            {isManager &&(
+            <button 
+                onClick={() => window.location.href = `/club-dashboard/${club_id}`}
                 style={{
                     background: '#1890ff',
                     color: 'white',
@@ -367,12 +349,14 @@ const PublicView = () => {
                     fontSize: '14px',
                     height: '40px',
                     transition: 'background 0.3s',
+                    ':hover': {
+                        background: '#40a9ff'
+                    }
                 }}
-                >
+            >
                 Edit
-                </button>
-                )}
-            </div>
+            </button>
+            )}
         </div>
         
     );
