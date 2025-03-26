@@ -251,7 +251,7 @@ const Dashboard = () => {
             );
     
             const imageUrl = response.data.file_url;
-            const fullUrl = `http://51.21.191.188:8000/media/uploads/${imageUrl}`;
+            const fullUrl = `http://51.21.191.188:8000/media/${imageUrl}`;
     
             const img = new Image();
             img.src = fullUrl;
