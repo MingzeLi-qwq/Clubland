@@ -42,6 +42,41 @@ class AdminPanelAdminUsersTests(TestCase):
         self.assertIn('admin_user_count', response.context)
         self.assertEqual(response.context['admin_user_count'], 4)
 
+    def test_admin_users_search(self):
+        """Test the admin user search function"""
+        # Test Search by Name
+        response = self.client.get(f"{self.admin_users_url}?search=Admin0")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['admin_users']), 1)
+        
+        # Test Search by Email
+        response = self.client.get(f"{self.admin_users_url}?search=admin1@example.com")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['admin_users']), 1)
+
+    def test_create_admin_user_success(self):
+        """Test successful creation of administrator user"""
+        new_admin_data = {
+            'username': 'newadmin',
+            'email': 'newadmin@example.com',
+            'first_name': 'New',
+            'last_name': 'Admin',
+            'password1': 'newpassword123',
+            'password2': 'newpassword123'
+        }
+        
+        response = self.client.post(self.admin_users_url, new_admin_data, follow=True)
+        
+        self.assertRedirects(response, self.admin_users_url)
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertIn('created successfully', str(messages[0]))
+        
+        # Verify that the user has been created
+        self.assertTrue(User.objects.filter(username='newadmin').exists())
+        new_user = User.objects.get(username='newadmin')
+        self.assertEqual(new_user.account_type, User.ACCOUNT_TYPE_ADMIN)
+
     def tearDown(self):
         """Cleaning up test data"""
         User.objects.all().delete()
