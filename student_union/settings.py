@@ -188,7 +188,7 @@ else:
     CSRF_TRUSTED_ORIGINS = [
         "http://51.21.191.188:3000",
         "http://localhost:3000",
-        "http://127.0.0.1:3000"]
+        "http://127.0.0.1:3000,"]
 
 
 # SUMMERNOTE_THEME = 'bs5'  # Show summernote with Bootstrap 5 theme
