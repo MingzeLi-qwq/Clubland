@@ -30,7 +30,6 @@ from message_system.views import get_messages, send_message, search_users
 from notification_system.views import delete_notification
 from notification_system.views import delete_all_notifications
 from club_hub.views import ImageUploadView
-from club_hub.views import ManagerCheckView
 
 
 import event_system.views
