@@ -4,24 +4,24 @@ from django.middleware.csrf import REASON_NO_CSRF_COOKIE, REASON_NO_REFERER, REA
 
 def csrf_failure(request, reason=""):
     """
-    自定义CSRF错误处理视图，用于改善用户体验
-    - 对于AJAX请求，返回JSON错误
-    - 对于普通请求，显示弹窗并重定向回上一页
+    Custom CSRF failure handler to improve user experience
+    - For AJAX requests, returns a JSON error
+    - For regular requests, shows an alert and redirects back
     """
-    # 获取更有意义的错误信息
-    error_message = "CSRF验证失败。可能是您切换用户太快，请等待片刻再试。"
+    # Provide a more meaningful error message
+    error_message = "CSRF verification failed. This may happen if you switched users too quickly. Please wait a moment and try again."
     
-    # 判断是否为AJAX请求
+    # Check if it is an AJAX request
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({
             'status': 'error',
             'message': error_message
         }, status=403)
     
-    # 对于普通请求，返回带有弹窗和返回上一页的脚本的响应
+    # For regular requests, return an HTML response with a popup and back navigation
     response = HttpResponse("""
     <html>
-    <head><title>CSRF验证失败</title></head>
+    <head><title>CSRF Verification Failed</title></head>
     <body>
         <script>
             alert("{}");

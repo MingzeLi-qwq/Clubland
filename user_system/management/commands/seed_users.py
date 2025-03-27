@@ -7,11 +7,11 @@ User = get_user_model()
 fake = Faker()
 
 class Command(BaseCommand):
-    help = "生成 100 个测试用户"
+    help = "Generate 100 test users"
     def handle(self, *args, **kwargs):
-        self.stdout.write("🚀 开始生成用户...")
+        self.stdout.write("🚀 Starting to generate users...")
 
-        # **固定用户列表**
+        # **Fixed user list**
         fixed_users = [
             {"username": "@admin", "email": "admin@example.com", "first_name": "Admin", "last_name": "User", "account_type": "Admin", "password": "Password123!"},
             {"username": "@john_doe", "email": "john.doe@example.com", "first_name": "John", "last_name": "Doe", "account_type": "User", "password": "Password123!"},
@@ -29,9 +29,10 @@ class Command(BaseCommand):
                 )
                 user.set_password(user_data["password"])
                 user.save()
-        self.stdout.write(f"✅ 创建固定用户: @admin | @john_doe | @jane_smith")
-        # **随机生成其余用户**
-        for i in range(97):  # 100 - 3 (固定用户)
+        self.stdout.write("✅ Fixed users created: @admin | @john_doe | @jane_smith")
+
+        # **Randomly generate the remaining users**
+        for i in range(97):  # 100 - 3 fixed users
             first_name = fake.first_name()
             last_name = fake.last_name()
             username = f"@{first_name.lower()}_{last_name.lower()}{random.randint(1, 99)}"
@@ -50,4 +51,4 @@ class Command(BaseCommand):
                 user.set_password(password)
                 user.save()
 
-        self.stdout.write("🎉 100 个用户生成完成！")
+        self.stdout.write("🎉 Successfully generated 100 users!")

@@ -29,7 +29,7 @@ class SignUpForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.account_type = User.ACCOUNT_TYPE_USER  # 自动设置账户类型
+        user.account_type = User.ACCOUNT_TYPE_USER  # Set the account_type to 'User'
         if commit:
             user.save()
         return user
