@@ -230,7 +230,7 @@ const Dashboard = () => {
         try {
             const csrfToken = await getCsrfToken();
             const response = await axios.post(
-                '${API_BASE}/api/upload-image/',
+                `${API_BASE}/api/upload-image/`,
                 formData,
                 {
                     headers: {
@@ -486,7 +486,7 @@ const Dashboard = () => {
                                                         formData.append("file", file);
 
                                                         try {
-                                                            const res = await axios.post("${API_BASE}/api/upload-image/", formData, {
+                                                            const res = await axios.post(`${API_BASE}/api/upload-image/`, formData, {
                                                                 headers: {
                                                                     "X-CSRFToken": csrfToken,
                                                                     "Content-Type": "multipart/form-data"
