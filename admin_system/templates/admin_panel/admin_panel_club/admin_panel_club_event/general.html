@@ -126,7 +126,7 @@
 <div class="mb-4">
   <div class="card p-3 mb-3 shadow-sm danger-card">
     <h5>Danger - Delete this event</h5>
-    <p class="text-danger">Warning: This operation is irreversible, deleting a Event will remove all RSVPs associated with it.</p>
+    <p class="text-danger">Warning: This operation is irreversible, deleting an event will remove all RSVPs associated with it.</p>
     <form method="post" action="{% url 'delete_event' club_id=club.club_id event_id=event.id %}">
       {% csrf_token %}
       <button class="btn btn-danger" type="submit" name="delete_club">Delete Event</button>

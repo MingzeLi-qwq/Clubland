@@ -12,7 +12,6 @@ UserModel = get_user_model()
 
 class ModelsTestCase(TestCase):
     def setUp(self):
-        # 准备测试数据
         self.user = UserModel.objects.create_user(
             username='testuser',
             password='testpass123',
@@ -25,7 +24,6 @@ class ModelsTestCase(TestCase):
         self.category1 = Category.objects.create(name='Music')
         self.category2 = Category.objects.create(name='Sports')
 
-        # 创建一个Event
         self.event = Event.objects.create(
             name='Test Event',
             club=self.club,
@@ -34,9 +32,8 @@ class ModelsTestCase(TestCase):
             location='Room 101',
             description='This is a test event'
         )
-        self.event.categories.add(self.category1)  # 给活动添加一个分类
+        self.event.categories.add(self.category1) 
 
-        # 给普通用户加一个RSVP
         self.rsvp = RSVP.objects.create(
             user=self.user,
             event=self.event,
