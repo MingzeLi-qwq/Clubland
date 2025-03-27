@@ -21,6 +21,7 @@ interface WidgetType {
 }
 
 const PublicView = () => {
+    const API_BASE = import.meta.env.VITE_API_BASE_URL;
     const { club_id } = useParams();
     const [widgets, setWidgets] = useState<WidgetType[]>([]);
     const [layout, setLayout] = useState<{ i: string; x: number; y: number; w: number; h: number }[]>([]);
@@ -56,10 +57,10 @@ const PublicView = () => {
         const fetchClubData = async () => {
             try {
                 const [widgetsRes, clubRes] = await Promise.all([
-                    axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/`, {
+                    axios.get(`${API_BASE}/api/clubs/${club_id}/widgets/`, {
                         withCredentials: true
                     }),
-                    axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/info/`, {
+                    axios.get(`${API_BASE}/api/clubs/${club_id}/info/`, {
                         withCredentials: true
                     })
                 ]);
@@ -78,7 +79,7 @@ const PublicView = () => {
                 })));
                 setClubName(clubRes.data.name);
                 if (clubRes.data.background_image) {
-                    const fullUrl = `http://51.21.191.188:8000${clubRes.data.background_image}`;
+                    const fullUrl = `${API_BASE}${clubRes.data.background_image}`;
                     setDashboardBg(fullUrl);
                 }
             } catch (error) {
@@ -104,7 +105,7 @@ const PublicView = () => {
                             }}
                         >
                             <img
-                                src={`http://51.21.191.188:8000${widget.data.url}`}
+                                src={`${API_BASE}${widget.data.url}`}
                                 alt="Photo"
                                 style={{
                                     width: '100%',
@@ -279,7 +280,7 @@ const PublicView = () => {
             </button>
 
             <button
-                    onClick={() => window.location.href = 'http://51.21.191.188:8000/'}
+                    onClick={() => window.location.href = '${API_BASE}/'}
                     style={{
                         background: '#ff6b6b',
                         color: 'white',

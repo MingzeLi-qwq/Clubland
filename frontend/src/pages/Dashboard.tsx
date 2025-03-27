@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 
 
 const Dashboard = () => {
+    const API_BASE: string = import.meta.env.VITE_API_BASE_URL;
     const { club_id } = useParams();
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
     const [clubName, setClubName] = useState<string | null>(null);
@@ -42,7 +43,7 @@ const Dashboard = () => {
         const loadData = async () => {
             try {
                 const response = await axios.get(
-                    `http://51.21.191.188:8000/api/clubs/${club_id}/widgets/`,
+                    `${API_BASE}/api/clubs/${club_id}/widgets/`,
                     { 
                         withCredentials: true,
                         headers: { "Content-Type": "application/json" }
@@ -65,12 +66,12 @@ const Dashboard = () => {
                 })));
 
                 const clubRes = await axios.get(
-                    `http://51.21.191.188:8000/api/clubs/${club_id}/info/`,
+                    `${API_BASE}/api/clubs/${club_id}/info/`,
                     { withCredentials: true }
                 );
         
                 if (clubRes.data.background_image) {
-                    const fullUrl = `http://51.21.191.188:8000${clubRes.data.background_image}`;
+                    const fullUrl = `${API_BASE}${clubRes.data.background_image}`;
                     setDashboardBg(fullUrl);
                 }
                 if (clubRes.data.name) {
@@ -112,7 +113,7 @@ const Dashboard = () => {
         
         if (cookieToken) return cookieToken;
         
-        const response = await axios.get("http://51.21.191.188:8000/api/csrf/");
+        const response = await axios.get("${API_BASE}/api/csrf/");
         return response.data.csrfToken;
     };
     
@@ -135,7 +136,7 @@ const Dashboard = () => {
             const eventId = prompt('Enter the event ID:');
             try {
                     const eventRes = await axios.get(
-                        `http://51.21.191.188:8000/api/clubs/${club_id}/events/${eventId}/`,
+                        `${API_BASE}/api/clubs/${club_id}/events/${eventId}/`,
                         { withCredentials: true }
                     );
                     if (!eventRes.data || !eventRes.data.id) {
@@ -155,7 +156,7 @@ const Dashboard = () => {
                     return;
                 }
             }
-            axios.post(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/`, {
+            axios.post(`${API_BASE}/api/clubs/${club_id}/widgets/`, {
             name: `${widgets.length + 1}`,
             widget_type: typeMap[widgetType],
             x: 0, 
@@ -183,7 +184,7 @@ const Dashboard = () => {
     
     const removeWidget = async (id: number) => {
         const csrfToken = await getCsrfToken();
-        await axios.delete(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/${id}/`, {
+        await axios.delete(`${API_BASE}/api/clubs/${club_id}/widgets/${id}/`, {
             headers: { "X-CSRFToken": csrfToken },
             withCredentials: true
         });
@@ -207,7 +208,7 @@ const Dashboard = () => {
     
         try {
             await axios.post(
-                `http://51.21.191.188:8000/api/clubs/${club_id}/widgets/update_layout/`,
+                `${API_BASE}/api/clubs/${club_id}/widgets/update_layout/`,
                 payload, 
                 { 
                     withCredentials: true, 
@@ -229,7 +230,7 @@ const Dashboard = () => {
         try {
             const csrfToken = await getCsrfToken();
             const response = await axios.post(
-                'http://51.21.191.188:8000/api/upload-image/',
+                `${API_BASE}/api/upload-image/`,
                 formData,
                 {
                     headers: {
@@ -241,7 +242,7 @@ const Dashboard = () => {
             );
     
             const imageUrl = response.data.file_url;
-            const fullUrl = `http://51.21.191.188:8000/media/${imageUrl}`;
+            const fullUrl = `${API_BASE}/media/${imageUrl}`;
     
             const img = new Image();
             img.src = fullUrl;
@@ -249,7 +250,7 @@ const Dashboard = () => {
                 setDashboardBg(fullUrl);
     
                 await axios.patch(
-                    `http://51.21.191.188:8000/api/clubs/${club_id}/background/`,
+                    `${API_BASE}/api/clubs/${club_id}/background/`,
                     { background_image: imageUrl },
                     {
                         headers: {
@@ -311,7 +312,7 @@ const Dashboard = () => {
         }
     
         await axios.patch(
-            `http://51.21.191.188:8000/api/clubs/${club_id}/widgets/${id}/`, 
+            `${API_BASE}/api/clubs/${club_id}/widgets/${id}/`, 
             { data: updatedWidgetData.data }, 
             {
                 headers: { "X-CSRFToken": csrfToken },
@@ -485,7 +486,7 @@ const Dashboard = () => {
                                                         formData.append("file", file);
 
                                                         try {
-                                                            const res = await axios.post("http://51.21.191.188:8000/api/upload-image/", formData, {
+                                                            const res = await axios.post(`${API_BASE}/api/upload-image/`, formData, {
                                                                 headers: {
                                                                     "X-CSRFToken": csrfToken,
                                                                     "Content-Type": "multipart/form-data"
@@ -506,7 +507,7 @@ const Dashboard = () => {
                                         ) : (
                                             
                                             <img
-                                                src={`http://51.21.191.188:8000${widget.data.url}`}
+                                                src={`${API_BASE}${widget.data.url}`}
                                                 alt="Uploaded Image"
                                                 style={{
                                                     width: '100%',
