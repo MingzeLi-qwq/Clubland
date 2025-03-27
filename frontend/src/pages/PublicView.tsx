@@ -22,9 +22,6 @@ interface WidgetType {
 
 const PublicView = () => {
     const { club_id } = useParams();
-    const { event_id } = useParams();
-    const [event, setEvent] = useState<any>(null);
-    const [isManager, setIsManager] = useState<boolean | null>(null);
     const [widgets, setWidgets] = useState<WidgetType[]>([]);
     const [layout, setLayout] = useState<{ i: string; x: number; y: number; w: number; h: number }[]>([]);
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
@@ -40,20 +37,6 @@ const PublicView = () => {
         default: { w: 2, h: 2, resizable: true }
     };
     
-    useEffect(() => {
-        const checkIfManager = async () => {
-            try {
-                console.log("Checking admin status...");
-                const response = await axios.get(`/api/clubs/${club_id}/is_manager/`);
-                setIsManager(response.data.is_manager);  // Set the manager status based on the response
-                console.log("Admin status set to:", response.data.is_manager);
-            } catch (error) {
-                console.error("Error checking admin status", error);
-            }
-        };
-
-        checkIfManager();
-    }, [club_id]);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -322,7 +305,6 @@ const PublicView = () => {
                 
 
             </GridLayout>
-            {isManager && (
             <button 
                 onClick={() => window.location.href = `/club-dashboard/${club_id}`}
                 style={{
@@ -342,7 +324,24 @@ const PublicView = () => {
             >
                 Edit
             </button>
-            )}
+
+            <button
+                    onClick={() => window.location.href = 'http://51.21.191.188:8000/'}
+                    style={{
+                        background: '#ff6b6b',
+                        color: 'white',
+                        border: 'none',
+                        padding: '8px 16px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        height: '40px',
+                        transition: 'background 0.3s',
+                        marginLeft: '10px', // 使按钮有一点间距
+                    }}
+                >
+                Home
+            </button>
         </div>
         
     );

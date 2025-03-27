@@ -112,22 +112,3 @@ def club_hub_view(request, club_id):
     is_admin = user.account_type == 'Admin'
     response = redirect(f'http://51.21.191.188:3000/club-view/{club_id}')
     return response
-
-
-class ManagerCheckView(APIView):
-    permission_classes = [IsAuthenticated]
-    
-    def get(self, request, club_id):
-        try:
-            club = Club.objects.get(pk=club_id)
-            is_manager = Membership.objects.filter(
-                user=request.user,
-                club=club,
-                is_manager=True
-            ).exists()
-            print(f"User {request.user.username} is manager: {is_manager}")
-            return Response({"is_manager": is_manager})
-        except Club.DoesNotExist:
-            return Response({"error": "Club not found"}, status=404)
-        except Exception as e:
-            return Response({"error": str(e)}, status=500)
