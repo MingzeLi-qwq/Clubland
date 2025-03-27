@@ -273,38 +273,6 @@ const PublicView = () => {
             >
                 {clubName ? `Welcome to ${clubName}` : "Loading..."}
             </h2>
-            
-            <GridLayout
-                className="layout"
-                layout={layout}
-                cols={8}
-                rowHeight={100}
-                width={1200}
-                isDraggable={false}
-                isResizable={false}
-            >
-                {widgets.map((widget) => (
-                    <div key={widget.id}
-                        data-grid={layout.find(l => l.i === String(widget.id))}
-                        style={{
-                            background: "#fff",
-                            borderRadius: 12,
-                            border: "1px solid #eee",
-                            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                            overflow: 'hidden'
-                        }}
-                    >
-                        <div style={{
-                            height: 'calc(100%)',
-                            padding: 1
-                        }}>
-                            {renderWidgetContent(widget)}
-                        </div>
-                    </div>
-                ))}
-                
-
-            </GridLayout>
             <button 
                 onClick={() => window.location.href = `/club-dashboard/${club_id}`}
                 style={{
@@ -342,6 +310,38 @@ const PublicView = () => {
                 >
                 Home
             </button>
+            <GridLayout
+                className="layout"
+                layout={layout}
+                cols={8}
+                rowHeight={100}
+                width={1200}
+                isDraggable={false}
+                isResizable={false}
+            >
+                {widgets.map((widget) => (
+                    <div key={widget.id}
+                        data-grid={layout.find(l => l.i === String(widget.id))}
+                        style={{
+                            background: "#fff",
+                            borderRadius: 12,
+                            border: "1px solid #eee",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                            overflow: 'hidden'
+                        }}
+                    >
+                        <div style={{
+                            height: 'calc(100%)',
+                            padding: 1
+                        }}>
+                            {renderWidgetContent(widget)}
+                        </div>
+                    </div>
+                ))}
+                
+
+            </GridLayout>
+            
         </div>
         
     );
