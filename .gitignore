@@ -358,6 +358,7 @@ $RECYCLE.BIN/
 *.lnk
 
 frontend/node_modules/
+node_modules/
 design_draft/
 
 # LaTeX build artifacts

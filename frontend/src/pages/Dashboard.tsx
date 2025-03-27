@@ -5,16 +5,12 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
-// 修正导入路径，使用相对路径
-import EventSelector from '../components/EventSelector';
 
 
 const Dashboard = () => {
     const { club_id } = useParams();
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
     const [clubName, setClubName] = useState<string | null>(null);
-    const [currentTime, setCurrentTime] = useState(new Date());
-    const [selectedEvent, setSelectedEvent] = useState<any>(null);
     const [time, setTime] = useState({
         hours: 0,
         minutes: 0,
@@ -26,10 +22,7 @@ const Dashboard = () => {
         event_selector: { w: 4, h: 4, resizable: true },
         default: { w: 2, h: 2, resizable: true }
     };
-    const handleEventSelect = (event: any) => {
-        setSelectedEvent(event); 
-        console.log(event); 
-      };
+
     useEffect(() => {
         const updateClock = () => {
             const now = new Date();
@@ -45,14 +38,11 @@ const Dashboard = () => {
     
     useEffect(() => {
         if (!club_id || isNaN(Number(club_id))) return;
-        const timer = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
         
         const loadData = async () => {
             try {
                 const response = await axios.get(
-                    `http://127.0.0.1:8000/api/clubs/${club_id}/widgets/`,
+                    `http://51.21.191.188:8000/api/clubs/${club_id}/widgets/`,
                     { 
                         withCredentials: true,
                         headers: { "Content-Type": "application/json" }
@@ -75,19 +65,20 @@ const Dashboard = () => {
                 })));
 
                 const clubRes = await axios.get(
-                    `http://127.0.0.1:8000/api/clubs/${club_id}/info/`,
+                    `http://51.21.191.188:8000/api/clubs/${club_id}/info/`,
                     { withCredentials: true }
                 );
         
                 if (clubRes.data.background_image) {
-                    setDashboardBg(clubRes.data.background_image);
+                    const fullUrl = `http://51.21.191.188:8000${clubRes.data.background_image}`;
+                    setDashboardBg(fullUrl);
                 }
                 if (clubRes.data.name) {
                     setClubName(clubRes.data.name);
                 }
 
             } catch (error) {
-                console.error("加载失败:", error);
+                console.error("Failed to load:", error);
             }
         };
 
@@ -121,7 +112,7 @@ const Dashboard = () => {
         
         if (cookieToken) return cookieToken;
         
-        const response = await axios.get("http://127.0.0.1:8000/api/csrf/");
+        const response = await axios.get("http://51.21.191.188:8000/api/csrf/");
         return response.data.csrfToken;
     };
     
@@ -140,57 +131,59 @@ const Dashboard = () => {
         const newY = widgets.length > 0 ? Math.max(...widgets.map(w => w.y)) + 1 : 0;
         
         let widgetData = {};
-    if (typeMap[widgetType] === 'event_selector') {
-        const eventId = prompt('请输入要关联的活动ID（在PublicView展示）:');
-        if (!eventId) return;
-        
-        // 获取活动详情
-        try {
-                const eventRes = await axios.get(
-                    `http://127.0.0.1:8000/api/clubs/${club_id}/events/${eventId}/`,
-                    { withCredentials: true }
-                );
-                widgetData = {
-                    event_id: eventId,
-                    name: eventRes.data.name,
-                    start_time: eventRes.data.start_time,
-                    end_time: eventRes.data.end_time,
-                    location: eventRes.data.location,
-                    description: eventRes.data.description
-                };
-            } catch (error) {
-                console.error('获取活动详情失败:', error);
-                return;
+        if (typeMap[widgetType] === 'event_selector') {
+            const eventId = prompt('Enter the event ID:');
+            try {
+                    const eventRes = await axios.get(
+                        `http://51.21.191.188:8000/api/clubs/${club_id}/events/${eventId}/`,
+                        { withCredentials: true }
+                    );
+                    if (!eventRes.data || !eventRes.data.id) {
+                        alert('Invalid event ID');
+                        return;
+                    }
+                    widgetData = {
+                        event_id: eventId,
+                        name: eventRes.data.name,
+                        start_time: eventRes.data.start_time,
+                        end_time: eventRes.data.end_time,
+                        location: eventRes.data.location,
+                        description: eventRes.data.description
+                    };
+                } catch (error) {
+                    console.error('Failed to get Event:', error);
+                    return;
+                }
             }
-        }
-        axios.post(`http://127.0.0.1:8000/api/clubs/${club_id}/widgets/`, {
-        name: `${widgets.length + 1}`,
-        widget_type: typeMap[widgetType],
-        x: 0, 
-        y: newY, 
-        width: 2, 
-        height: 2, 
-        club: club_id,
-        data: widgetData
-        }, 
-        { withCredentials: true, headers: { "X-CSRFToken": csrfToken } }
-        ).then(res => {
-            const widgetConfigItem = widgetConfig[res.data.widget_type as keyof typeof widgetConfig] || widgetConfig.default;
+            axios.post(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/`, {
+            name: `${widgets.length + 1}`,
+            widget_type: typeMap[widgetType],
+            x: 0, 
+            y: newY, 
+            width: 2, 
+            height: 2, 
+            club: club_id,
+            data: widgetData
+            }, 
+            { withCredentials: true, headers: { "X-CSRFToken": csrfToken } }
+            ).then(res => {
+                const widgetConfigItem = widgetConfig[res.data.widget_type as keyof typeof widgetConfig] || widgetConfig.default;
 
-            setWidgets([...widgets, res.data]);
-            setLayout([...layout, { 
-                i: String(res.data.id), 
-                x: 0, 
-                y: newY, 
-                w: widgetConfigItem.w,
-                h: widgetConfigItem.h,
-            }]);
-        });
-    };
+                setWidgets([...widgets, res.data]);
+                setLayout([...layout, { 
+                    i: String(res.data.id), 
+                    x: 0, 
+                    y: newY, 
+                    w: widgetConfigItem.w,
+                    h: widgetConfigItem.h,
+                }]);
+                saveLayout();
+            });
+        };
     
     const removeWidget = async (id: number) => {
         const csrfToken = await getCsrfToken();
-        await axios.delete(`http://127.0.0.1:8000/api/clubs/${club_id}/widgets/${id}/`, {
+        await axios.delete(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/${id}/`, {
             headers: { "X-CSRFToken": csrfToken },
             withCredentials: true
         });
@@ -214,7 +207,7 @@ const Dashboard = () => {
     
         try {
             await axios.post(
-                `http://127.0.0.1:8000/api/clubs/${club_id}/widgets/update_layout/`,
+                `http://51.21.191.188:8000/api/clubs/${club_id}/widgets/update_layout/`,
                 payload, 
                 { 
                     withCredentials: true, 
@@ -224,10 +217,8 @@ const Dashboard = () => {
                     } 
                 }
             );
-            alert('Saved Layout');
         } catch (error) {
             console.error('Save failed:', error.response?.data || error.message);
-            alert(`Save failed: ${error.response?.data?.error || error.message}`);
         }
     };
 
@@ -238,7 +229,7 @@ const Dashboard = () => {
         try {
             const csrfToken = await getCsrfToken();
             const response = await axios.post(
-                'http://127.0.0.1:8000/api/upload-image/',
+                'http://51.21.191.188:8000/api/upload-image/',
                 formData,
                 {
                     headers: {
@@ -250,7 +241,7 @@ const Dashboard = () => {
             );
     
             const imageUrl = response.data.file_url;
-            const fullUrl = `/media/${imageUrl}`;
+            const fullUrl = `http://51.21.191.188:8000/media/${imageUrl}`;
     
             const img = new Image();
             img.src = fullUrl;
@@ -258,7 +249,7 @@ const Dashboard = () => {
                 setDashboardBg(fullUrl);
     
                 await axios.patch(
-                    `http://127.0.0.1:8000/api/clubs/${club_id}/background/`,
+                    `http://51.21.191.188:8000/api/clubs/${club_id}/background/`,
                     { background_image: imageUrl },
                     {
                         headers: {
@@ -284,22 +275,57 @@ const Dashboard = () => {
     
 
     const updateWidgetData = async (id: number, key: string, value: any) => {
-    const csrfToken = await getCsrfToken();
-    const updatedWidgets = widgets.map(w => {
-    if (w.id === id) {
-    return { ...w, data: { ...w.data, [key]: value } };
-    }
-    return w;
-    });
-    setWidgets(updatedWidgets);
+        const getCsrfToken =
+         () => {
+            const csrfToken = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))?.split('=')[1];
+            
+            if (!csrfToken) {
+                console.error('CSRF token not found!');
+                return null;
+            }
+            return csrfToken;
+        };
     
-    await axios.patch(`http://127.0.0.1:8000/api/clubs/${club_id}/widgets/${id}/`, {
-    data: updatedWidgets.find(w => w.id === id)?.data
-    }, {
-    headers: { "X-CSRFToken": csrfToken },
-    withCredentials: true
-    });
+        const csrfToken = getCsrfToken();
+        if (!csrfToken) {
+            console.error('CSRF token is missing');
+            return;
+        }
+    
+        const updatedWidgets = widgets.map(w => {
+            if (w.id === id) {
+                return { ...w, data: { ...w.data, [key]: value } };
+            }
+            return w;
+        });
+    
+        setWidgets(updatedWidgets);
+    
+        const updatedWidgetData = updatedWidgets.find(w => w.id === id);
+    
+        if (!updatedWidgetData) {
+            console.error('Widget not found!');
+            return;
+        }
+    
+        await axios.patch(
+            `http://51.21.191.188:8000/api/clubs/${club_id}/widgets/${id}/`, 
+            { data: updatedWidgetData.data }, 
+            {
+                headers: { "X-CSRFToken": csrfToken },
+                withCredentials: true
+            }
+        )
+        .then(response => {
+            console.log('Widget updated successfully', response.data);
+        })
+        .catch(error => {
+            console.error('Error updating widget', error.response?.data || error.message);
+        });
     };
+    
 
     return (
             <div 
@@ -362,13 +388,10 @@ const Dashboard = () => {
                 {widgets.map((widget) => {
                     <div key={widget.id} data-grid={layout.find(l => l.i === String(widget.id))} />
                         
-                    // 获取当前 widget 类型的配置，默认为 'default' 配置
                     const widgetConfigItem = widgetConfig[widget.widget_type as keyof typeof widgetConfig] || widgetConfig.default;
 
-                    // 判断当前 widget 是否可以调整大小
                     const isResizable = widgetConfigItem.resizable;
 
-                    // 设置 widget 的 layout 数据
                     const widgetLayout = layout.find((l) => l.i === String(widget.id));
                     
                     return (
@@ -440,7 +463,7 @@ const Dashboard = () => {
                                             height: '90%',
                                             border: '0px solid #ddd',
                                         }}
-                                        placeholder="输入公告内容..."
+                                        placeholder="Input content..."
                                         value={widget.data.content || ''}
                                         onChange={(e) => updateWidgetData(widget.id, 'content', e.target.value)}
                                     />
@@ -462,7 +485,7 @@ const Dashboard = () => {
                                                         formData.append("file", file);
 
                                                         try {
-                                                            const res = await axios.post("http://127.0.0.1:8000/api/upload-image/", formData, {
+                                                            const res = await axios.post("http://51.21.191.188:8000/api/upload-image/", formData, {
                                                                 headers: {
                                                                     "X-CSRFToken": csrfToken,
                                                                     "Content-Type": "multipart/form-data"
@@ -471,18 +494,20 @@ const Dashboard = () => {
                                                             });
 
                                                             const uploadedUrl = `/media/${res.data.file_url}`;
+                                                            console.log(uploadedUrl);   
                                                             await updateWidgetData(widget.id, 'url', uploadedUrl);
                                                         } catch (err) {
-                                                            alert("上传失败");
+                                                            alert("Upload failed");
                                                             console.error(err);
                                                         }
                                                     }}
                                                 />
                                             </>
                                         ) : (
+                                            
                                             <img
-                                                src={widget.data.url}
-                                                alt="上传图片"
+                                                src={`http://51.21.191.188:8000${widget.data.url}`}
+                                                alt="Uploaded Image"
                                                 style={{
                                                     width: '100%',
                                                     height: '100%',
@@ -491,42 +516,6 @@ const Dashboard = () => {
                                                 }}
                                             />
                                         )}
-                                    </div>
-                                )}
-
-                                {widget.widget_type === 'countdown' && (
-                                    <div style={{ 
-                                        height: '100%',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        padding: '8px'
-                                    }}>
-                                        <input
-                                            type="date"
-                                            value={widget.data.date?.split('T')[0] || ''}
-                                            onChange={(e) => updateWidgetData(widget.id, 'date', e.target.value + 'T00:00:00')}
-                                            style={{
-                                                marginBottom: '8px',
-                                                padding: '4px',
-                                                border: '1px solid #ddd',
-                                                borderRadius: '4px'
-                                            }}
-                                        />
-                                        <div style={{ 
-                                            flex: 1,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontSize: '1.2em',
-                                            color: '#666'
-                                        }}>
-                                            {widget.data.date ? (
-                                                `剩余天数: ${Math.ceil(
-                                                    (new Date(widget.data.date).getTime() - Date.now()) / 
-                                                    (1000 * 60 * 60 * 24)
-                                                )}`
-                                            ) : '请设置目标日期'}
-                                        </div>
                                     </div>
                                 )}
 
@@ -609,20 +598,24 @@ const Dashboard = () => {
                                     </div>
                                 )}
                                 {widget.widget_type === "event_selector" && (
-                                    <div>
-                                    <h2>Event Selector</h2>
-                                    <EventSelector clubId={club_id} onEventSelect={handleEventSelect} />
-                                    
-                                    {selectedEvent && (
-                                      <div>
-                                        <h3>Selected Event Details:</h3>
-                                        <p><strong>Name:</strong> {selectedEvent.name}</p>
-                                        <p><strong>Start Time:</strong> {new Date(selectedEvent.start_time).toLocaleString()}</p>
-                                        <p><strong>Location:</strong> {selectedEvent.location}</p>
-                                        <p><strong>Description:</strong> {selectedEvent.description}</p>
-                                      </div>
+                                    <div style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                        overflow: 'hidden'
+                                    }}>
+                                    <h3>Event Detail</h3>
+                                    {widget.data ? (
+                                        <>
+                                            <p><strong>Event Name:</strong> {widget.data.name}</p>
+                                            <p><strong>TIme:</strong> {new Date(widget.data.start_time).toLocaleString()} - {new Date(widget.data.end_time).toLocaleString()}</p>
+                                            <p><strong>Location:</strong> {widget.data.location}</p>
+                                            <p><strong>Descriptioon:</strong> {widget.data.description}</p>
+                                        </>
+                                    ) : (
+                                        <div>Loading...</div>
                                     )}
-                                  </div>
+                                </div>
                                 )}
                             </div>
                         </div>

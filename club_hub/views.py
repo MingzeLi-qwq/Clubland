@@ -7,7 +7,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Widget
 from .serializers import WidgetSerializer, EventSerializer
 from club_system.helpers.mixins import ClubMemberRequiredMixin
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
@@ -15,6 +15,8 @@ from django.core.files.storage import default_storage
 from club_system.models import Club
 from event_system.models import Event
 from .serializers import EventSerializer
+from club_system.models import Membership
+
 
 def get_csrf_token(request):
     return JsonResponse({"csrfToken": get_token(request)})
@@ -105,5 +107,8 @@ class EventViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 @login_required
-def club_dashboard(request, club_id):
-    return render(request, "club_hub/dashboard.html", {"club_id": club_id})
+def club_hub_view(request, club_id):
+    user = request.user
+    is_admin = user.account_type == 'Admin'
+    response = redirect(f'http://51.21.191.188:3000/club-view/{club_id}')
+    return response
