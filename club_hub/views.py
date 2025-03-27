@@ -16,6 +16,7 @@ from club_system.models import Club
 from event_system.models import Event
 from .serializers import EventSerializer
 from club_system.models import Membership
+from django.conf import settings
 
 
 def get_csrf_token(request):
@@ -110,5 +111,5 @@ class EventViewSet(viewsets.ModelViewSet):
 def club_hub_view(request, club_id):
     user = request.user
     is_admin = user.account_type == 'Admin'
-    response = redirect(f'http://51.21.191.188:3000/club-view/{club_id}')
+    response = redirect(f'{settings.FRONTEND_BASE_URL}/club-view/{club_id}')
     return response

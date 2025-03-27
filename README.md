@@ -95,6 +95,14 @@ $ python manage.py runserver <port_number>
 ```
 
 ### 5. **Run the React Development Server**
+Before running the React development server, ensure that you have set the appropriate environment variables in the .env file. You can do this by creating a .env file in the root directory of the project and adding the following lines:
+```
+$ echo FRONTEND_BASE_URL=http://localhost:3000 >> .env
+```
+If you want to specify a different port, you can use the following command:
+```
+$ echo FRONTEND_BASE_URL=http://your_url_port >> .env
+```
 To run the React development server, use the following command:
 ```
 $ npm run dev

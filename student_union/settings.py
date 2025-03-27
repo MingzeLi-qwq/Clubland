@@ -231,3 +231,5 @@ LOGIN_URL = '/login/'
 
 # Customizing the CSRF Failure View
 CSRF_FAILURE_VIEW = 'user_system.views.csrf_failure'
+
+FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL', 'http://localhost:3000')
