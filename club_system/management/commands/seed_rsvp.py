@@ -13,7 +13,7 @@ class Command(BaseCommand):
         """Add RSVP records ensuring each Event has at least 4 RSVPs."""
         self.stdout.write("Start generating RSVP records...")
 
-        events = list(Event.objects.all()
+        events = list(Event.objects.all())
 
         if not events:
             self.stdout.write(self.style.ERROR("There are no available campaigns, please add campaign data first!"))
