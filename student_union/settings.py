@@ -51,13 +51,13 @@ INSTALLED_APPS = [
     'news_system.apps.NewsSystemConfig',
     'forum_system.apps.ForumSystemConfig',
     'club_hub',
-    "corsheaders",  # 允许跨域请求
+    "corsheaders",
     "rest_framework",
     'message_system',
     "admin_system",
 ]
 
-INSTALLED_APPS += ('django_summernote', ) # RTE 新的富文本编辑器
+INSTALLED_APPS += ('django_summernote', ) # RTE Rich text editor
 
 AUTH_USER_MODEL = 'user_system.User'
 
@@ -164,14 +164,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 if DEBUG:
-    # 开发环境下使用本地存储
+    # Using local storage in a development environment
 
     # DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
     CSRF_TRUSTED_ORIGINS = ['https://localhost:8000']
 else:
-#     # 生产环境下使用 Amazon S3 存储
+#     # Using Amazon S3 Storage in a Production Environment
 #     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 #     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 #     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
@@ -185,18 +185,18 @@ else:
 # SUMMERNOTE_THEME = 'bs5'  # Show summernote with Bootstrap 5 theme
 
 SUMMERNOTE_CONFIG = {
-    # 开启 iframe 模式。若改为 False 则使用 SummernoteInplaceWidget，
-    # 此时需要自行加载 Bootstrap/jQuery 的依赖。
+    # Enable iframe mode. If you change it to False, you will use the SummernoteInplaceWidget.
+    # At this point, you need to load the Bootstrap/jQuery dependencies yourself.
     'iframe': False,
 
-    # summernote 的基础设置
+    # Basic settings for summernote
     'summernote': {
-        'airMode': False,  # 是否使用 Air-mode
-        'width': '100%',   # 编辑器宽度
-        'height': '480',   # 编辑器高度
-        # 默认语言，如果留空则自动匹配浏览器语言
+        'airMode': False,  # Whether to use Air-mode
+        'width': '100%',   # Editor width
+        'height': '480',   # Editor Height
+        # Default language, automatically matches browser language if left blank
         'lang': None,  
-        # 自定义工具栏
+        # Customized toolbars
         # 'toolbar': [
         #     ['style', ['style']],
         #     ['font', ['bold', 'underline', 'clear']],
@@ -220,5 +220,5 @@ SUMMERNOTE_CONFIG = {
 
 LOGIN_URL = '/login/'
 
-# 自定义CSRF失败视图
+# Customizing the CSRF Failure View
 CSRF_FAILURE_VIEW = 'user_system.views.csrf_failure'

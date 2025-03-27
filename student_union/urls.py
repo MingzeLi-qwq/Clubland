@@ -60,18 +60,18 @@ urlpatterns = [
     path('change_password/', user_system.views.change_password, name='change_password'), 
     path('mine/', user_system.views.Mine, name='Mine'),
 
-    # Personal Dashboard / 个人资料页
+    # Personal Dashboard
     path('dashboard/personal_information/', user_system.views.DashboardPersonalInformation.as_view(), name='dashboard_personal_information'),
     path('dashboard/my_club/', user_system.views.DashboardMyClub.as_view(), name='dashboard_my_club'),
     path('dashboard/my_requests', user_system.views.DashboardMyRequests.as_view(), name='dashboard_my_requests'),
     path('dashboard/requests/new_club/', user_system.views.NewClubRequestsView.as_view(), name='dashboard_new_club_requests'),
-    # 个人资料页下的membership details
+    # membership details
     path('dashboard/my_club/detail/<int:club_id>/', user_system.views.ClubMembershipDetail.as_view(), name='dashboard_my_club_detail'),
 
 
     # path('societies/', user_system.views.societies, name='societies'),
 
-    # Notification related / 通知相关页面
+    # Notification related
     path('notifications/', notification_list, name='notifications'),
     path('notifications/<int:notification_id>/', notification_detail, name='notification_detail'),
     path('notifications/mark_all_as_read/', mark_all_as_read, name='mark_all_as_read'),
@@ -81,13 +81,13 @@ urlpatterns = [
           
 
 
-    # Summernote related / 富文本编辑器相关
+    # Summernote related
     path('summernote/', include('django_summernote.urls')),
 
-    # News related / 新闻相关页面
+    # News related
     path('news/', include('news_system.urls', namespace='news_system')),
 
-    # Forum related / 论坛相关页面
+    # Forum related
     path('forum/', include('forum_system.urls', namespace='forum_system')),
 
 
@@ -95,26 +95,26 @@ urlpatterns = [
     path("club-dashboard/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
     path("club-view/<int:club_id>/", club_hub.views.club_dashboard, name="club_dashboard"),
 
-    # Message related / 消息相关
+    # Message related
     path('messages/message_dashboard', message_system.views.message_dashboard, name='message_dashboard'),
     path('api/messages/', message_system.views.get_messages, name='get_messages'),
     path('api/send/', message_system.views.send_message, name='send_message'),
     path("api/search_users/", message_system.views.search_users, name="search_users"),
-    #---------------------------------------------------- Event related / Event相关页面 -----------------------------------------------------------------------
+    #---------------------------------------------------- Event related -----------------------------------------------------------------------
     path('events/', include('event_system.urls')),
     #-------------------------------------------------------- Event related END ----------------------------------------------------------------------------
 
 
-    #---------------------------------------------------- Club related / Club相关页面 -----------------------------------------------------------------------
+    #---------------------------------------------------- Club related -----------------------------------------------------------------------
     path('clubs/', include('club_system.urls')),
     #-------------------------------------------------------- Club related END ----------------------------------------------------------------------------
 
 
-    #---------------------------------------------------- Admin related / Admin相关页面 -----------------------------------------------------------------------
+    #---------------------------------------------------- Admin related -----------------------------------------------------------------------
     path('admin_panel/', include('admin_system.urls')),
     #-------------------------------------------------------- Admin related END ------------------------------------------------------------------------------
 
-    #--------------------------------------- Password verification for dangerous operations / 危险操作的密码验证 --------------------------------------------------
+    #--------------------------------------- Password verification for dangerous operations --------------------------------------------------
     path('verify-admin-password/', admin_system.views.verifyAdminPassword, name='verify_admin_password'),
     #--------------------------------------------Password verification for dangerous operations END --------------------------------------------------------
 
