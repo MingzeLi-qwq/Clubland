@@ -258,22 +258,7 @@ const PublicView = () => {
                 minHeight: '100vh'
             }}
         >
-            <h2 
-                style={{
-                    textAlign: "center",
-                    fontSize: "32px",
-                    fontWeight: "bold",
-                    color: "#FFFFFF",
-                    textShadow: "2px 2px 8px rgba(0, 0, 0, 0.6)",
-                    backgroundColor: "rgba(0, 0, 0, 0.4)",
-                    padding: "10px",
-                    borderRadius: "8px",
-                    marginBottom: "20px"
-                }}
-            >
-                {clubName ? `Welcome to ${clubName}` : "Loading..."}
-            </h2>
-            <button 
+                        <button 
                 onClick={() => window.location.href = `/club-dashboard/${club_id}`}
                 style={{
                     background: '#1890ff',
@@ -310,6 +295,22 @@ const PublicView = () => {
                 >
                 Home
             </button>
+            <h2 
+                style={{
+                    textAlign: "center",
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                    color: "#FFFFFF",
+                    textShadow: "2px 2px 8px rgba(0, 0, 0, 0.6)",
+                    backgroundColor: "rgba(0, 0, 0, 0.4)",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    marginBottom: "20px"
+                }}
+            >
+                {clubName ? `Welcome to ${clubName}` : "Loading..."}
+            </h2>
+
             <GridLayout
                 className="layout"
                 layout={layout}
