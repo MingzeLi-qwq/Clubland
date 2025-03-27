@@ -4,8 +4,7 @@ import GridLayout from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import axios from "axios";
-import EventSelector from '../components/EventSelector';
-// 定义组件类型接口
+
 interface WidgetType {
     id: number;
     name: string;
@@ -23,8 +22,6 @@ interface WidgetType {
 
 const PublicView = () => {
     const { club_id } = useParams();
-    const { event_id } = useParams();
-    const [event, setEvent] = useState<any>(null);
     const [widgets, setWidgets] = useState<WidgetType[]>([]);
     const [layout, setLayout] = useState<{ i: string; x: number; y: number; w: number; h: number }[]>([]);
     const [dashboardBg, setDashboardBg] = useState<string | null>(null);
@@ -37,7 +34,6 @@ const PublicView = () => {
     const widgetConfig = {
         clock: { w: 2, h: 3, resizable: false },
         calendar: { w: 3, h: 3, resizable: false },
-        event_selector: { w: 4, h: 4, resizable: true },
         default: { w: 2, h: 2, resizable: true }
     };
     
@@ -55,28 +51,15 @@ const PublicView = () => {
     }, []);
 
     useEffect(() => {
-        if (event_id && club_id) {
-          axios
-            .get(`/api/clubs/${club_id}/events/${event_id}/`)
-            .then((response) => {
-              setEvent(response.data);
-            })
-            .catch((error) => {
-              console.error('Error fetching event details', error);
-            });
-        }
-      }, [club_id, event_id]);
-
-    useEffect(() => {
         if (!club_id || isNaN(Number(club_id))) return;
 
         const fetchClubData = async () => {
             try {
                 const [widgetsRes, clubRes] = await Promise.all([
-                    axios.get(`http://127.0.0.1:8000/api/clubs/${club_id}/widgets/`, {
+                    axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/widgets/`, {
                         withCredentials: true
                     }),
-                    axios.get(`http://127.0.0.1:8000/api/clubs/${club_id}/info/`, {
+                    axios.get(`http://51.21.191.188:8000/api/clubs/${club_id}/info/`, {
                         withCredentials: true
                     })
                 ]);
@@ -94,16 +77,18 @@ const PublicView = () => {
                     h: widgetConfig[w.widget_type as keyof typeof widgetConfig]?.h || w.height,
                 })));
                 setClubName(clubRes.data.name);
-                setDashboardBg(clubRes.data.background_image);
+                if (clubRes.data.background_image) {
+                    const fullUrl = `http://51.21.191.188:8000${clubRes.data.background_image}`;
+                    setDashboardBg(fullUrl);
+                }
             } catch (error) {
-                console.error("加载组件或背景失败：", error);
+                console.error("Loading Error", error);
             }
         };
 
         fetchClubData();
     }, [club_id]);
 
-    // 在renderWidgetContent函数中添加时钟渲染逻辑
     const renderWidgetContent = (widget: WidgetType) => {
         switch (widget.widget_type) {
             case 'text':
@@ -119,8 +104,8 @@ const PublicView = () => {
                             }}
                         >
                             <img
-                                src={widget.data.url}
-                                alt="社团图片"
+                                src={`http://51.21.191.188:8000${widget.data.url}`}
+                                alt="Photo"
                                 style={{
                                     width: '100%',
                                     height: '100%',
@@ -130,12 +115,12 @@ const PublicView = () => {
                                 }}
                             />
                         </div>
-                    ) : <div style={{ padding: 10 }}>暂无图片</div>;
+                    ) : <div style={{ padding: 10 }}>No Photo</div>;
 
             case 'notice':
                 return <div style={{ padding: 10 }}>
-                    <div style={{ color: '#666', fontSize: 18 }}>最新公告：</div>
-                    <div>{widget.data?.content || '暂无公告'}</div>
+                    <div style={{ color: '#666', fontSize: 18 }}>Lastest Notice</div>
+                    <div>{widget.data?.content || 'No Notice'}</div>
                 </div>;
 
             case 'countdown':
@@ -166,7 +151,6 @@ const PublicView = () => {
                         margin: '0 auto',
                         position: 'relative'
                     }}>
-                        {/* 表盘刻度 */}
                         <div style={{
                             width: '80%',
                             height: '80%',
@@ -190,7 +174,6 @@ const PublicView = () => {
                             ))}
                         </div>
                         
-                        {/* 时钟指针 */}
                         <div style={{
                             position: 'absolute',
                             left: '50%',
@@ -225,7 +208,6 @@ const PublicView = () => {
                             transition: 'transform 0.3s cubic-bezier(0.4, 2.3, 0.6, 1)'
                         }} />
                         
-                        {/* 中心点 */}
                         <div style={{
                             position: 'absolute',
                             left: '50%',
@@ -240,10 +222,9 @@ const PublicView = () => {
                 </div>;
             case 'event_selector':
                 if (!widget.data?.event_id) {
-                    return <div>请选择活动</div>;
+                    return <div>No Event Info</div>;
                 }
                 
-                // Remove useState/useEffect from here and use existing data
                 return (
                     <div style={{ padding: 10 }}>
                         <h3>Event Detail</h3>
@@ -255,14 +236,14 @@ const PublicView = () => {
                                 <p><strong>Descriptioon:</strong> {widget.data.description}</p>
                             </>
                         ) : (
-                            <div>加载中...</div>
+                            <div>Loading...</div>
                         )}
                     </div>
                 );
           
                 
             default:
-                return <div>未知组件类型</div>;
+                return <div>Undefined Widget</div>;
         }
     };
 
@@ -277,6 +258,43 @@ const PublicView = () => {
                 minHeight: '100vh'
             }}
         >
+                        <button 
+                onClick={() => window.location.href = `/club-dashboard/${club_id}`}
+                style={{
+                    background: '#1890ff',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    height: '40px',
+                    transition: 'background 0.3s',
+                    ':hover': {
+                        background: '#40a9ff'
+                    }
+                }}
+            >
+                Edit
+            </button>
+
+            <button
+                    onClick={() => window.location.href = 'http://51.21.191.188:8000/'}
+                    style={{
+                        background: '#ff6b6b',
+                        color: 'white',
+                        border: 'none',
+                        padding: '8px 16px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        height: '40px',
+                        transition: 'background 0.3s',
+                        marginLeft: '10px', 
+                    }}
+                >
+                Home
+            </button>
             <h2 
                 style={{
                     textAlign: "center",
@@ -292,7 +310,7 @@ const PublicView = () => {
             >
                 {clubName ? `Welcome to ${clubName}` : "Loading..."}
             </h2>
-            
+
             <GridLayout
                 className="layout"
                 layout={layout}
@@ -324,25 +342,7 @@ const PublicView = () => {
                 
 
             </GridLayout>
-            <button 
-                onClick={() => window.location.href = `/club-dashboard/${club_id}`}
-                style={{
-                    background: '#1890ff',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    height: '40px',
-                    transition: 'background 0.3s',
-                    ':hover': {
-                        background: '#40a9ff'
-                    }
-                }}
-            >
-                Edit
-            </button>
+            
         </div>
         
     );

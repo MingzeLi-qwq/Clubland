@@ -21,6 +21,7 @@
                             <i class="bi bi-flag"></i> Club Operations    
                         </h5>
                     </div>
+
                     <div class="card-body">
                         {% if is_manager %}
                         <h6 class="mb-3">You are a manager of this club, check more at <strong>Club Hub</strong>; or manage members, events and more at <strong>Club Manager Page</strong>:</h6>
@@ -31,7 +32,7 @@
                         {% endif %}
                         <div class="row g-3">
                             <div class="col-12 col-md-6">
-                                <a href="{% url 'club_dashboard' club_id=club.club_id %}" 
+                                <a href="{% url 'club_hub_view' club_id=club.club_id %}" 
                                    class="btn btn-outline-success btn-lg rounded-pill w-100 hover-effect">
                                     Access {{ club.name }} Hub →
                                 </a>

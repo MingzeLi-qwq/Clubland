@@ -33,12 +33,12 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle rounded px-2 py-1" href="#" id="clubDropdown" role="button"
                    data-bs-toggle="dropdown" aria-expanded="false">
-                  My Club
+                  Club hubs
                 </a>
                 <ul class="dropdown-menu mobile-dropdown-drawer" aria-labelledby="clubDropdown" id="clubMenu">
                   {% for membership in request.user.membership_set.all %}
                     <li>
-                      <a class="dropdown-item" href="{% url 'club_dashboard' club_id=membership.club.club_id %}">
+                      <a class="dropdown-item" href="{% url 'club_hub_view' club_id=membership.club.club_id %}">
                         {{ membership.club.name }}
                       </a>
                     </li>
