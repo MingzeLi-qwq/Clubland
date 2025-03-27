@@ -1,5 +1,9 @@
 # Team miHoyo
 
+## Student Union Club Management Platform
+
+
+
 ## Team members 
 
 - *Mingze Li*
@@ -10,123 +14,62 @@
 - *Yu-Tang Huang*
 - *Youyou Wu*
 
-  
-# Team miHoyo
-
-## Team Members
-
-- *Mingze Li*
-- *Ruijie Li*
-- *Qilan Lin*
-- *Peize Li*
-- *Jiale She*
-- *Yu-Tang Huang*
-- *Youyou Wu*
-
-## How to Start
-
-### 1. **Set Up Local Development Environment**
-
-To begin, set up and activate a local (virtual) development environment to ensure all dependencies and settings are isolated. Follow these steps:
-
-```
-$ python -m venv venv
-```
-On macOS and Linux:
-```
-$ source venv/bin/activate
-```
-On Windows:
-```
-$ source venv/Scripts/activate
-
-```
-
-#### 1.1. Install Python (3.13.1)
-
-Make sure that you have Python 3.13.1 installed. You can download it from the official Python website: [Python Downloads](https://www.python.org/downloads/release/python-3131/).
-
-#### 1.2. Install Node.js (22.14.0) and Node Package Manager (npm) (10.9.2)
-Install Node.js and npm by following the instructions on the official Node.js website: [Node.js Downloads](https://nodejs.org/en/download).
-On Windows:
-```
-$ winget install Schniz.fnm
-$ fnm install 22.14.0
-```
-On macOS and Linux:
-```
-$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash
-$ nvm install 22.14.0
-```
-
-#### 1.3. Activate Virtual Environment and Install Dependencies
-```
-$ python -m venv venv
-$ source venv/bin/activate
-$ pip install -r requirements.txt
-```
-
-### 2. **Populate or Delete Database with Initial Data**
-
-To populate or delete the database with initial data:
-```
-$ python manage.py seed
-```
-To delete the database and re-seed it with initial data:
-```
-$ python manage.py unseed
-```
-### 3. **Run Test**
-To ensure everything is working correctly, run all tests:
-```
-$ python manage.py test
-```
-
-### 4. **Run the Django Development Server**
-To run the Django development server, use the following command:
-```
-$ python manage.py runserver
-```
-The server will be hosted at http://127.0.0.1:8000/ by default.
-
-If you want to specify a different port, you can use the following command:
-```
-$ python manage.py runserver <port_number>  
-```
-
-### 5. **Run the React Development Server**
-Before running the React development server, ensure that you have set the appropriate environment variables in the .env file. You can do this by creating a .env file in the root directory of the project and adding the following lines:
-```
-$ echo FRONTEND_BASE_URL=http://localhost:3000 >> .env
-```
-If you want to specify a different port, you can use the following command:
-```
-$ echo FRONTEND_BASE_URL=http://your_url_port >> .env
-```
-To run the React development server, use the following command:
-```
-$ npm run dev
-```
 
 
-## Practical User Instances in Seed Data
+## Reference List
 
-The following user instances will only be created after running the command `$ python manage.py seed`:
+The following third-party packages and libraries have been significantly used in the development of this software:
 
-- User: `@john_doe`
-  - A default-generated Manager account for the Book Club, intended for accessing Club Manager-specific functionalities.
-- User: `@admin`
-  - To ensure system security, only administrator accounts can register new administrator users. Therefore, an initial administrator account is necessary.
-  - The `@admin` user is an administrator account explicitly created via `seed_user.py`, enabling access to functionalities that require admin permissions.
+### Python Dependencies
+
+- **Django** (`django==5.1.2`)
+  - Source: https://pypi.org/project/Django/
+- **Django REST Framework** (`djangorestframework==3.14.0`)
+  - Source: https://pypi.org/project/djangorestframework/
+- **Django Widget Tweaks** (`django-widget-tweaks==1.5.0`)
+  - Source: https://pypi.org/project/django-widget-tweaks/
+- **Django Summernote** (`django-summernote==0.8.20.0`)
+  - Source: https://pypi.org/project/django-summernote/
+- **Django CORS Headers** (`==4.3.1`)django-cors-headers
+  - Source: https://pypi.org/project/django-cors-headers/
+- **Libgravatar** (`libgravatar==1.0.4`)
+  - Source: https://pypi.org/project/libgravatar/
+- **Faker** (`Faker==30.8.2`)
+  - Source: https://pypi.org/project/Faker/
+- **Beautiful Soup 4** (`bs4`)
+  - Source: https://pypi.org/project/bs4/
+- **Pillow** (`Pillow==11.1.0`)
+  - Source: https://pypi.org/project/pillow/
+
+### JavaScript Dependencies
+
+
+- **Axios** (`axios@^1.6.5`)
+  - Source: https://www.npmjs.com/package/axios/v/1.6.5
+- **React** (`react@^18.2.0` & `react-dom@^18.2.0`)
+  - Source: https://www.npmjs.com/package/react-dom
+
+### Utility and Supporting Libraries
+
+- **Lxml** (`lxml==5.3.0`)
+  - Source: https://pypi.org/project/lxml/
+- **Python-dateutil** (`python-dateutil==2.9.0.post0`)
+  - Source: https://pypi.org/project/python-dateutil/
+- **SQLparse** (`sqlparse==0.5.1`)
+  - Source: https://pypi.org/project/sqlparse/
+- **Nodeenv** (`nodeenv==1.8.0`)
+  - Source: https://pypi.org/project/nodeenv/
+
+This reference list credits the authors and maintainers of these essential components.
+
+
+
+
+
 
 ## Deployed Version
 
 You can access the deployed version of this system at [http://51.21.191.188:8000/](http://51.21.191.188:8000/).
 
-## Troubleshooting
-Common Errors:
-Database Connection Error: Ensure that the database credentials in settings.py are correctly set for your local or production environment.
 
-Missing Environment Variables: If the application fails to start, double-check that all necessary environment variables (e.g., DJANGO_SECRET_KEY, REACT_APP_API_URL) are set correctly.
 
-Frontend Build Errors: If there are issues with building the React app, try deleting the node_modules folder and running npm install again.
