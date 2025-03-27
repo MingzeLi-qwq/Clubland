@@ -290,7 +290,7 @@ const PublicView = () => {
                         fontSize: '14px',
                         height: '40px',
                         transition: 'background 0.3s',
-                        marginLeft: '10px', // 使按钮有一点间距
+                        marginLeft: '10px', 
                     }}
                 >
                 Home
