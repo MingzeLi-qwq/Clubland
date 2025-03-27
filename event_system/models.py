@@ -26,7 +26,6 @@ class Event(models.Model):
     def __str__(self):
         return f"{self.name} by {self.club.name}"
 
-#用户报名模型记录 to record users registed every event
 class RSVP(models.Model):
     """Model to record user registrations for each event"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -33,7 +33,7 @@ class WidgetViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         widget = self.get_object()
         widget.delete()
-        return Response({"message": "组件删除成功"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Component deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
 
     @action(detail=False, methods=["POST"])

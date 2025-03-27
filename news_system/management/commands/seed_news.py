@@ -6,14 +6,14 @@ from news_system.models import News
 fake = Faker()
 
 class Command(BaseCommand):
-    help = "生成一些测试新闻数据"
+    help = "Generate some test news data"
 
     def add_arguments(self, parser):
         parser.add_argument(
             '--count',
             type=int,
             default=10,
-            help='生成新闻的数量，默认为10篇'
+            help='Number of news generated, default is 10'
         )
 
     def handle(self, *args, **options):
@@ -24,4 +24,4 @@ class Command(BaseCommand):
             content = '\n\n'.join(fake.paragraphs(nb=5))
             News.objects.create(title=title, content=content)
             created += 1
-        self.stdout.write(self.style.SUCCESS(f"成功生成 {created} 篇新闻"))
+        self.stdout.write(self.style.SUCCESS(f"Successfully generated {created} news article"))
