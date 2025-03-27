@@ -217,7 +217,6 @@ const Dashboard = () => {
                     } 
                 }
             );
-            alert('Saved Layout');
         } catch (error) {
             console.error('Save failed:', error.response?.data || error.message);
             alert(`Save failed: ${error.response?.data?.error || error.message}`);
