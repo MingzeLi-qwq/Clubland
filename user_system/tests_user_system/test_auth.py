@@ -7,7 +7,7 @@ User = get_user_model()
 class UserAuthTests(TestCase):
 
     def setUp(self):
-        """Make sure the user is not in the database before testing"""
+        """Ensure the user does not already exist before testing"""
         User.objects.filter(username="@testuser").delete()
         User.objects.filter(email="test@example.com").delete()
         self.user = User.objects.create_user(
@@ -53,21 +53,21 @@ class UserAuthTests(TestCase):
         self.assertEqual(str(messages[0]), "You have successfully logged out.")
 
     def test_invalid_login(self):
-        """Test the wrong login information"""
+        """Test incorrect login credentials"""
         response = self.client.post(reverse('login'), {
             'username': '@testuser',
             'password': 'WrongPassword!',
         })
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
-        # 验证错误消息存在
+        # Verify that error message is displayed
         self.assertContains(response, "Invalid username or password")
 
     def test_change_password(self):
-        """测试用户修改密码"""
+        """Test user password change"""
         self.client.login(username="@testuser", password="TestPassword123!")
         
-        # 发送修改密码请求
+        # Submit password change request
         response = self.client.post(reverse('change_password'), {
             'old_password': 'TestPassword123!',
             'new_password1': 'NewTestPassword456!',
@@ -75,11 +75,11 @@ class UserAuthTests(TestCase):
         })
         self.assertEqual(response.status_code, 302) 
         
-        '''旧密码无法登录'''
+        # Old password should no longer work
         self.client.logout()
         login_failed = self.client.login(username="@testuser", password="TestPassword123!")
         self.assertFalse(login_failed)
 
-        '''新密码可以登录'''
+        # New password should work
         login_success = self.client.login(username="@testuser", password="NewTestPassword456!")
         self.assertTrue(login_success)

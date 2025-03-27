@@ -1,27 +1,67 @@
 \chapter{Project management}
 \label{chap:project-management}
+Throughout the project, our team adopted a hybrid approach to project
+management, combining traditional planning with Agile-inspired iterative
+development. This strategy enabled us to maintain organization while
+remaining responsive to evolving requirements and challenges.
 
-\defaultInstructions
+\subsubsection{Planning and Tooling}\label{Planning and Tooling}
 
-\begin{length}
-There are no strict length requirements for this chapter.  However, it is important that the writing is clear and concise.  Avoid repeating yourself.  Make sure to clearly signpost evidence for claims.  It should be possible for a reader to understand this chapter without consulting other sources.  It is expected that a typical project needs 3--6 pages, but this can vary considerably from project to project.
-\end{length}
+Initially, we used \textbf{Trello} to outline key deliverables and
+divide the project into clear, actionable tasks. Each task was clearly
+assigned and categorized into columns such as "To Do," "In Progress,"
+and "Completed," enhancing transparency and accountability among team
+members.
 
-\begin{expectations}
-In this chapter, the team must present, reflect on, and evaluate the team's approaches to project management.  This discussion should present the main approaches to project management the team decided to use.  Include the team's rationale for these decisions, and the team's observations on the effectiveness of each approach.
+Version control and collaboration were handled through \textbf{GitHub},
+where each team member created a new branch every week. This approach
+allowed us to clearly manage version control by individual contribution
+rather than by feature, making it easier to pinpoint issues and revert
+changes if necessary. Pull requests were regularly reviewed and approved
+by teammates before merging into our main development branch, ensuring
+code quality and consistency.
 
-During the project, the team may have made significant changes to project management approaches, or made new decisions where initial arrangements were insufficient.  A typical team will also have encountered difficulties, such as risks that materialised and impacted the team.  Discuss the most critical decisions the team made, why you made them, and what the results were.  If certain approaches were not entirely successful, discuss what you would do differently in a future project.  
+\subsubsection{Iterative Progress and Agile Practices}\label{Iterative Progress and Agile Practices}
 
-A good report shows a systematic approach to project management, justifications for key decisions, and a critical reflection on the effectiveness of different approaches.  Ideally, the justifications and reflections in this chapter are based on project management theory.
+While we initially created a comprehensive roadmap, we consistently
+applied Agile practices, holding weekly meetings to review progress and
+adjust our priorities accordingly. For example, three weeks before the
+final deadline, we discovered our goal of creating a wide variety of
+customizable components in the Club Hub was overly ambitious given our
+timeline. Consequently, we decided to simplify this feature,
+implementing only essential components such as images, clocks, and text.
+However, we strategically designed our codebase to facilitate future
+expansions.
 
-Note that ``a systematic approach to project management'', ``critical reflection'', and use of ``project management theory'' do not necessary imply that your team's project management approach is a success story.  Thoughful, considered project management improves your chances of success, but projects do not always go according to plan and team's make mistakes.  The markers are looking for 
-\begin{itemize}
-    \item Good justifications for approaching a project in a particular way.
-    \item Critical reflection on the results, including recognition of problems.
-    \item The team taking ownership of the problems they encountered.
-\end{itemize}
+Another example occurred during the middle of our development when we
+identified that implementing a user deletion feature was highly
+problematic due to extensive foreign key dependencies in the database.
+Recognizing the risk to data integrity, we proactively decided to
+abandon this feature. Such flexibility significantly reduced potential
+issues and maintained project stability.
 
-There is no one best way of organising this content.  One approach is to cover different phases of the project management lifecycle (from initialisation to project close).  Another approach is to cover different project management tasks (e.g. team management, scheduling, planning, risk, etc.).  Yet another approach is to cover the most impactful events.  Each project is different and you should take the approach that works best for your team.
+\subsubsection{Communication and Collaboration}\label{Communication and Collaboration}
 
-There is also no minimum or maximum number of issues to cover.  Cover what is more important in the depth necessary to do the topic justice.
-\end{expectations}
+Our communication extended beyond scheduled meetings, as team members
+frequently interacted privately through messaging platforms to address
+tightly coupled features. For instance, frontend and backend developers
+regularly coordinated to ensure seamless integration of the event
+management functionalities, which required continuous adjustments to the
+Django views and frontend templates. This constant dialogue was crucial
+in resolving unexpected issues promptly and maintaining steady progress.
+
+\subsubsection{Evaluation and Lessons Learned}\label{Evaluation and Lessons Learned}
+
+In this project, we effectively utilized version control tools to ensure
+that each team member had continuous access to the latest code
+developments. We used Trello to track the tasks and progress of each
+member effectively. However, during the initial phases, we inaccurately
+assessed our project architecture, misunderstanding
+Django\textquotesingle s framework features, and incorrectly allocated
+tasks based on frontend and backend roles. Although we identified this
+issue by the third week of the project and switched our task allocation
+strategy to assigning tasks based on specific features, this initial
+mistake inevitably caused tight coupling in our code. As a result,
+despite consistent effort and contributions from all team members, we
+experienced difficulties distributing tasks evenly in the
+project\textquotesingle s later stages.

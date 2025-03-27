@@ -1,19 +1,12 @@
 \chapter{Manual tests}
 \label{chap:manual-tests}
 
-\defaultInstructions
-
-\begin{instructions}
-By default, this chapter is not included in the report because many teams do \emph{not} need this chapter.  If your project requires this chapter, uncomment the \texttt{input} command that includes this chapter.
-\end{instructions}
-
-\begin{expectations}
-If your team relied on manual testing, and the manual testing was carefully planned such that the team has a detailed written specification of its tests, then this chapter should be used to provide a list of all the team's tests.  A template table is provided to help format the tests.
-\end{expectations}
-
-\begin{longtable}{| p{.04\textwidth} | p{.40\textwidth} | p{.25\textwidth} | p{.18\textwidth} |} 
+\begin{longtable}{| p{.04\textwidth} | p{.40\textwidth} | p{.22\textwidth} | p{.21\textwidth} |} 
 \hline
 \# & Test script & Expected outcome & Outcome/date \\ \hline
 \endhead
-1 & Specify the actions the tester must undertake to run the test. & Specify what the tester must observe. &  \\ \hline
+1 & Test the messaging feature between users - Two members log into the deployed version of the website on two different computers with two different accounts and send two messages to each other's accounts.   & Both members should receive the two messages sent by the other. & All four messages were successfully sent and received, March 25, 2025. \\ \hline
+2 & Test the background image feature in Club Hub - One member logs into the deployed version of the website and changes the background image in the AI Club's Hub. Another member logs into a different account to check if the background image is updated correctly.    & The background image should be uploaded correctly and displayed properly when logged in with other accounts. & The background image was uploaded correctly and displayed properly, March 26, 2025.  \\ \hline
+3 & Test the widget feature in Club Hub - One member logs into the deployed version of the website and adds a clock widget, an image widget, and a notice widget in the AI Club's Club Hub. Another member logs into a different account to check if the widgets render correctly.  & All three widgets should be uploaded and rendered correctly. & All three widgets were uploaded and rendered correctly, March 26, 2025.  \\ \hline
+
 \end{longtable}

@@ -65,5 +65,13 @@ def send_message(request):
 
         Message.objects.create(sender=sender, receiver=receiver, text=text)
 
+        Notification.objects.create(
+            user=receiver,
+            title=f"New Message from {sender.username}",
+            message=f"You have a new message from {sender.username}. Click 'continue' to check your messages",
+            notification_type='general',
+            url=reverse('message_dashboard'),
+        )
+
         return JsonResponse({'status': 'success'})
 

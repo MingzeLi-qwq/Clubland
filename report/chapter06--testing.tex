@@ -1,35 +1,69 @@
 \chapter{Testing}
 \label{chap:testing}
 
-\defaultInstructions
-
-\begin{length}
-There are no strict length requirements for this chapter.  However, it is important that the writing is clear and concise.  Avoid repeating yourself.  Make sure to clearly signpost evidence for claims.  It is expected that a typical project needs 1--5 pages, but this can vary considerably from project to project.
-\end{length}
-
-\begin{expectations}
-This chapter discusses how the software has been tested.  
-
-Start by identifying the different ways the team has used to test the software, including the tools used in each approach.  Below, a section title ``Approach and tools'' is provided a suggestion for a header under which to cover this.  The purpose of this section is to help the reader understand what testing is included in the software.  For each distinct testing approach, clearly identify its purpose, and the extent to which you relied on it.  Also, identify where in the source code or the report the reader can find evidence of each type of testing.
-
-The team may have used certain processes to ensure the quality of testing.  If so, explain what these were and how effective these approaches were.  If you decide to discuss this, it is important to identify evidence of the processes you employed.  For example, you could identify minuted meeting decisions that clearly demonstrate your team's application of a particular appraoch.  Unsupported claims tend not to be so convincing.
-
-A good report includes a critical evaluation covering both strengths and weaknesses.  Claims made in this evaluation should also be justified with evidence.  If your team has code coverage results, make sure to present summary results in the report, but identify the location of the source report (typically HTML pages) in the source code.  Again, unsupported claims remain unconvincing.
-
-If your team used manual testing as well as automated testing, it is important to include the following:
-\begin{itemize}
-\item What did your rely on manual testing for?  In other words, what was the purpose of manual testing.
-\item To what extent did you rely on manual testing for aspects of software testing that would ideally be automated.
-\item What are the respective limits of automated and manual testing.
-\item An appendix listing each manual test.  For each manual test, describe precisely the actions the tester must undertake and what they are expected to observe.  Also add when the test was last performed and whether it was successful.
-\end{itemize}
-\end{expectations}
-
 \section{Approach and tools}
 \label{sect:testing:approach}
+In this project, we primarily relied on the Django testing framework for
+automated testing, which included the following types of tests:
+
+\begin{itemize}
+\item
+  \textbf{Unit Testing}: Testing core functional modules to ensure the
+  correctness of each module.
+\item
+  \textbf{Integration Testing}: Verifying interactions between
+  apps to ensure that various modules work together properly.
+\item
+  \textbf{User Interface Testing}: Ensuring the responsiveness and
+  usability of the user interface (tests focused on template rendering).
+\item
+  \textbf{Security Testing}: Checking for potential security
+  vulnerabilities to ensure system security (tests focused on mixins and
+  other security restriction tools).
+\end{itemize}
 
 \section{Quality assurance processes}
 \label{sect:testing:process}
+To ensure the quality of our tests, we used test coverage tools for
+coverage detection. Currently, the test coverage for the entire project
+reaches 93\%, with all tests passing successfully, ensuring the stable
+operation of the main functionalities.
+
+The test coverage report can be viewed in ./htmlcov/index.html
+
 
 \section{Evaluation of testing}
 \label{sect:testing:evaluation}
+In our testing evaluation, we identified the following strengths and
+weaknesses:
+
+\begin{itemize}
+\item
+  \textbf{Strengths}:
+
+  \begin{itemize}
+  \item
+    Unit tests and integration tests covered most of the core
+    functionalities, ensuring their correctness.
+  \item
+    The main user interface templates were tested, ensuring usability.
+  \end{itemize}
+\item
+  \textbf{Weaknesses}:
+
+  \begin{itemize}
+  \item
+    Some complex functionalities had insufficient test coverage and need
+    further improvement. For example:
+
+    \begin{itemize}
+    \item
+      Widget functionality in Club Hub
+    \item
+      Message chat functionality between users in the Message system
+    \end{itemize}
+  \item
+    The tests that could not be automated were compensated through
+    Manual tests, please see Appendix A - Manual tests
+  \end{itemize}
+\end{itemize}

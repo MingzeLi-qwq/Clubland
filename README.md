@@ -12,31 +12,45 @@
 
   
 ## How to start
-虚拟环境的搭建 To begin, set up and activate a local (virtual) development environment. Make sure download the python(3.13.1). From the root of this project:
+To begin, set up and activate a local (virtual) development environment. Make sure download the python(3.13.1). From the root of this project:
 ```
 $ python -m venv venv
 $ source venv/Scripts/activate
 ```
 
-依赖包的下载 Install all required packages:
+Install all required packages:
 
 ```
 $ pip3 install -r requirements.txt
 ```
 
 
-测试用户数据的生成和删除 To populate or delete the database with initial data:
+ To populate or delete the database with initial data:
 ```
-$ python manage.py seed_users
+$ python manage.py seed
 $ python manage.py unseed_users
 ```
-测试代码的运行 To ensure everything is working correctly, run all tests:
+o ensure everything is working correctly, run all tests:
 ```
 $ python manage.py test
 ```
 
-启动 Django 开发服务器，运行本地网站 To run the Django development server, use the following command:
+To run the Django development server, use the following command:
 ```
 $ python manage.py runserver
 ```
-wwwww
+
+
+## Practical User Instances in Seed Data
+
+The following user instances will only be created after running the command `$ python manage.py seed`:
+
+- User: `@john_doe`
+  - A default-generated Manager account for the Book Club, intended for accessing Club Manager-specific functionalities.
+- User: `@admin`
+  - To ensure system security, only administrator accounts can register new administrator users. Therefore, an initial administrator account is necessary.
+  - The `@admin` user is an administrator account explicitly created via `seed_user.py`, enabling access to functionalities that require admin permissions.
+
+## Deployed Version
+
+You can access the deployed version of this system at [http://51.21.191.188:8000/](http://51.21.191.188:8000/).
