@@ -1,5 +1,5 @@
 {# ...existing code... #}
-<h4>评论</h4>
+<h4>Comment</h4>
 {% if post.newsComments.all %}
   {% for comment in post.newsComments.all %}
     <div class="card mb-3">
@@ -30,5 +30,5 @@
     </div>
   {% endfor %}
 {% else %}
-  <p>暂无评论</p>
+  <p>No comment</p>
 {% endif %}
