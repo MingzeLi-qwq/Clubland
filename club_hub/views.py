@@ -120,12 +120,12 @@ class ManagerCheckView(APIView):
     def get(self, request, club_id):
         try:
             club = Club.objects.get(pk=club_id)
-            console.log(club)
             is_manager = Membership.objects.filter(
                 user=request.user,
                 club=club,
                 is_manager=True
             ).exists()
+            print(f"User {request.user.username} is manager: {is_manager}")
             return Response({"is_manager": is_manager})
         except Club.DoesNotExist:
             return Response({"error": "Club not found"}, status=404)
