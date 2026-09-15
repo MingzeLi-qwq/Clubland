@@ -1,7 +1,7 @@
 # Clubland
 
 ## Student Union Club Management Platform
-from Team miHoyo
+From Team miHoyo
 
 
 
